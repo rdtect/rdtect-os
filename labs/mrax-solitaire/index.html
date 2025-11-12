@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solitaire</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>♠ Solitaire ♥</h1>
+            <div class="controls">
+                <button id="new-game" class="btn">New Game</button>
+                <div class="score">Moves: <span id="moves">0</span></div>
+                <div class="timer">Time: <span id="time">0:00</span></div>
+                <div class="hints">💡 N: New | Z: Undo | Space: Draw | Double-click: Auto-move</div>
+            </div>
+        </header>
+        
+        <div class="game-board">
+            <div class="top-row">
+                <div class="stock-waste">
+                    <div id="stock" class="card-pile stock"></div>
+                    <div id="waste" class="card-pile waste"></div>
+                </div>
+                
+                <div class="foundations">
+                    <div id="foundation-0" class="card-pile foundation"></div>
+                    <div id="foundation-1" class="card-pile foundation"></div>
+                    <div id="foundation-2" class="card-pile foundation"></div>
+                    <div id="foundation-3" class="card-pile foundation"></div>
+                </div>
+            </div>
+            
+            <div class="tableau">
+                <div id="tableau-0" class="card-pile tableau-pile"></div>
+                <div id="tableau-1" class="card-pile tableau-pile"></div>
+                <div id="tableau-2" class="card-pile tableau-pile"></div>
+                <div id="tableau-3" class="card-pile tableau-pile"></div>
+                <div id="tableau-4" class="card-pile tableau-pile"></div>
+                <div id="tableau-5" class="card-pile tableau-pile"></div>
+                <div id="tableau-6" class="card-pile tableau-pile"></div>
+            </div>
+        </div>
+        
+        <div id="win-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>🎉 Congratulations! 🎉</h2>
+                <p>You won in <span id="final-moves"></span> moves!</p>
+                <p>Time: <span id="final-time"></span></p>
+                <button id="play-again" class="btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+/* ========================================
+   Main Stylesheet
+   Imports all CSS modules
+   ======================================== */
+@import url('components.css');
+@import url('animations.css');
+
+/* ========================================
+   Core Styles: Variables + Base
+   ======================================== */
+
+/* ========================================
+   Design System: CSS Custom Properties
+   ======================================== */
+:root {
+   /* Colors */
+   --color-primary: #4CAF50;
+   --color-primary-dark: #45a049;
+   --color-red: #e74c3c;
+   --color-black: #2c3e50;
+   --color-white: #ffffff;
+
+   /* Gradients */
+   --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+   --card-back-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+   --button-gradient: linear-gradient(145deg, #4CAF50, #45a049);
+
+   /* Card Dimensions */
+   --card-width: 100px;
+   --card-height: 140px;
+   --card-border-radius: 10px;
+   --card-gap: 15px;
+   --tableau-card-offset: 30px;
+
+   /* Shadows */
+   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+   --shadow-lg: 0 6px 12px rgba(0, 0, 0, 0.4);
+   --shadow-xl: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+   /* Transitions */
+   --transition-fast: 0.2s;
+   --transition-normal: 0.3s;
+   --transition-slow: 0.5s;
+
+   /* Spacing */
+   --spacing-sm: 10px;
+   --spacing-md: 20px;
+   --spacing-lg: 30px;
+   --spacing-xl: 40px;
+}
+
+/* ========================================
+   Responsive: Mobile Breakpoint
+   ======================================== */
+@media (max-width: 768px) {
+   :root {
+      --card-width: 70px;
+      --card-height: 98px;
+      --card-gap: 10px;
+   }
+}
+
+/* ========================================
+   Base: Reset & Typography
+   ======================================== */
+* {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
+body {
+   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+   background: var(--bg-gradient);
+   min-height: 100vh;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   padding: var(--spacing-md);
+}
+
+.game-container {
+   width: 100%;
+   max-width: 1200px;
+}
+
+/* ========================================
+   Drag & Drop Visual Feedback
+   ======================================== */
+.card-pile.drag-over {
+   background: rgba(76, 175, 80, 0.3);
+   border-color: var(--color-primary);
+   border-style: solid;
+   transform: scale(1.05);
+}
+
+.card-pile.drag-over-invalid {
+   background: rgba(231, 76, 60, 0.3);
+   border-color: var(--color-red);
+   border-style: solid;
+   animation: shake 0.3s;
+}
+
+@keyframes shake {
+   0%, 100% { transform: translateX(0); }
+   25% { transform: translateX(-5px); }
+   75% { transform: translateX(5px); }
+}
+
+/* Drag Preview for Card Stacks */
+.card.drag-preview {
+   opacity: 0.6;
+   pointer-events: none;
+}
