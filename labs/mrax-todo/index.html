@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Todo App</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✓ Todo App</h1>
+            <p class="subtitle">Stay organized, stay productive</p>
+        </header>
+        
+        <div class="controls">
+            <div class="input-group">
+                <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off">
+                <button id="add-btn" class="btn btn-primary">Add</button>
+            </div>
+            <div class="filter-group">
+                <button id="filter-all" class="btn filter-btn active">All</button>
+                <button id="filter-active" class="btn filter-btn">Active</button>
+                <button id="filter-completed" class="btn filter-btn">Completed</button>
+            </div>
+        </div>
+
+        <div id="todo-list" class="todo-list">
+            <!-- Todos will be rendered here -->
+        </div>
+
+        <div class="stats">
+            <span id="stats-total">0 total</span>
+            <span id="stats-active">0 active</span>
+            <span id="stats-completed">0 completed</span>
+            <button id="clear-completed" class="btn btn-text">Clear completed</button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
