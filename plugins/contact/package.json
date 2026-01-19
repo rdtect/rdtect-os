@@ -1,0 +1,12 @@
+{
+  "name": "@desktop-os/contact",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/Contact.svelte",
+  "types": "./src/Contact.svelte",
+  "exports": {
+    ".": "./src/Contact.svelte",
+    "./manifest": "./manifest.ts"
+  }
+}

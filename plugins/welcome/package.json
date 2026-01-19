@@ -1,0 +1,12 @@
+{
+  "name": "@desktop-os/welcome",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/Welcome.svelte",
+  "types": "./src/Welcome.svelte",
+  "exports": {
+    ".": "./src/Welcome.svelte",
+    "./manifest": "./manifest.ts"
+  }
+}

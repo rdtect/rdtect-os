@@ -1,0 +1,18 @@
+{
+  "name": "@desktop-os/prompt-manager-remote",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5003 --host",
+    "build": "vite build",
+    "preview": "vite preview --port 5003"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-federation": "^1.3.6",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "svelte": "^5.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^5.4.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@desktop-os/plugin-about-me",
+  "version": "1.0.0",
+  "description": "About Me portfolio plugin for rdtect OS",
+  "type": "module",
+  "main": "./src/AboutMe.svelte",
+  "types": "./src/data.ts",
+  "keywords": [
+    "desktop-os",
+    "plugin",
+    "portfolio",
+    "about-me",
+    "svelte"
+  ],
+  "author": "rdtect",
+  "license": "MIT",
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

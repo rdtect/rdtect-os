@@ -1,0 +1,210 @@
+# =============================================================================
+# rdtect OS - GitHub Actions CI/CD Workflow
+# =============================================================================
+# This workflow builds Docker images, pushes to GHCR, and triggers Coolify deployment
+#
+# Required GitHub Secrets:
+#   - COOLIFY_WEBHOOK_URL: Your Coolify deployment webhook URL
+#   - COOLIFY_TOKEN: API token from Coolify with "deploy" permission
+#
+# Optional Secrets:
+#   - COOLIFY_POCKETBASE_WEBHOOK: Separate webhook for pocketbase service
+#   - COOLIFY_PYTHON_WEBHOOK: Separate webhook for python-backend service
+# =============================================================================
+
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Deploy after build'
+        required: false
+        default: 'true'
+        type: boolean
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: deployment-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  # Image names
+  FRONTEND_IMAGE: ${{ github.repository }}/frontend
+  PYTHON_BACKEND_IMAGE: ${{ github.repository }}/python-backend
+
+jobs:
+  # ===========================================================================
+  # Build and Test
+  # ===========================================================================
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      frontend_tags: ${{ steps.meta-frontend.outputs.tags }}
+      python_tags: ${{ steps.meta-python.outputs.tags }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # -----------------------------------------------------------------------
+      # Frontend Image
+      # -----------------------------------------------------------------------
+      - name: Extract metadata for Frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.FRONTEND_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=production
+
+      # -----------------------------------------------------------------------
+      # Python Backend Image
+      # -----------------------------------------------------------------------
+      - name: Extract metadata for Python Backend
+        id: meta-python
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.PYTHON_BACKEND_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Python Backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/python-backend
+          file: ./apps/python-backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-python.outputs.tags }}
+          labels: ${{ steps.meta-python.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ===========================================================================
+  # Deploy to Coolify
+  # ===========================================================================
+  deploy:
+    name: Deploy to Coolify
+    needs: build
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'workflow_dispatch' || github.event.inputs.deploy == 'true')
+
+    steps:
+      - name: Trigger Coolify Deployment
+        env:
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          if [ -z "$COOLIFY_WEBHOOK_URL" ] || [ -z "$COOLIFY_TOKEN" ]; then
+            echo "::warning::Coolify webhook URL or token not configured. Skipping deployment."
+            echo "To enable automatic deployment, add COOLIFY_WEBHOOK_URL and COOLIFY_TOKEN to your repository secrets."
+            exit 0
+          fi
+
+          echo "Triggering Coolify deployment..."
+
+          response=$(curl -s -w "\n%{http_code}" \
+            -X POST "$COOLIFY_WEBHOOK_URL" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H "Content-Type: application/json")
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "Response code: $http_code"
+          echo "Response body: $body"
+
+          if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+            echo "Deployment triggered successfully!"
+          else
+            echo "::error::Failed to trigger deployment. HTTP $http_code"
+            exit 1
+          fi
+
+      # Optional: Trigger individual service webhooks if configured
+      - name: Trigger PocketBase Deployment (if configured)
+        if: ${{ secrets.COOLIFY_POCKETBASE_WEBHOOK != '' }}
+        env:
+          COOLIFY_POCKETBASE_WEBHOOK: ${{ secrets.COOLIFY_POCKETBASE_WEBHOOK }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          curl -s "$COOLIFY_POCKETBASE_WEBHOOK" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" || true
+        continue-on-error: true
+
+      - name: Trigger Python Backend Deployment (if configured)
+        if: ${{ secrets.COOLIFY_PYTHON_WEBHOOK != '' }}
+        env:
+          COOLIFY_PYTHON_WEBHOOK: ${{ secrets.COOLIFY_PYTHON_WEBHOOK }}
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        run: |
+          curl -s "$COOLIFY_PYTHON_WEBHOOK" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" || true
+        continue-on-error: true
+
+  # ===========================================================================
+  # Notify (Optional)
+  # ===========================================================================
+  notify:
+    name: Deployment Notification
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    if: always() && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Create deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && 'Passed' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy | ${{ needs.deploy.result == 'success' && 'Triggered' || needs.deploy.result == 'skipped' && 'Skipped' || 'Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY

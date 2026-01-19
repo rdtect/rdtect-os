@@ -1,0 +1,120 @@
+# Docker Compose for rdtect OS - Development by Default
+#
+# Quick Start:
+#   docker compose up              # Start backend services only (pocketbase, python-backend)
+#   docker compose --profile full up  # Full stack including frontend in container
+#   docker compose --profile all up   # Everything including excalidraw federation remote
+#
+# Recommended Development Workflow:
+#   docker compose up -d           # Start services in background
+#   bun run dev                    # Run frontend locally for fastest HMR
+#
+# Production:
+#   docker compose -f docker-compose.prod.yml up
+
+services:
+  # ==============================================================================
+  # Core Services (always started)
+  # ==============================================================================
+
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: rdtect-pocketbase
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    volumes:
+      - pocketbase_data:/pb_data
+      - ./data/pb_migrations:/pb_migrations:ro
+    environment:
+      - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY:-}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8090/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  python-backend:
+    build:
+      context: ./apps/python-backend
+      dockerfile: Dockerfile
+    container_name: rdtect-python-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for hot reload in development
+      - ./apps/python-backend/src:/app:cached
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ==============================================================================
+  # Frontend Service (profile: full)
+  # Use when you want everything containerized
+  # ==============================================================================
+
+  frontend:
+    image: oven/bun:latest
+    container_name: rdtect-frontend
+    profiles:
+      - full
+      - all
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app:cached
+      - /app/node_modules
+      - bun_cache:/root/.bun
+    environment:
+      - NODE_ENV=development
+      - VITE_POCKETBASE_URL=http://pocketbase:8090
+      - VITE_PYTHON_BACKEND_URL=http://python-backend:8000
+    command: sh -c "bun install && bun run dev --host 0.0.0.0 --port 5173"
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+      python-backend:
+        condition: service_started
+
+  # ==============================================================================
+  # Federation Apps (profile: all)
+  # ==============================================================================
+
+  excalidraw-remote:
+    image: oven/bun:latest
+    container_name: rdtect-excalidraw
+    profiles:
+      - all
+    working_dir: /app/apps/excalidraw-remote
+    ports:
+      - "5004:5004"
+    volumes:
+      - .:/app:cached
+      - /app/node_modules
+      - /app/apps/excalidraw-remote/node_modules
+      - bun_cache_excalidraw:/root/.bun
+    environment:
+      - NODE_ENV=development
+    command: sh -c "cd /app && bun install && cd /app/apps/excalidraw-remote && bun run dev"
+
+# ==============================================================================
+# Volumes
+# ==============================================================================
+
+volumes:
+  pocketbase_data:
+    name: rdtect_pocketbase_data
+  bun_cache:
+    name: rdtect_bun_cache
+  bun_cache_excalidraw:
+    name: rdtect_bun_cache_excalidraw

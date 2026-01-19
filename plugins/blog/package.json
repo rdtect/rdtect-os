@@ -1,0 +1,9 @@
+{
+  "name": "@desktop-os/blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./manifest.ts",
+  "dependencies": {},
+  "devDependencies": {}
+}

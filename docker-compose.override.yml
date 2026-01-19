@@ -1,0 +1,73 @@
+# =============================================================================
+# rdtect OS - Local Development Overrides
+# =============================================================================
+# This file automatically extends docker-compose.prod.yml for local development
+# Usage: docker compose -f docker-compose.prod.yml -f docker-compose.override.yml up
+# Or simply: docker compose up (if you symlink/rename docker-compose.prod.yml)
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # Frontend - Development Mode
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      target: deps  # Stop at deps stage, we'll use volume mounts
+    volumes:
+      # Mount source code for hot reloading
+      - .:/app
+      - /app/node_modules  # Preserve container's node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["bun", "run", "dev", "--host", "0.0.0.0"]
+    ports:
+      - "5176:5176"  # Vite dev server port
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5176/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # Python Backend - Development Mode with Hot Reload
+  # ---------------------------------------------------------------------------
+  python-backend:
+    volumes:
+      - ./apps/python-backend/src:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      # Relax health check for development
+      interval: 10s
+      timeout: 5s
+      start_period: 5s
+
+  # ---------------------------------------------------------------------------
+  # PocketBase - Development Mode
+  # ---------------------------------------------------------------------------
+  pocketbase:
+    # Use local volumes for easier data inspection
+    volumes:
+      - ./data/pocketbase/pb_data:/pb_data
+      - ./data/pocketbase/pb_public:/pb_public
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      start_period: 5s
+
+  # ---------------------------------------------------------------------------
+  # Piston - Enable by default in development
+  # ---------------------------------------------------------------------------
+  piston:
+    profiles: []  # Remove profile restriction, always start in dev
+    volumes:
+      - ./data/piston/packages:/piston/packages
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G

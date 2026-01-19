@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat Remote - Module Federation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body, #app {
+        height: 100%;
+        width: 100%;
+        background: #0f172a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      // For standalone development testing
+      import { mount } from 'svelte';
+      import Chat from '/src/Chat.svelte';
+
+      mount(Chat, {
+        target: document.getElementById('app'),
+        props: { windowId: 'dev-test' }
+      });
+    </script>
+  </body>
+</html>

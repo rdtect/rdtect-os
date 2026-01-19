@@ -1,0 +1,11 @@
+{
+  "name": "@desktop-os/code-editor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/CodeEditor.svelte",
+  "exports": {
+    ".": "./src/CodeEditor.svelte",
+    "./manifest": "./manifest.ts"
+  }
+}
