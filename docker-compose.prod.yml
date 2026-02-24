@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      SERVICE_FQDN_FRONTEND: ''
+      SERVICE_FQDN_FRONTEND_3000: ''
       NODE_ENV: production
       PUBLIC_POCKETBASE_URL: ${PUBLIC_POCKETBASE_URL:-http://pocketbase:8090}
       PUBLIC_PYTHON_BACKEND_URL: ${PUBLIC_PYTHON_BACKEND_URL:-http://python-backend:8000}
