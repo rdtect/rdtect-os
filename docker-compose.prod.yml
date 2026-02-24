@@ -28,7 +28,7 @@ services:
       pocketbase:
         condition: service_healthy
       python-backend:
-        condition: service_healthy
+        condition: service_started
     networks:
       - rdtect-network
     healthcheck:
@@ -93,10 +93,10 @@ services:
       - rdtect-network
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
-      interval: 30s
+      interval: 15s
       timeout: 10s
-      retries: 3
-      start_period: 10s
+      retries: 5
+      start_period: 30s
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
