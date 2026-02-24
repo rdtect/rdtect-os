@@ -27,8 +27,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    labels:
-      - traefik.docker.network=coolify
     networks:
       - default
       - coolify
@@ -54,8 +52,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    labels:
-      - traefik.docker.network=coolify
     networks:
       - default
       - coolify
