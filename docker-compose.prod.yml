@@ -1,9 +1,6 @@
 # =============================================================================
 # rdtect OS - Production Docker Compose (Coolify)
 # =============================================================================
-# Follows Coolify conventions: SERVICE_FQDN_* for domains, coolify external
-# network for Traefik discovery, expose (not ports) for internal routing.
-# =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
@@ -16,24 +13,20 @@ services:
     environment:
       SERVICE_FQDN_FRONTEND_3000: ''
       NODE_ENV: production
-      PUBLIC_POCKETBASE_URL: ${PUBLIC_POCKETBASE_URL:-http://pocketbase:8090}
-      PUBLIC_PYTHON_BACKEND_URL: ${PUBLIC_PYTHON_BACKEND_URL:-http://python-backend:8000}
-      PUBLIC_PISTON_URL: ${PUBLIC_PISTON_URL:-http://piston:2000}
+      PUBLIC_POCKETBASE_URL: ${PUBLIC_POCKETBASE_URL:-https://pb.rdtect.com}
       ORIGIN: ${ORIGIN:-https://rdtect.com}
     expose:
       - '3000'
     depends_on:
       pocketbase:
         condition: service_healthy
-      python-backend:
-        condition: service_started
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 15s
+      start_period: 20s
     labels:
       - traefik.docker.network=coolify
     networks:
@@ -67,78 +60,10 @@ services:
       - default
       - coolify
 
-  # ---------------------------------------------------------------------------
-  # Python Backend - AI/OpenAI Integration
-  # ---------------------------------------------------------------------------
-  python-backend:
-    build:
-      context: ./apps/python-backend
-      dockerfile: Dockerfile
-    environment:
-      SERVICE_FQDN_PYTHON_BACKEND_8000: ''
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
-      POCKETBASE_URL: ${POCKETBASE_URL:-http://pocketbase:8090}
-      PYTHONUNBUFFERED: '1'
-    expose:
-      - '8000'
-    depends_on:
-      pocketbase:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    labels:
-      - traefik.docker.network=coolify
-    networks:
-      - default
-      - coolify
-
-  # ---------------------------------------------------------------------------
-  # Piston - Code Execution Engine (Optional)
-  # ---------------------------------------------------------------------------
-  piston:
-    image: ghcr.io/engineer-man/piston
-    expose:
-      - '2000'
-    volumes:
-      - piston_packages:/piston/packages
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:2000/api/v2/runtimes"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - default
-      - coolify
-    profiles:
-      - code-execution
-
-# =============================================================================
-# Networks
-# =============================================================================
 networks:
   coolify:
     external: true
 
-# =============================================================================
-# Volumes - Persistent Data
-# =============================================================================
 volumes:
   pocketbase_data:
   pocketbase_public:
-  piston_packages:
