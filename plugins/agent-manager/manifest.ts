@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '🤖',
   description: 'Monitor and manage AI agents - like a Task Manager for AI',
+  access: 'protected',
   entry: './src/AgentManager.svelte',
   defaultWidth: 720,
   defaultHeight: 600,

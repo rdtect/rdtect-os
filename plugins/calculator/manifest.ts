@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '🧮',
   description: 'A full-featured calculator with memory functions and keyboard support',
+  access: 'free',
   entry: './src/Calculator.svelte',
   defaultWidth: 320,
   defaultHeight: 480,

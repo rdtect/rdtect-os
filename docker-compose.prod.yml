@@ -26,7 +26,7 @@ services:
       - PUBLIC_POCKETBASE_URL=${PUBLIC_POCKETBASE_URL:-http://pocketbase:8090}
       - PUBLIC_PYTHON_BACKEND_URL=${PUBLIC_PYTHON_BACKEND_URL:-http://python-backend:8000}
       - PUBLIC_PISTON_URL=${PUBLIC_PISTON_URL:-http://piston:2000}
-      - ORIGIN=${ORIGIN:-http://localhost:3000}
+      - ORIGIN=${ORIGIN:-https://rdtect.com}
     depends_on:
       pocketbase:
         condition: service_healthy
@@ -43,7 +43,9 @@ services:
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.frontend.rule=Host(`rdtect.com`) || Host(`www.rdtect.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
 
   # ---------------------------------------------------------------------------

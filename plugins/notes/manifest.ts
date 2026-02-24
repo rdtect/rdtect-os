@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '📒',
   description: 'Simple notes app using Web Components',
+  access: 'protected',
   entry: './src/Notes.svelte',
   defaultWidth: 400,
   defaultHeight: 500,

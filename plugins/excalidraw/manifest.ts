@@ -5,6 +5,7 @@ const manifest = {
   type: 'federation',
   icon: '🎨',
   description: 'Virtual whiteboard for sketching hand-drawn like diagrams',
+  access: 'free',
   entry: './src/ExcalidrawApp.svelte',
   remote: {
     name: 'excalidrawRemote',

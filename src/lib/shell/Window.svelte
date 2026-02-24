@@ -287,30 +287,38 @@
   >
     <!-- macOS-style Traffic Light Buttons (Left side) -->
     <div class="flex items-center gap-2 traffic-lights">
-      <button
-        class="traffic-light traffic-light-close group"
-        onclick={handleClose}
-        title="Close"
-      >
-        <svg class="traffic-light-icon" viewBox="0 0 12 12">
-          <line x1="3" y1="3" x2="9" y2="9"/>
-          <line x1="9" y1="3" x2="3" y2="9"/>
-        </svg>
-      </button>
-      <button
-        class="traffic-light traffic-light-minimize group"
-        onclick={handleMinimize}
-        title="Minimize"
-      >
-        <svg class="traffic-light-icon" viewBox="0 0 12 12">
-          <line x1="2" y1="6" x2="10" y2="6"/>
-        </svg>
-      </button>
-      <button
-        class="traffic-light traffic-light-maximize group"
-        onclick={handleMaximize}
-        title={win.isMaximized ? 'Restore' : 'Maximize'}
-      >
+      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <button
+          class="traffic-light traffic-light-close group"
+          onclick={handleClose}
+          aria-label="Close window"
+          title="Close"
+        >
+          <svg class="traffic-light-icon" viewBox="0 0 12 12">
+            <line x1="3" y1="3" x2="9" y2="9"/>
+            <line x1="9" y1="3" x2="3" y2="9"/>
+          </svg>
+        </button>
+      </div>
+      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <button
+          class="traffic-light traffic-light-minimize group"
+          onclick={handleMinimize}
+          aria-label="Minimize window"
+          title="Minimize"
+        >
+          <svg class="traffic-light-icon" viewBox="0 0 12 12">
+            <line x1="2" y1="6" x2="10" y2="6"/>
+          </svg>
+        </button>
+      </div>
+      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
+        <button
+          class="traffic-light traffic-light-maximize group"
+          onclick={handleMaximize}
+          aria-label={win.isMaximized ? 'Restore window' : 'Maximize window'}
+          title={win.isMaximized ? 'Restore' : 'Maximize'}
+        >
         {#if win.isMaximized}
           <svg class="traffic-light-icon" viewBox="0 0 12 12">
             <rect x="2.5" y="4" width="5" height="5" fill="none" rx="0.5"/>
@@ -321,7 +329,8 @@
             <path d="M2 6L6 2L10 6L6 10Z" fill="none"/>
           </svg>
         {/if}
-      </button>
+        </button>
+      </div>
     </div>
 
     <!-- Centered Title with App Icon -->
@@ -519,8 +528,8 @@
   }
 
   .traffic-light {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -541,8 +550,8 @@
   }
 
   .traffic-light:focus-visible {
-    outline: 2px solid rgba(99, 102, 241, 0.6);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 1), 0 0 0 4px rgba(99, 102, 241, 0.8);
   }
 
   .traffic-light-icon {

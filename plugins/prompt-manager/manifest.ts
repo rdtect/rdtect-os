@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '📝',
   description: 'Manage and organize AI prompts',
+  access: 'protected',
   entry: './src/PromptManager.svelte',
   defaultWidth: 600,
   defaultHeight: 550,

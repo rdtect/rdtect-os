@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '💻',
   description: 'A code editor with Python execution support via Pyodide (WebAssembly)',
+  access: 'protected',
   entry: './src/CodeEditor.svelte',
   defaultWidth: 900,
   defaultHeight: 650,

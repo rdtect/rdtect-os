@@ -26,6 +26,7 @@ export interface PluginManifest {
   type: PluginType;
   icon: string;
   description?: string;
+  access?: 'free' | 'protected';
 
   // Type-specific configuration
   entry?: string;              // For native/webcomponent/wasm

@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '🖼️',
   description: 'Apply image filters - grayscale, brightness, contrast, blur, sharpen, and more',
+  access: 'free',
   entry: './src/ImageFilter.svelte',
   defaultWidth: 600,
   defaultHeight: 700,

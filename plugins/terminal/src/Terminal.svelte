@@ -320,7 +320,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #0d1117;
+    background-color: #0f172a;
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', 'Consolas', monospace;
     font-size: 14px;
     line-height: 1.4;
@@ -342,16 +342,16 @@
   }
 
   .output::-webkit-scrollbar-track {
-    background: #161b22;
+    background: #1e293b;
   }
 
   .output::-webkit-scrollbar-thumb {
-    background: #30363d;
+    background: #334155;
     border-radius: 4px;
   }
 
   .output::-webkit-scrollbar-thumb:hover {
-    background: #484f58;
+    background: #475569;
   }
 
   .line {
@@ -361,11 +361,11 @@
   }
 
   .line.command {
-    color: #58a6ff;
+    color: #6366f1;
   }
 
   .line.output {
-    color: #c9d1d9;
+    color: #f8fafc;
   }
 
   .line.error {
@@ -380,7 +380,7 @@
     display: flex;
     align-items: center;
     padding-top: 4px;
-    border-top: 1px solid #21262d;
+    border-top: 1px solid #334155;
   }
 
   .prompt {
@@ -394,14 +394,14 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #c9d1d9;
+    color: #f8fafc;
     font-family: inherit;
     font-size: inherit;
     caret-color: #33ff33;
   }
 
   .input::selection {
-    background: #264f78;
+    background: rgba(99, 102, 241, 0.3);
   }
 
   /* Blinking cursor effect */

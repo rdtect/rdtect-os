@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: 'https://api.dicebear.com/7.x/avataaars/svg?seed=rdtect',
   description: 'Personal portfolio and about me showcase',
+  access: 'free',
   entry: './src/AboutMe.svelte',
   defaultWidth: 800,
   defaultHeight: 700,

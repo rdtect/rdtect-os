@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '🕐',
   description: 'A beautiful native clock widget with alarm notification support',
+  access: 'free',
   entry: './src/ClockApp.svelte',
   // Widget is intentionally NOT auto-registered as a floating desktop widget.
   // The clock appears in the system tray (DesktopWidgets.svelte) and can be

@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '🐦',
   description: 'Classic Flappy Bird game using Canvas',
+  access: 'free',
   entry: './src/FlappyBird.svelte',
   defaultWidth: 400,
   defaultHeight: 600,

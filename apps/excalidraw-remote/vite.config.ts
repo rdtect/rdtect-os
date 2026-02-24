@@ -11,11 +11,11 @@ export default defineConfig({
       exposes: {
         './Excalidraw': './src/ExcalidrawWrapper.tsx'
       },
-      // Don't share React - bundle our own React 18 to avoid version conflicts with host
       shared: []
     })
   ],
   server: {
+    host: true,
     port: 5004,
     strictPort: true,
     cors: true

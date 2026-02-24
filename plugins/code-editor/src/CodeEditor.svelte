@@ -327,8 +327,8 @@ print(f"Factorial of 5: {factorial(5)}")
     display: flex;
     flex-direction: column;
     height: 100%;
-    background-color: #1e1e1e;
-    color: #cccccc;
+    background-color: #0f172a;
+    color: #f8fafc;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     position: relative;
     overflow: hidden;
@@ -340,8 +340,8 @@ print(f"Factorial of 5: {factorial(5)}")
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background-color: #252526;
-    border-bottom: 1px solid #3c3c3c;
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
     gap: 12px;
   }
 
@@ -358,17 +358,17 @@ print(f"Factorial of 5: {factorial(5)}")
     align-items: center;
     gap: 4px;
     padding: 6px 12px;
-    background-color: #3c3c3c;
+    background-color: #334155;
     border: none;
     border-radius: 4px;
-    color: #cccccc;
+    color: #f8fafc;
     font-size: 13px;
     cursor: pointer;
     transition: background-color 0.15s;
   }
 
   .toolbar-btn:hover {
-    background-color: #4c4c4c;
+    background-color: #475569;
   }
 
   .toolbar-btn .icon {
@@ -378,17 +378,17 @@ print(f"Factorial of 5: {factorial(5)}")
 
   .language-select {
     padding: 6px 8px;
-    background-color: #3c3c3c;
-    border: 1px solid #555;
+    background-color: #334155;
+    border: 1px solid #475569;
     border-radius: 4px;
-    color: #cccccc;
+    color: #f8fafc;
     font-size: 13px;
     cursor: pointer;
   }
 
   .language-select:focus {
     outline: none;
-    border-color: #569cd6;
+    border-color: #6366f1;
   }
 
   .run-btn {
@@ -396,7 +396,7 @@ print(f"Factorial of 5: {factorial(5)}")
     align-items: center;
     gap: 6px;
     padding: 8px 20px;
-    background-color: #0e639c;
+    background-color: #6366f1;
     border: none;
     border-radius: 4px;
     color: white;
@@ -407,11 +407,11 @@ print(f"Factorial of 5: {factorial(5)}")
   }
 
   .run-btn:hover:not(:disabled) {
-    background-color: #1177bb;
+    background-color: #818cf8;
   }
 
   .run-btn:disabled {
-    background-color: #4c4c4c;
+    background-color: #475569;
     cursor: not-allowed;
   }
 
@@ -437,9 +437,9 @@ print(f"Factorial of 5: {factorial(5)}")
 
   .status-indicator {
     font-size: 12px;
-    color: #858585;
+    color: #94a3b8;
     padding: 4px 8px;
-    background-color: #3c3c3c;
+    background-color: #334155;
     border-radius: 4px;
   }
 
@@ -451,8 +451,8 @@ print(f"Factorial of 5: {factorial(5)}")
   /* Tabs */
   .tabs-bar {
     display: flex;
-    background-color: #252526;
-    border-bottom: 1px solid #3c3c3c;
+    background-color: #1e293b;
+    border-bottom: 1px solid #334155;
     overflow-x: auto;
     min-height: 35px;
   }
@@ -462,7 +462,7 @@ print(f"Factorial of 5: {factorial(5)}")
   }
 
   .tabs-bar::-webkit-scrollbar-thumb {
-    background: #555;
+    background: #475569;
     border-radius: 2px;
   }
 
@@ -473,8 +473,8 @@ print(f"Factorial of 5: {factorial(5)}")
     padding: 8px 12px;
     background-color: transparent;
     border: none;
-    border-right: 1px solid #3c3c3c;
-    color: #858585;
+    border-right: 1px solid #334155;
+    color: #94a3b8;
     font-size: 13px;
     cursor: pointer;
     white-space: nowrap;
@@ -482,13 +482,13 @@ print(f"Factorial of 5: {factorial(5)}")
   }
 
   .tab:hover {
-    background-color: #2a2a2a;
+    background-color: #1e293b;
   }
 
   .tab.active {
-    background-color: #1e1e1e;
+    background-color: #0f172a;
     color: #ffffff;
-    border-bottom: 2px solid #569cd6;
+    border-bottom: 2px solid #6366f1;
   }
 
   .tab-icon {
@@ -510,7 +510,7 @@ print(f"Factorial of 5: {factorial(5)}")
     padding: 0 4px;
     background: none;
     border: none;
-    color: #858585;
+    color: #94a3b8;
     font-size: 16px;
     cursor: pointer;
     border-radius: 4px;
@@ -519,7 +519,7 @@ print(f"Factorial of 5: {factorial(5)}")
 
   .tab-close:hover {
     color: #ffffff;
-    background-color: #4c4c4c;
+    background-color: #475569;
   }
 
   /* Content area */
@@ -538,7 +538,7 @@ print(f"Factorial of 5: {factorial(5)}")
 
   .output-pane {
     height: 200px;
-    border-top: 1px solid #3c3c3c;
+    border-top: 1px solid #334155;
     overflow: hidden;
   }
 

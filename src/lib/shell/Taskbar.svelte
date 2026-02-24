@@ -4,12 +4,15 @@
   import type { AppDefinition, MenuItem } from './types';
   import type { PluginType } from '$lib/core/types';
   import { Window } from './window.svelte';
+  import { getAuthState } from '$lib/core/pocketbase';
 
   // Props
   let {
     onOpenLauncher,
     onContextMenu,
     onShowAppInfo,
+    onSignInClick,
+    onLaunchApp,
     taskbarLocked = false,
     showSearch = true,
     showWidgets = true,
@@ -19,12 +22,18 @@
     onOpenLauncher?: () => void;
     onContextMenu?: (e: MouseEvent, items: MenuItem[]) => void;
     onShowAppInfo?: (app: AppDefinition, view: 'source' | 'architecture' | 'docs') => void;
+    onSignInClick?: () => void;
+    onLaunchApp?: (appId: string) => void;
     taskbarLocked?: boolean;
     showSearch?: boolean;
     showWidgets?: boolean;
     showTaskView?: boolean;
     onTaskbarSettingsChange?: (settings: { locked?: boolean; showSearch?: boolean; showWidgets?: boolean; showTaskView?: boolean }) => void;
   } = $props();
+
+  // Auth state (reactive)
+  let isAuthenticated = $derived(getAuthState().isValid);
+  let authModel = $derived(getAuthState().model);
 
   // Track pinned apps (initially all registered apps are pinned)
   let pinnedAppIds = $state<Set<string>>(new Set());
@@ -121,13 +130,22 @@
     windows.forEach(w => wm.closeWindow(w.id));
   }
 
+  // Helper: launch app through Desktop's auth-aware launcher or fallback to wm
+  function openAppWindow(appId: string) {
+    if (onLaunchApp) {
+      onLaunchApp(appId);
+    } else {
+      wm.openWindow(appId);
+    }
+  }
+
   // Handle taskbar icon click
   function handleIconClick(app: AppDefinition) {
     const appWindows = getAppWindows(app.id);
 
     if (appWindows.length === 0) {
       // No windows open - open a new one
-      wm.openWindow(app.id);
+      openAppWindow(app.id);
     } else if (appWindows.length === 1) {
       // Single window - toggle minimize or focus
       const win = appWindows[0];
@@ -175,7 +193,7 @@
     if (!isRunning) {
       items.push({
         label: 'Open',
-        action: () => wm.openWindow(app.id),
+        action: () => openAppWindow(app.id),
       });
     }
 
@@ -183,7 +201,7 @@
     if (supportsMultipleInstances) {
       items.push({
         label: 'New Window',
-        action: () => wm.openWindow(app.id),
+        action: () => openAppWindow(app.id),
       });
     }
 
@@ -239,7 +257,7 @@
 
     <!-- Start Button -->
     <button
-      class="start-button group relative w-11 h-11 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200"
+      class="start-button group relative w-11 h-11 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none"
       onclick={() => onOpenLauncher?.()}
       title="Start Menu"
     >
@@ -252,7 +270,7 @@
     <div class="taskbar-divider"></div>
 
     <!-- Centered App Icons -->
-    <div class="flex items-center gap-0.5 px-1">
+    <div class="flex items-center gap-1.5 px-1">
       {#each taskbarApps() as app (app.id)}
         {@const isRunning = hasOpenWindow(app.id)}
         {@const isHovered = hoveredApp === app.id}
@@ -332,7 +350,7 @@
 
           <!-- App Icon Button -->
           <button
-            class="taskbar-icon relative w-11 h-11 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200
+            class="taskbar-icon relative w-11 h-11 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200 focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none
               {hasFocusedWindow ? 'taskbar-icon-focused' : ''}
               {isRunning ? 'taskbar-icon-running' : ''}"
             onclick={() => handleIconClick(app)}
@@ -341,6 +359,15 @@
             onmouseleave={hidePreview}
           >
             <span class="text-2xl drop-shadow-md transition-transform duration-150">{app.icon}</span>
+
+            <!-- Lock badge for protected apps -->
+            {#if app.plugin?.manifest?.access === 'protected' && !isAuthenticated}
+              <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-slate-800 border border-slate-600 flex items-center justify-center">
+                <svg class="w-2 h-2 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            {/if}
 
             <!-- Running Indicator -->
             {#if isRunning}
@@ -359,42 +386,58 @@
     <!-- System Tray -->
     <div class="flex items-center gap-0.5">
       <!-- Hidden icons indicator (caret) -->
-      <button class="tray-icon w-6 h-9 flex items-center justify-center rounded-md" title="Show hidden icons">
+      <button class="tray-icon w-11 h-11 flex items-center justify-center rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Show hidden icons">
         <svg class="w-3 h-3 text-slate-400" viewBox="0 0 24 24" fill="currentColor">
           <path d="M7 10l5 5 5-5z"/>
         </svg>
       </button>
 
       <!-- Network -->
-      <button class="tray-icon w-9 h-9 flex items-center justify-center rounded-md" title="Network">
+      <button class="tray-icon w-11 h-11 flex items-center justify-center rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Network">
         <svg class="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
           <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
         </svg>
       </button>
 
       <!-- Volume -->
-      <button class="tray-icon w-9 h-9 flex items-center justify-center rounded-md" title="Volume">
+      <button class="tray-icon w-11 h-11 flex items-center justify-center rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Volume">
         <svg class="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
           <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
         </svg>
       </button>
 
       <!-- Battery -->
-      <button class="tray-icon w-9 h-9 flex items-center justify-center rounded-md" title="Battery: 85%">
+      <button class="tray-icon w-11 h-11 flex items-center justify-center rounded-md focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Battery: 85%">
         <svg class="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
           <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4zM15 19H9V6h6v13z"/>
         </svg>
       </button>
+
+      <!-- Auth indicator -->
+      {#if isAuthenticated}
+        <button class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-white/5 text-xs text-slate-300" title="Signed in">
+          <div class="w-5 h-5 rounded-full bg-indigo-500/30 flex items-center justify-center">
+            <span class="text-[10px] text-indigo-300">{authModel?.name?.[0] || '?'}</span>
+          </div>
+        </button>
+      {:else}
+        <button
+          class="px-2.5 py-1 rounded-md bg-indigo-500/10 hover:bg-indigo-500/20 text-xs text-indigo-300 transition-colors"
+          onclick={() => onSignInClick?.()}
+        >
+          Sign In
+        </button>
+      {/if}
     </div>
 
     <!-- Clock & Date -->
-    <button class="clock-area flex flex-col items-center justify-center px-3 py-1 rounded-lg min-w-[72px]" title="Calendar">
+    <button class="clock-area flex flex-col items-center justify-center px-3 py-1 rounded-lg min-w-[72px] min-h-[44px] focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Calendar">
       <span class="text-[11px] font-medium text-white">{timeStr}</span>
       <span class="text-[10px] text-slate-400">{dateStr}</span>
     </button>
 
     <!-- Notification Area -->
-    <button class="notification-btn w-9 h-9 flex items-center justify-center rounded-lg relative" title="Notifications">
+    <button class="notification-btn w-11 h-11 flex items-center justify-center rounded-lg relative focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:outline-none" title="Notifications">
       <svg class="w-4 h-4 text-slate-300" viewBox="0 0 24 24" fill="currentColor">
         <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
       </svg>

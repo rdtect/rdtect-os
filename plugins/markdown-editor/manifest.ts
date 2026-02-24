@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '📝',
   description: 'A full-featured Markdown editor with live preview, syntax highlighting, and keyboard shortcuts',
+  access: 'protected',
   entry: './src/MarkdownEditor.svelte',
   defaultWidth: 900,
   defaultHeight: 600,

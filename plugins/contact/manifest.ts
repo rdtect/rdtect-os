@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: 'mail',
   description: 'Contact form to reach out to rdtect',
+  access: 'free',
   entry: './src/Contact.svelte',
   defaultWidth: 480,
   defaultHeight: 600,

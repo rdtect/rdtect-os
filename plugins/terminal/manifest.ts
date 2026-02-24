@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '💻',
   description: 'A terminal emulator with simulated commands and fake filesystem',
+  access: 'protected',
   entry: './src/Terminal.svelte',
   defaultWidth: 600,
   defaultHeight: 400,

@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: 'article',
   description: 'Technical blog with articles and thoughts',
+  access: 'free',
   entry: './src/Blog.svelte',
   defaultWidth: 900,
   defaultHeight: 700,

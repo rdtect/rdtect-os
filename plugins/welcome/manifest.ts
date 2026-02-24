@@ -5,6 +5,7 @@ const manifest = {
   type: 'native',
   icon: '👋',
   description: 'Welcome wizard for first-time visitors to rdtect OS',
+  access: 'free',
   entry: './src/Welcome.svelte',
   defaultWidth: 700,
   defaultHeight: 550,

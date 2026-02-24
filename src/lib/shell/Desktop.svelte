@@ -10,9 +10,11 @@
   import AppLauncher from './AppLauncher.svelte';
   import AppInfoModal from './AppInfoModal.svelte';
   import WindowSwitcher from './WindowSwitcher.svelte';
+  import AuthGate from './AuthGate.svelte';
   import { keyboardShortcuts, type Shortcut } from '$lib/core/keyboard-shortcuts';
   import { eventBus } from '$lib/core/event-bus';
   import { widgetRegistry } from '$lib/core/widget-registry.svelte';
+  import { getAuthState } from '$lib/core/pocketbase';
   import { onMount } from 'svelte';
   import type { AppDefinition } from './types';
 
@@ -21,8 +23,6 @@
   let loadingProgress = $state(0);
   let isFadingOut = $state(false);
   let bootMessageIndex = $state(0);
-  let showProfile = $state(false);
-
   // Boot sequence messages
   const bootMessages = [
     'Initializing kernel...',
@@ -46,24 +46,18 @@
       bootMessageIndex = Math.min(bootMessageIndex + 1, bootMessages.length - 1);
     }, 600);
 
-    // Show profile info after a short delay
-    const profileTimeout = setTimeout(() => {
-      showProfile = true;
-    }, 800);
-
-    // Auto-dismiss after 3.5 seconds for the full boot experience
+    // Auto-dismiss after 2 seconds
     const dismissTimeout = setTimeout(() => {
       isFadingOut = true;
       // Remove loading screen after fade animation completes
       setTimeout(() => {
         isLoading = false;
       }, 600);
-    }, 3500);
+    }, 2000);
 
     return () => {
       clearInterval(progressInterval);
       clearInterval(messageInterval);
-      clearTimeout(profileTimeout);
       clearTimeout(dismissTimeout);
     };
   });
@@ -89,6 +83,25 @@
     resetIconPositions: () => void;
     hasCustomPositions: () => boolean;
   };
+
+  // Auth gate state
+  let showAuthGate = $state(false);
+  let pendingPluginId = $state<string | null>(null);
+  let isAuthenticated = $derived(getAuthState().isValid);
+
+  /**
+   * Launch an app with auth check. If the app is protected and the user
+   * is not authenticated, show the auth gate instead of opening the window.
+   */
+  function launchApp(appId: string) {
+    const app = wm.getApp(appId);
+    if (app?.plugin?.manifest?.access === 'protected' && !isAuthenticated) {
+      pendingPluginId = appId;
+      showAuthGate = true;
+      return;
+    }
+    wm.openWindow(appId);
+  }
 
   function openStartMenu() {
     startMenuOpen = true;
@@ -322,7 +335,7 @@
       x: e.clientX,
       y: e.clientY,
       items: [
-        { label: 'Open', icon: '📂', action: () => wm.openWindow(app.id) },
+        { label: 'Open', icon: '📂', action: () => launchApp(app.id) },
         { separator: true, label: '' },
         { label: 'View Source Code', icon: '< >', action: () => showAppInfo(app, 'source') },
         { label: 'View Architecture', icon: '🔧', action: () => showAppInfo(app, 'architecture') },
@@ -548,75 +561,14 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="fixed inset-0 overflow-hidden font-sans" oncontextmenu={showDesktopContextMenu}>
-  <!-- Premium animated background with multiple layers -->
+  <!-- Desktop background: 3 layers (gradient, aurora, noise) -->
   <div class="absolute inset-0 bg-desktop-gradient">
-    <!-- Aurora animated glow effect -->
+    <!-- Layer 1: Base gradient (via bg-desktop-gradient class) -->
+    <!-- Layer 2: Aurora glow effect -->
     <div class="bg-desktop-aurora"></div>
-    <!-- Radial gradient overlays -->
     <div class="absolute inset-0 bg-desktop-overlay"></div>
-    <!-- Subtle grid pattern -->
-    <div class="absolute inset-0 bg-desktop-grid"></div>
-    <!-- Noise texture for depth -->
+    <!-- Layer 3: Noise texture for depth -->
     <div class="absolute inset-0 bg-desktop-noise"></div>
-
-    <!-- rdtect Branding Watermark -->
-    <div class="absolute inset-0 pointer-events-none overflow-hidden">
-      <!-- Large rd monogram watermark - bottom right -->
-      <div class="absolute -bottom-20 -right-20 w-[500px] h-[500px] opacity-[0.03] select-none">
-        <svg viewBox="0 0 200 200" class="w-full h-full animate-float-slow">
-          <defs>
-            <linearGradient id="rdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#6366f1"/>
-              <stop offset="100%" style="stop-color:#8b5cf6"/>
-            </linearGradient>
-          </defs>
-          <rect x="20" y="20" width="160" height="160" rx="32" fill="url(#rdGradient)"/>
-          <text x="100" y="130" text-anchor="middle" font-size="90" font-weight="900" fill="white" font-family="system-ui, -apple-system, sans-serif">rd</text>
-        </svg>
-      </div>
-
-      <!-- Floating geometric shapes -->
-      <div class="absolute top-[10%] left-[5%] w-32 h-32 opacity-[0.04]">
-        <svg viewBox="0 0 100 100" class="w-full h-full animate-float-drift">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" stroke-width="2"/>
-          <circle cx="50" cy="50" r="25" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
-        </svg>
-      </div>
-
-      <div class="absolute top-[60%] left-[8%] w-24 h-24 opacity-[0.03]">
-        <svg viewBox="0 0 100 100" class="w-full h-full animate-float-reverse">
-          <polygon points="50,10 90,90 10,90" fill="none" stroke="#a855f7" stroke-width="2"/>
-        </svg>
-      </div>
-
-      <div class="absolute top-[25%] right-[12%] w-20 h-20 opacity-[0.04]">
-        <svg viewBox="0 0 100 100" class="w-full h-full animate-spin-very-slow">
-          <rect x="20" y="20" width="60" height="60" rx="8" fill="none" stroke="#6366f1" stroke-width="2" transform="rotate(45 50 50)"/>
-        </svg>
-      </div>
-
-      <div class="absolute bottom-[30%] right-[5%] w-16 h-16 opacity-[0.03]">
-        <svg viewBox="0 0 100 100" class="w-full h-full animate-float">
-          <path d="M50 10 L90 50 L50 90 L10 50 Z" fill="none" stroke="#8b5cf6" stroke-width="2"/>
-        </svg>
-      </div>
-
-      <!-- Subtle brand text watermarks -->
-      <div class="absolute top-[45%] left-[50%] -translate-x-1/2 -translate-y-1/2 opacity-[0.015] select-none">
-        <span class="text-[180px] font-black tracking-tighter text-white whitespace-nowrap" style="font-family: system-ui, -apple-system, sans-serif;">
-          rdtect
-        </span>
-      </div>
-
-      <!-- Particle dots -->
-      <div class="particles-container">
-        <div class="particle particle-1"></div>
-        <div class="particle particle-2"></div>
-        <div class="particle particle-3"></div>
-        <div class="particle particle-4"></div>
-        <div class="particle particle-5"></div>
-      </div>
-    </div>
   </div>
 
   <!-- Desktop area with icons and widgets -->
@@ -703,41 +655,6 @@
             </div>
           </div>
 
-          <!-- Profile info with fade-in -->
-          <div class="transition-all duration-500 {showProfile ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}">
-            <!-- Author Info -->
-            <p class="text-slate-400 text-sm mb-2">A portfolio project by</p>
-            <div class="flex items-center justify-center gap-2 mb-4">
-              <span class="text-desktop-accent font-semibold text-lg">rdtect</span>
-              <span class="text-slate-500">|</span>
-              <span class="text-slate-400 text-sm">UI/UX & Frontend Developer</span>
-            </div>
-
-            <!-- Social Links -->
-            <div class="flex items-center justify-center gap-3 mb-6">
-              <a href="https://github.com/rdtect" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white text-xs transition-all hover:scale-105">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                GitHub
-              </a>
-              <a href="https://x.com/rdtect" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white text-xs transition-all hover:scale-105">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                @rdtect
-              </a>
-              <a href="https://rdtect.com" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-700/50 hover:bg-slate-600/50 text-slate-300 hover:text-white text-xs transition-all hover:scale-105">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>
-                Website
-              </a>
-            </div>
-
-            <!-- Tech Stack Badges -->
-            <div class="flex gap-2 justify-center mb-6 flex-wrap">
-              <span class="px-3 py-1 bg-desktop-accent/10 rounded-full text-indigo-200 text-xs border border-desktop-accent/20 hover:bg-desktop-accent/20 transition-colors">Svelte 5</span>
-              <span class="px-3 py-1 bg-desktop-accent/10 rounded-full text-indigo-200 text-xs border border-desktop-accent/20 hover:bg-desktop-accent/20 transition-colors">TypeScript</span>
-              <span class="px-3 py-1 bg-desktop-accent/10 rounded-full text-indigo-200 text-xs border border-desktop-accent/20 hover:bg-desktop-accent/20 transition-colors">Bun</span>
-              <span class="px-3 py-1 bg-desktop-accent/10 rounded-full text-indigo-200 text-xs border border-desktop-accent/20 hover:bg-desktop-accent/20 transition-colors">5 Plugin Types</span>
-            </div>
-          </div>
-
           <!-- Enhanced progress bar with gradient and glow -->
           <div class="w-full h-2 bg-slate-800/80 rounded-full overflow-hidden mb-3 relative">
             <!-- Glow effect -->
@@ -775,6 +692,8 @@
     onOpenLauncher={openStartMenu}
     onContextMenu={showGenericContextMenu}
     onShowAppInfo={showAppInfo}
+    onSignInClick={() => { showAuthGate = true; }}
+    onLaunchApp={launchApp}
   />
 
   <!-- Start Menu (Windows 11 style) -->
@@ -809,4 +728,21 @@
     onSelect={selectWindowFromSwitcher}
     onClose={() => { windowSwitcherOpen = false; }}
   />
+
+  <!-- Auth Gate Modal -->
+  {#if showAuthGate}
+    <AuthGate
+      onSuccess={() => {
+        showAuthGate = false;
+        if (pendingPluginId) {
+          wm.openWindow(pendingPluginId);
+          pendingPluginId = null;
+        }
+      }}
+      onDismiss={() => {
+        showAuthGate = false;
+        pendingPluginId = null;
+      }}
+    />
+  {/if}
 </div>

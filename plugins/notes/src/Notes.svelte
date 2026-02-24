@@ -202,7 +202,7 @@
                 margin: 0;
                 font-size: 18px;
                 font-weight: 700;
-                background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+                background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
@@ -228,8 +228,8 @@
               }
 
               .icon-btn:hover {
-                background: rgba(251, 191, 36, 0.2);
-                color: #fbbf24;
+                background: rgba(99, 102, 241, 0.2);
+                color: #6366f1;
               }
 
               .icon-btn svg {
@@ -258,7 +258,7 @@
               }
 
               .search-input:focus {
-                border-color: rgba(251, 191, 36, 0.5);
+                border-color: rgba(99, 102, 241, 0.5);
                 background-color: rgba(255, 255, 255, 0.08);
               }
 
@@ -300,8 +300,8 @@
               }
 
               .note-item.active {
-                background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
-                border: 1px solid rgba(251, 191, 36, 0.3);
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(129, 140, 248, 0.1) 100%);
+                border: 1px solid rgba(99, 102, 241, 0.3);
               }
 
               .note-item.pinned::before {
@@ -311,7 +311,7 @@
                 right: 8px;
                 width: 6px;
                 height: 6px;
-                background: #fbbf24;
+                background: #6366f1;
                 border-radius: 50%;
               }
 
@@ -395,14 +395,14 @@
               }
 
               .pin-btn:hover {
-                border-color: rgba(251, 191, 36, 0.5);
-                color: #fbbf24;
+                border-color: rgba(99, 102, 241, 0.5);
+                color: #6366f1;
               }
 
               .pin-btn.pinned {
-                background: rgba(251, 191, 36, 0.15);
-                border-color: rgba(251, 191, 36, 0.5);
-                color: #fbbf24;
+                background: rgba(99, 102, 241, 0.15);
+                border-color: rgba(99, 102, 241, 0.5);
+                color: #6366f1;
               }
 
               .delete-btn {
@@ -470,10 +470,10 @@
                 text-align: center;
                 padding: 10px;
                 font-size: 9px;
-                color: #fbbf24;
+                color: #6366f1;
                 text-transform: uppercase;
                 letter-spacing: 0.15em;
-                background: rgba(251, 191, 36, 0.05);
+                background: rgba(99, 102, 241, 0.05);
                 border-top: 1px solid rgba(255, 255, 255, 0.04);
               }
             </style>
