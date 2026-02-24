@@ -17,10 +17,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
-    container_name: rdtect-frontend
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-3000}:3000"
     environment:
       - NODE_ENV=production
       - PUBLIC_POCKETBASE_URL=${PUBLIC_POCKETBASE_URL:-http://pocketbase:8090}
@@ -53,10 +50,7 @@ services:
   # ---------------------------------------------------------------------------
   pocketbase:
     image: ghcr.io/muchobien/pocketbase:latest
-    container_name: rdtect-pocketbase
     restart: unless-stopped
-    ports:
-      - "${POCKETBASE_PORT:-8090}:8090"
     volumes:
       - pocketbase_data:/pb_data
       - pocketbase_public:/pb_public
@@ -75,6 +69,8 @@ services:
       - "coolify.managed=true"
       - "traefik.enable=true"
       - "traefik.http.routers.pocketbase.rule=Host(`pb.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.pocketbase.entrypoints=websecure"
+      - "traefik.http.routers.pocketbase.tls.certresolver=letsencrypt"
       - "traefik.http.services.pocketbase.loadbalancer.server.port=8090"
 
   # ---------------------------------------------------------------------------
@@ -84,10 +80,7 @@ services:
     build:
       context: ./apps/python-backend
       dockerfile: Dockerfile
-    container_name: rdtect-python-backend
     restart: unless-stopped
-    ports:
-      - "${PYTHON_BACKEND_PORT:-8000}:8000"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
@@ -108,6 +101,8 @@ services:
       - "coolify.managed=true"
       - "traefik.enable=true"
       - "traefik.http.routers.api.rule=Host(`api.${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
       - "traefik.http.services.api.loadbalancer.server.port=8000"
 
   # ---------------------------------------------------------------------------
@@ -115,10 +110,7 @@ services:
   # ---------------------------------------------------------------------------
   piston:
     image: ghcr.io/engineer-man/piston
-    container_name: rdtect-piston
     restart: unless-stopped
-    ports:
-      - "${PISTON_PORT:-2000}:2000"
     volumes:
       - piston_packages:/piston/packages
     networks:
@@ -149,15 +141,11 @@ services:
 networks:
   rdtect-network:
     driver: bridge
-    name: rdtect-network
 
 # =============================================================================
 # Volumes - Persistent Data
 # =============================================================================
 volumes:
   pocketbase_data:
-    name: rdtect-pocketbase-data
   pocketbase_public:
-    name: rdtect-pocketbase-public
   piston_packages:
-    name: rdtect-piston-packages
