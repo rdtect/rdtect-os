@@ -6,13 +6,18 @@
 FROM oven/bun:1.1-alpine AS deps
 WORKDIR /app
 
+# Force development mode for install — Coolify injects NODE_ENV=production as
+# a build ARG into all stages, which causes bun/npm to skip devDependencies.
+# We need devDependencies (vite, svelte, adapter-node) to build.
+ENV NODE_ENV=development
+
 # Copy all package files for workspace resolution
 COPY package.json bun.lock* bun.lockb* ./
 COPY packages/ ./packages/
 COPY apps/ ./apps/
 COPY plugins/ ./plugins/
 
-# Install dependencies
+# Install ALL dependencies (including devDependencies needed for build)
 RUN bun install --frozen-lockfile || bun install
 
 # Stage 2: Builder
@@ -23,9 +28,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages ./packages
 COPY . .
 
+# NODE_ENV=production during build is fine — deps are already installed from stage 1
 ENV NODE_ENV=production
 
-# Build the SvelteKit application (adapter-node is in devDependencies)
+# Build the SvelteKit application
 RUN bun run build
 
 # Stage 3: Production Runner
