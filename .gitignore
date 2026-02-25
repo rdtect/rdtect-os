@@ -23,5 +23,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Data directories (user content)
-/data/
-!/data/markdown/.gitkeep
+/data/*
+!/data/markdown/
+!/data/pb_migrations/

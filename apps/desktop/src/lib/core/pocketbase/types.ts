@@ -352,6 +352,65 @@ export interface FileMetadataUpdate {
 }
 
 // ============================================
+// Chat Sessions Collection
+// ============================================
+
+/**
+ * Chat session record
+ */
+export interface ChatSession extends BaseRecord {
+  title: string;
+  user_id: string;
+  model: string;
+  message_count: number;
+  last_message_at: string;
+}
+
+// ============================================
+// Chat Messages Collection
+// ============================================
+
+/**
+ * Chat message record
+ */
+export interface ChatMessage extends BaseRecord {
+  session_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  tokens_used?: number;
+}
+
+// ============================================
+// Agent Configs Collection
+// ============================================
+
+/**
+ * Agent configuration record
+ */
+export interface AgentConfig extends BaseRecord {
+  name: string;
+  avatar: string;
+  model: string;
+  capabilities: string[];
+  system_prompt?: string;
+}
+
+// ============================================
+// Knowledge Sources Collection
+// ============================================
+
+/**
+ * Knowledge source record
+ */
+export interface KnowledgeSource extends BaseRecord {
+  name: string;
+  type: 'obsidian' | 'url' | 'file';
+  collection_name: string;
+  document_count: number;
+  last_indexed_at: string;
+}
+
+// ============================================
 // Collection Names & Mapping
 // ============================================
 
@@ -364,7 +423,11 @@ export const Collections = {
   BLOG_POSTS: 'blog_posts',
   CONTACT_MESSAGES: 'contact_messages',
   APP_SETTINGS: 'app_settings',
-  FILES_METADATA: 'files_metadata'
+  FILES_METADATA: 'files_metadata',
+  CHAT_SESSIONS: 'chat_sessions',
+  CHAT_MESSAGES: 'chat_messages',
+  AGENT_CONFIGS: 'agent_configs',
+  KNOWLEDGE_SOURCES: 'knowledge_sources'
 } as const;
 
 export type CollectionName = (typeof Collections)[keyof typeof Collections];
@@ -379,6 +442,10 @@ export interface CollectionRecordMap {
   contact_messages: ContactMessage;
   app_settings: AppSettings;
   files_metadata: FileMetadata;
+  chat_sessions: ChatSession;
+  chat_messages: ChatMessage;
+  agent_configs: AgentConfig;
+  knowledge_sources: KnowledgeSource;
 }
 
 // ============================================
