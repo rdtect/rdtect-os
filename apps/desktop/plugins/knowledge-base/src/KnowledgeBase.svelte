@@ -609,6 +609,7 @@
     display: flex;
     height: 100%;
     background: #0f172a;
+    font-family: var(--desktop-font-sans);
     position: relative;
   }
 
@@ -631,17 +632,17 @@
 
   .sidebar-title {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--text-md);
     font-weight: 600;
     color: #f1f5f9;
   }
 
   .note-count {
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     color: #64748b;
     background: rgba(99, 102, 241, 0.15);
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: var(--radius-full);
   }
 
   .sidebar-actions {
@@ -655,11 +656,12 @@
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
+    min-height: 44px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     border: none;
   }
 
@@ -703,11 +705,11 @@
     padding: 8px 12px 8px 32px;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid #334155;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #f1f5f9;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
     outline: none;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     box-sizing: border-box;
   }
 
@@ -733,11 +735,11 @@
     padding: 2px 8px;
     background: rgba(99, 102, 241, 0.1);
     border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 10px;
+    border-radius: var(--radius-full);
     color: #94a3b8;
-    font-size: 0.65rem;
+    font-size: var(--text-xs);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     white-space: nowrap;
   }
 
@@ -760,7 +762,7 @@
   }
 
   .note-list::-webkit-scrollbar {
-    width: 4px;
+    width: var(--scrollbar-width);
   }
 
   .note-list::-webkit-scrollbar-track {
@@ -768,8 +770,12 @@
   }
 
   .note-list::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 2px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+  }
+
+  .note-list::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 
   .note-item {
@@ -782,10 +788,10 @@
     background: transparent;
     border: none;
     border-left: 2px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     text-align: left;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all var(--transition-fast) var(--transition-easing);
     color: #e2e8f0;
   }
 
@@ -884,17 +890,17 @@
   }
 
   .delete-btn {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: #64748b;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .delete-btn:hover {
@@ -917,14 +923,15 @@
     align-items: center;
     gap: 6px;
     padding: 6px 14px;
+    min-height: 44px;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: #64748b;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .tab:hover {
@@ -953,8 +960,8 @@
     background: transparent;
     border: none;
     color: #e2e8f0;
-    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
-    font-size: 0.9rem;
+    font-family: var(--desktop-font-mono);
+    font-size: var(--text-base);
     line-height: 1.7;
     resize: none;
     outline: none;
@@ -1093,8 +1100,8 @@
   }
 
   .graph-stats {
-    font-size: 0.75rem;
-    color: #475569;
+    font-size: var(--text-sm);
+    color: #64748b;
     margin-top: 8px;
   }
 
@@ -1132,15 +1139,20 @@
     padding: 8px 12px;
     background: rgba(99, 102, 241, 0.08);
     border: 1px solid rgba(99, 102, 241, 0.12);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     text-align: left;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: transform var(--transition-normal) var(--transition-easing),
+                box-shadow var(--transition-normal) var(--transition-easing),
+                background var(--transition-normal) var(--transition-easing),
+                border-color var(--transition-normal) var(--transition-easing);
   }
 
   .backlink-item:hover {
     background: rgba(99, 102, 241, 0.15);
     border-color: rgba(99, 102, 241, 0.3);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .backlink-source {

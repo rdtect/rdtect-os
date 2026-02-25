@@ -10,6 +10,7 @@
   import AppInfoModal from './AppInfoModal.svelte';
   import WindowSwitcher from './WindowSwitcher.svelte';
   import AuthGate from './AuthGate.svelte';
+  import Toast from './Toast.svelte';
   import { keyboardShortcuts, type Shortcut } from '$lib/core/keyboard-shortcuts';
   import { eventBus } from '$lib/core/event-bus';
   import { widgetRegistry } from '$lib/core/widget-registry.svelte';
@@ -657,6 +658,9 @@
     onSelect={selectWindowFromSwitcher}
     onClose={() => { windowSwitcherOpen = false; }}
   />
+
+  <!-- Toast Notifications -->
+  <Toast />
 
   <!-- Auth Gate Modal -->
   {#if showAuthGate}
