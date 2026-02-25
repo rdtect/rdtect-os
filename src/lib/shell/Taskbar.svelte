@@ -334,7 +334,7 @@
       <div class="taskbar-divider"></div>
 
       <!-- Centered App Icons -->
-      <div class="flex items-center gap-1.5 px-1">
+      <div class="flex items-center gap-1.5 px-1 max-w-[calc(100vw-280px)] overflow-x-auto scrollbar-none">
         {#each taskbarApps as app (app.id)}
           {@const isRunning = hasOpenWindow(app.id)}
           {@const isHovered = hoveredApp === app.id}
@@ -657,6 +657,15 @@
 
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Hide scrollbar for taskbar app icons */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 
   /* Custom scrollbar for preview */

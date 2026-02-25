@@ -111,7 +111,7 @@
 
   <!-- Start Menu Panel -->
   <div class="start-menu fixed z-[9999]
-    {mobile.isMobile ? 'inset-0' : 'bottom-[70px] left-1/2 -translate-x-1/2 w-[600px] max-h-[620px]'}">
+    {mobile.isMobile ? 'inset-0' : 'bottom-[70px] left-1/2 -translate-x-1/2 w-[min(600px,calc(100vw-2rem))] max-h-[min(620px,calc(100vh-100px))]'}">
     <div class="menu-container overflow-hidden flex flex-col {mobile.isMobile ? 'rounded-none h-full' : 'rounded-xl'}">
 
       <!-- Search Bar -->

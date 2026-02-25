@@ -334,7 +334,7 @@
 {/each}
 
 <!-- Top-right widgets area (system tray - fixed position) -->
-<div class="absolute top-4 right-4 flex items-start gap-3 z-10 pointer-events-auto">
+<div class="absolute top-4 right-4 flex items-start gap-3 z-10 pointer-events-auto max-w-[calc(100vw-2rem)]">
 
   <!-- System Tray -->
   <div class="quick-settings-container relative">
@@ -488,7 +488,7 @@
 
     <!-- Quick Settings Panel Popup -->
     {#if showQuickSettings}
-      <div class="absolute top-full right-0 mt-2 glass-panel rounded-2xl p-4 w-80 shadow-2xl animate-slide-down">
+      <div class="absolute top-full right-0 mt-2 glass-panel rounded-2xl p-4 w-[min(320px,calc(100vw-2rem))] shadow-2xl animate-slide-down">
         <div class="space-y-4">
           <!-- Quick Toggles Grid -->
           <div class="grid grid-cols-3 gap-2">
@@ -631,7 +631,7 @@
 
     <!-- Calendar Popup -->
     {#if showCalendar}
-      <div class="absolute top-full right-0 mt-2 glass-panel rounded-2xl p-4 w-80 shadow-2xl animate-slide-down">
+      <div class="absolute top-full right-0 mt-2 glass-panel rounded-2xl p-4 w-[min(320px,calc(100vw-2rem))] shadow-2xl animate-slide-down">
         <!-- Calendar Header -->
         <div class="flex items-center justify-between mb-4">
           <button
