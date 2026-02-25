@@ -3,7 +3,7 @@
 # =============================================================================
 
 # Stage 1: Dependencies
-FROM oven/bun:1.1-alpine AS deps
+FROM oven/bun:1.3-alpine AS deps
 WORKDIR /app
 
 # Force development mode for install — Coolify injects NODE_ENV=production as
@@ -21,7 +21,7 @@ COPY plugins/ ./plugins/
 RUN bun install --frozen-lockfile || bun install
 
 # Stage 2: Builder
-FROM oven/bun:1.1-alpine AS builder
+FROM oven/bun:1.3-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -35,7 +35,7 @@ ENV NODE_ENV=production
 RUN bun run build
 
 # Stage 3: Production Runner
-FROM oven/bun:1.1-alpine AS runner
+FROM oven/bun:1.3-alpine AS runner
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs && \
