@@ -2,6 +2,9 @@
 # rdtect OS — Production (Coolify)
 # =============================================================================
 # Coolify uses this file. SERVICE_FQDN_* vars are set in the Coolify UI.
+#
+# To add python-backend later, uncomment the service below and set
+# OPENAI_API_KEY in Coolify environment variables.
 
 services:
   frontend:
@@ -12,7 +15,6 @@ services:
       SERVICE_FQDN_FRONTEND_3000: ''
       NODE_ENV: production
       PUBLIC_POCKETBASE_URL: ${PUBLIC_POCKETBASE_URL:-https://pb.rdtect.com}
-      PUBLIC_PYTHON_API_URL: ${PUBLIC_PYTHON_API_URL:-https://api.rdtect.com}
       ORIGIN: ${ORIGIN:-https://rdtect.com}
     expose:
       - '3000'
@@ -50,30 +52,30 @@ services:
     networks:
       - coolify
 
-  python-backend:
-    build:
-      context: ./apps/python-backend
-      dockerfile: Dockerfile
-    environment:
-      SERVICE_FQDN_PYTHONBACKEND_8000: ''
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
-      POCKETBASE_URL: http://pocketbase:8090
-      PYTHONUNBUFFERED: '1'
-    expose:
-      - '8000'
-    depends_on:
-      pocketbase:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - coolify
+  # python-backend:
+  #   build:
+  #     context: ./apps/python-backend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     SERVICE_FQDN_PYTHONBACKEND_8000: ''
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+  #     POCKETBASE_URL: http://pocketbase:8090
+  #     PYTHONUNBUFFERED: '1'
+  #   expose:
+  #     - '8000'
+  #   depends_on:
+  #     pocketbase:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   networks:
+  #     - coolify
 
 networks:
   coolify:
