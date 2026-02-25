@@ -90,6 +90,7 @@
 
   // Particle animation loop
   function animateParticles() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (containerRef) {
       const rect = containerRef.getBoundingClientRect();
       particles = updateParticles(particles, rect.width, rect.height);
@@ -344,9 +345,8 @@
     position: relative;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #1a1033 100%);
+    background: #0f172a;
     overflow: hidden;
-    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
   }
 
   /* Particles */
@@ -503,7 +503,7 @@
   }
 
   .nav-button.next {
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: white;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);

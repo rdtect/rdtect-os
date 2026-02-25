@@ -142,8 +142,8 @@
     padding: 1.5rem 2rem;
     box-shadow:
       0 32px 64px -20px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(99, 102, 241, 0.15),
-      0 0 80px -20px rgba(99, 102, 241, 0.2),
+      0 0 0 1px rgba(var(--desktop-accent-rgb), 0.15),
+      0 0 80px -20px rgba(var(--desktop-accent-rgb), 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
     animation: slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -200,10 +200,10 @@
   .window-thumbnail.selected .thumbnail-preview {
     background: linear-gradient(
       180deg,
-      rgba(99, 102, 241, 0.2) 0%,
-      rgba(99, 102, 241, 0.1) 100%
+      rgba(var(--desktop-accent-rgb), 0.2) 0%,
+      rgba(var(--desktop-accent-rgb), 0.1) 100%
     );
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(var(--desktop-accent-rgb), 0.3);
   }
 
   /* Minimized badge */
@@ -232,7 +232,7 @@
   }
 
   .window-thumbnail.selected .thumbnail-title {
-    background: rgba(99, 102, 241, 0.15);
+    background: rgba(var(--desktop-accent-rgb), 0.15);
     color: #e2e8f0;
   }
 
@@ -240,11 +240,11 @@
   .selection-ring {
     position: absolute;
     inset: -2px;
-    border: 2px solid rgba(99, 102, 241, 0.8);
+    border: 2px solid rgba(var(--desktop-accent-rgb), 0.8);
     border-radius: 0.85rem;
     pointer-events: none;
     animation: pulse-ring 1.5s ease-in-out infinite;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 0 20px rgba(var(--desktop-accent-rgb), 0.4);
   }
 
   /* Keyboard hint styling */

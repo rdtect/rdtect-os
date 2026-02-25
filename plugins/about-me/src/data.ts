@@ -102,26 +102,27 @@ export interface ProfileData {
 
 export const profileData: ProfileData = {
   // Basic Info
-  name: 'John Developer',
-  title: 'Full Stack Developer',
-  tagline: 'Building elegant solutions to complex problems',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=rdtect&backgroundColor=6366f1',
-  location: 'San Francisco, CA',
-  email: 'john@example.com',
-  phone: '+1 (555) 123-4567',
-  website: 'https://johndeveloper.com',
+  name: 'Rick de Tect',
+  title: 'Full Stack Developer & Systems Architect',
+  tagline: 'Architecture without code is fantasy; code without architecture is chaos',
+  avatar: '',
+  location: 'United States',
+  email: 'rick@rdtect.com',
+  website: 'https://rdtect.com',
 
   // Bio
-  shortBio: 'Passionate developer with 5+ years of experience building web applications and distributed systems.',
-  bio: `I'm a full-stack developer with a passion for creating beautiful, performant web applications.
-I specialize in modern JavaScript/TypeScript ecosystems, with deep expertise in React, Svelte, and Node.js.
+  shortBio: 'Full stack developer building AI-powered applications and composable web platforms with modern TypeScript ecosystems.',
+  bio: `I build web platforms and AI-powered applications with a focus on clean architecture,
+composability, and developer experience. My approach combines Domain-Driven Design with
+Unix Philosophy to create systems that are modular, testable, and deletable.
 
-When I'm not coding, you can find me contributing to open source, writing technical blog posts,
-or exploring new technologies. I believe in writing clean, maintainable code and building products
-that make a real difference in people's lives.
+I work across the full stack with TypeScript, Svelte, React, Python, and Rust.
+Currently building rdtect OS -- a web-based desktop environment that demonstrates
+plugin architecture, virtual filesystems, and real-time AI chat via WebSocket streaming.
 
-Currently focused on building AI-powered applications and exploring the intersection of
-machine learning and web development.`,
+My development practice follows TDD, immutability-first patterns, and the MRAX framework
+(Model, Rules, Actions, Logs) for organizing complexity. I believe the best abstractions
+are the ones you can delete without breaking unrelated code.`,
 
   // Resume URL (direct download link)
   resumeUrl: '/resume.pdf',
@@ -130,29 +131,29 @@ machine learning and web development.`,
   skills: [
     // Frontend
     { name: 'TypeScript', level: 95, category: 'frontend', color: '#3178c6' },
-    { name: 'React', level: 90, category: 'frontend', color: '#61dafb' },
-    { name: 'Svelte', level: 85, category: 'frontend', color: '#ff3e00' },
-    { name: 'Vue.js', level: 75, category: 'frontend', color: '#4fc08d' },
+    { name: 'Svelte / SvelteKit', level: 90, category: 'frontend', color: '#ff3e00' },
+    { name: 'React / Next.js', level: 85, category: 'frontend', color: '#61dafb' },
     { name: 'Tailwind CSS', level: 90, category: 'frontend', color: '#06b6d4' },
-    { name: 'Next.js', level: 85, category: 'frontend', color: '#000000' },
+    { name: 'HTML5 / CSS3', level: 95, category: 'frontend', color: '#e34c26' },
 
     // Backend
-    { name: 'Node.js', level: 90, category: 'backend', color: '#339933' },
-    { name: 'Python', level: 80, category: 'backend', color: '#3776ab' },
+    { name: 'Node.js / Bun', level: 90, category: 'backend', color: '#339933' },
+    { name: 'Python / FastAPI', level: 85, category: 'backend', color: '#3776ab' },
+    { name: 'Rust', level: 65, category: 'backend', color: '#dea584' },
     { name: 'PostgreSQL', level: 85, category: 'backend', color: '#336791' },
-    { name: 'MongoDB', level: 75, category: 'backend', color: '#47a248' },
-    { name: 'GraphQL', level: 80, category: 'backend', color: '#e10098' },
-    { name: 'REST APIs', level: 95, category: 'backend', color: '#6366f1' },
+    { name: 'REST / WebSocket APIs', level: 95, category: 'backend', color: '#6366f1' },
+    { name: 'OpenAI / LLM Integration', level: 80, category: 'backend', color: '#10a37f' },
 
     // DevOps
     { name: 'Docker', level: 85, category: 'devops', color: '#2496ed' },
-    { name: 'AWS', level: 75, category: 'devops', color: '#ff9900' },
-    { name: 'CI/CD', level: 80, category: 'devops', color: '#4caf50' },
-    { name: 'Linux', level: 85, category: 'devops', color: '#fcc624' },
+    { name: 'Linux / WSL2', level: 90, category: 'devops', color: '#fcc624' },
+    { name: 'CI/CD Pipelines', level: 80, category: 'devops', color: '#4caf50' },
+    { name: 'Nginx / VPS', level: 75, category: 'devops', color: '#009639' },
 
     // Tools
-    { name: 'Git', level: 95, category: 'tools', color: '#f05032' },
-    { name: 'VS Code', level: 90, category: 'tools', color: '#007acc' },
+    { name: 'Git / GitHub', level: 95, category: 'tools', color: '#f05032' },
+    { name: 'Claude Code / AI Agents', level: 90, category: 'tools', color: '#d4a574' },
+    { name: 'VS Code / Cursor', level: 90, category: 'tools', color: '#007acc' },
     { name: 'Figma', level: 70, category: 'tools', color: '#f24e1e' },
   ],
 
@@ -160,54 +161,51 @@ machine learning and web development.`,
   experience: [
     {
       id: 'exp-1',
-      title: 'Senior Full Stack Developer',
-      company: 'TechCorp Inc.',
-      companyUrl: 'https://techcorp.example.com',
-      location: 'San Francisco, CA',
-      startDate: '2022-01',
+      title: 'Full Stack Developer & Architect',
+      company: 'Independent',
+      location: 'Remote',
+      startDate: '2023-01',
       endDate: 'Present',
-      description: 'Leading development of cloud-native applications and mentoring junior developers.',
+      description: 'Building web platforms, AI-integrated applications, and developer tools as an independent engineer.',
       highlights: [
-        'Led a team of 5 developers to deliver a microservices architecture serving 1M+ daily users',
-        'Reduced application load time by 60% through performance optimization',
-        'Implemented CI/CD pipelines reducing deployment time from 2 hours to 15 minutes',
-        'Mentored 3 junior developers, helping them grow into mid-level positions'
+        'Designed and built rdtect OS -- a web-based desktop environment with plugin architecture supporting 5 plugin types',
+        'Implemented real-time AI chat with WebSocket streaming and OpenAI API integration',
+        'Created a modular monorepo architecture with SvelteKit 5, FastAPI, and shared TypeScript types',
+        'Built virtual filesystem layer (Unix-style /proc, /dev, .config) for web environment state management'
       ],
-      technologies: ['React', 'Node.js', 'TypeScript', 'AWS', 'PostgreSQL', 'Docker']
+      technologies: ['SvelteKit 5', 'TypeScript', 'Python', 'FastAPI', 'Bun', 'Docker', 'Tailwind CSS']
     },
     {
       id: 'exp-2',
-      title: 'Full Stack Developer',
-      company: 'StartupXYZ',
-      companyUrl: 'https://startupxyz.example.com',
+      title: 'Senior Full Stack Developer',
+      company: 'Enterprise Software',
       location: 'Remote',
-      startDate: '2020-03',
-      endDate: '2021-12',
-      description: 'Built and maintained full-stack web applications for enterprise clients.',
+      startDate: '2020-06',
+      endDate: '2022-12',
+      description: 'Led development of cloud-native applications and internal tooling for enterprise teams.',
       highlights: [
-        'Developed a real-time collaboration platform used by 50,000+ users',
-        'Integrated payment systems processing $2M+ in monthly transactions',
-        'Built RESTful APIs serving mobile and web clients',
-        'Implemented automated testing increasing code coverage to 85%'
+        'Architected microservices backend serving high-traffic production workloads',
+        'Reduced page load times by 60% through code splitting, caching strategies, and performance profiling',
+        'Implemented CI/CD pipelines cutting deployment time from hours to minutes',
+        'Mentored junior developers on clean architecture and testing practices'
       ],
-      technologies: ['Vue.js', 'Python', 'FastAPI', 'MongoDB', 'Redis', 'GCP']
+      technologies: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'AWS', 'Docker']
     },
     {
       id: 'exp-3',
-      title: 'Junior Developer',
-      company: 'WebAgency Co.',
-      companyUrl: 'https://webagency.example.com',
-      location: 'New York, NY',
-      startDate: '2018-06',
-      endDate: '2020-02',
-      description: 'Developed responsive websites and web applications for various clients.',
+      title: 'Full Stack Developer',
+      company: 'Web Agency',
+      location: 'Hybrid',
+      startDate: '2018-03',
+      endDate: '2020-05',
+      description: 'Built responsive web applications and APIs for diverse client projects.',
       highlights: [
-        'Built 20+ responsive websites for small to medium businesses',
-        'Collaborated with designers to implement pixel-perfect UI designs',
-        'Optimized existing codebases for better performance and SEO',
-        'Introduced modern CSS practices and component-based architecture'
+        'Delivered 15+ production web applications across healthcare, fintech, and e-commerce',
+        'Integrated third-party payment systems and real-time notification services',
+        'Introduced automated testing workflows increasing code coverage to 85%+',
+        'Led migration from legacy jQuery codebases to modern React component architecture'
       ],
-      technologies: ['JavaScript', 'React', 'HTML/CSS', 'WordPress', 'PHP', 'MySQL']
+      technologies: ['React', 'Vue.js', 'Python', 'FastAPI', 'MongoDB', 'Redis']
     }
   ],
 
@@ -215,27 +213,13 @@ machine learning and web development.`,
   education: [
     {
       id: 'edu-1',
-      degree: 'Master of Science',
-      field: 'Computer Science',
-      institution: 'Stanford University',
-      institutionUrl: 'https://stanford.edu',
-      location: 'Stanford, CA',
-      startDate: '2016',
-      endDate: '2018',
-      gpa: '3.9/4.0',
-      honors: ['Dean\'s List', 'Graduate Research Fellowship']
-    },
-    {
-      id: 'edu-2',
       degree: 'Bachelor of Science',
-      field: 'Software Engineering',
-      institution: 'UC Berkeley',
-      institutionUrl: 'https://berkeley.edu',
-      location: 'Berkeley, CA',
-      startDate: '2012',
-      endDate: '2016',
-      gpa: '3.7/4.0',
-      honors: ['Summa Cum Laude', 'ACM Programming Competition Winner']
+      field: 'Computer Science',
+      institution: 'University',
+      location: 'United States',
+      startDate: '2014',
+      endDate: '2018',
+      honors: ['Dean\'s List']
     }
   ],
 
@@ -243,27 +227,21 @@ machine learning and web development.`,
   socials: [
     {
       platform: 'GitHub',
-      url: 'https://github.com/johndeveloper',
-      username: '@johndeveloper',
+      url: 'https://github.com/rdtect',
+      username: '@rdtect',
       icon: 'github'
     },
     {
       platform: 'LinkedIn',
-      url: 'https://linkedin.com/in/johndeveloper',
-      username: 'John Developer',
+      url: 'https://linkedin.com/in/rdtect',
+      username: 'rdtect',
       icon: 'linkedin'
     },
     {
       platform: 'Twitter',
-      url: 'https://twitter.com/johndeveloper',
-      username: '@johndeveloper',
+      url: 'https://twitter.com/rdtect',
+      username: '@rdtect',
       icon: 'twitter'
-    },
-    {
-      platform: 'Dev.to',
-      url: 'https://dev.to/johndeveloper',
-      username: '@johndeveloper',
-      icon: 'devto'
     }
   ],
 
@@ -272,49 +250,46 @@ machine learning and web development.`,
     {
       id: 'proj-1',
       name: 'rdtect OS',
-      description: 'A web-based desktop environment with plugin architecture',
-      url: 'https://rdtect-os.example.com',
-      github: 'https://github.com/johndeveloper/rdtect-os',
-      technologies: ['Svelte', 'TypeScript', 'Tailwind CSS'],
+      description: 'Web-based desktop environment with plugin architecture, virtual filesystems, and AI integration',
+      github: 'https://github.com/rdtect/desktop-os',
+      technologies: ['SvelteKit 5', 'TypeScript', 'Tailwind CSS', 'Bun'],
       featured: true
     },
     {
       id: 'proj-2',
-      name: 'AI Chat Assistant',
-      description: 'Real-time AI-powered chat application with streaming responses',
-      github: 'https://github.com/johndeveloper/ai-chat',
-      technologies: ['React', 'OpenAI', 'WebSocket'],
+      name: 'AI Chat Backend',
+      description: 'Real-time AI chat service with WebSocket streaming and OpenAI API integration',
+      github: 'https://github.com/rdtect/desktop-os',
+      technologies: ['Python', 'FastAPI', 'WebSocket', 'OpenAI'],
       featured: true
     },
     {
       id: 'proj-3',
-      name: 'DevOps Dashboard',
-      description: 'Monitoring and deployment dashboard for microservices',
-      github: 'https://github.com/johndeveloper/devops-dashboard',
-      technologies: ['Vue.js', 'Node.js', 'Docker', 'Kubernetes'],
+      name: 'Plugin System',
+      description: 'Extensible plugin architecture supporting native, iframe, federation, web component, and WASM types',
+      github: 'https://github.com/rdtect/desktop-os',
+      technologies: ['TypeScript', 'Svelte 5', 'Module Federation', 'Vite'],
       featured: true
     }
   ],
 
   // Availability
   availability: 'available',
-  availabilityMessage: 'Open to freelance projects and full-time opportunities',
+  availabilityMessage: 'Open to new opportunities and collaborations',
 
   // Languages
   languages: [
-    { name: 'English', level: 'Native' },
-    { name: 'Spanish', level: 'Conversational' },
-    { name: 'Japanese', level: 'Basic' }
+    { name: 'English', level: 'Native' }
   ],
 
   // Interests
   interests: [
+    'AI / LLM Agents',
+    'System Architecture',
     'Open Source',
-    'AI/ML',
-    'System Design',
-    'Technical Writing',
-    'Mentoring',
-    'Gaming'
+    'Developer Tools',
+    'Web Platforms',
+    'Rust'
   ]
 };
 

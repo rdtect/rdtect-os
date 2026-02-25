@@ -747,18 +747,6 @@
     z-index: 3;
   }
 
-  /* Glass panel enhancement for popups */
-  .glass-panel {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(99, 102, 241, 0.12);
-    box-shadow:
-      0 20px 40px rgba(0, 0, 0, 0.4),
-      0 0 0 1px rgba(255, 255, 255, 0.03) inset,
-      0 1px 0 rgba(255, 255, 255, 0.05) inset;
-  }
-
   /* Tray icon refinements */
   .tray-icon {
     position: relative;
@@ -769,7 +757,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(var(--desktop-accent-rgb), 0.2) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.2s ease;
   }

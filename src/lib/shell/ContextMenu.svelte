@@ -246,33 +246,17 @@
     transition:
       background-color 0.15s ease,
       color 0.15s ease,
-      transform 0.15s ease,
       box-shadow 0.15s ease;
     position: relative;
-    animation: item-appear 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(var(--item-index, 0) * 0.025s);
-    opacity: 0;
-  }
-
-  @keyframes item-appear {
-    from {
-      opacity: 0;
-      transform: translateX(-4px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
   }
 
   .menu-item:hover:not(.menu-item-disabled) {
     background: linear-gradient(90deg,
-      rgba(99, 102, 241, 0.2) 0%,
-      rgba(99, 102, 241, 0.15) 100%
+      rgba(var(--desktop-accent-rgb), 0.2) 0%,
+      rgba(var(--desktop-accent-rgb), 0.15) 100%
     );
     color: rgb(255, 255, 255);
-    transform: translateX(2px);
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 12px rgba(var(--desktop-accent-rgb), 0.1);
   }
 
   .menu-item:active:not(.menu-item-disabled) {
@@ -283,10 +267,10 @@
   .menu-item:focus-visible {
     outline: none;
     background: linear-gradient(90deg,
-      rgba(99, 102, 241, 0.25) 0%,
-      rgba(99, 102, 241, 0.18) 100%
+      rgba(var(--desktop-accent-rgb), 0.25) 0%,
+      rgba(var(--desktop-accent-rgb), 0.18) 100%
     );
-    box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.4);
+    box-shadow: inset 0 0 0 2px rgba(var(--desktop-accent-rgb), 0.4);
   }
 
   /* Disabled Item Styles */
@@ -346,8 +330,8 @@
   /* Active submenu state */
   .submenu-active {
     background: linear-gradient(90deg,
-      rgba(99, 102, 241, 0.2) 0%,
-      rgba(99, 102, 241, 0.15) 100%
+      rgba(var(--desktop-accent-rgb), 0.2) 0%,
+      rgba(var(--desktop-accent-rgb), 0.15) 100%
     );
     color: rgb(255, 255, 255);
   }

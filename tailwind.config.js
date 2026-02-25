@@ -16,7 +16,10 @@ export default {
 					muted: '#94a3b8',
 					subtle: '#475569',
 					text: '#f8fafc',
-					'text-secondary': '#cbd5e1'
+					'text-secondary': '#cbd5e1',
+					error: '#ef4444',
+					'error-hover': '#f87171',
+					success: '#22c55e'
 				}
 			},
 			fontSize: {

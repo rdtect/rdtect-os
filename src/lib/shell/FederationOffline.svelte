@@ -66,14 +66,12 @@
     </div>
 
     <!-- Retry Button -->
-    {#if onRetry}
-      <button class="retry-button" onclick={onRetry}>
-        <svg class="retry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-        Retry Connection
-      </button>
-    {/if}
+    <button class="retry-button" onclick={onRetry ?? (() => window.location.reload())}>
+      <svg class="retry-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      Retry Connection
+    </button>
 
     <!-- Debug Info (collapsed) -->
     <details class="debug-details">
@@ -173,8 +171,8 @@
   .offline-instructions {
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: rgba(var(--desktop-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--desktop-accent-rgb), 0.2);
     border-radius: 0.5rem;
   }
 
@@ -203,17 +201,17 @@
     font-size: 0.875rem;
     font-weight: 500;
     color: white;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, var(--desktop-accent) 0%, #4f46e5 100%);
     border: none;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(var(--desktop-accent-rgb), 0.3);
   }
 
   .retry-button:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 4px 12px rgba(var(--desktop-accent-rgb), 0.4);
   }
 
   .retry-button:active {

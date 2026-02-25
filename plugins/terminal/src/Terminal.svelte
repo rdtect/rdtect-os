@@ -369,7 +369,7 @@
   }
 
   .line.error {
-    color: #f85149;
+    color: #ef4444;
   }
 
   .line.system {

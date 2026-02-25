@@ -495,7 +495,6 @@
     display: flex;
     height: 100%;
     background: #0f172a;
-    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
     position: relative;
   }
 

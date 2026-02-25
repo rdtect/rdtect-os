@@ -293,7 +293,7 @@
     width: 100%;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(71, 85, 105, 0.5);
-    border-radius: 10px;
+    border-radius: 0.5rem;
     padding: 12px 16px;
     color: #f1f5f9;
     font-size: 14px;

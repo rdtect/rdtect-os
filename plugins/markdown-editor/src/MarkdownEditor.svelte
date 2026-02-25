@@ -544,7 +544,6 @@ Enjoy writing!
       <span class="status-item">Characters (no spaces): {charCountNoSpaces()}</span>
     </div>
     <div class="status-right">
-      <span class="status-badge">Native Plugin</span>
     </div>
   </div>
 </div>
@@ -580,8 +579,8 @@ Enjoy writing!
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 32px;
-    height: 32px;
+    min-width: 44px;
+    height: 44px;
     padding: 0 0.5rem;
     background: transparent;
     border: 1px solid transparent;
@@ -872,17 +871,6 @@ Enjoy writing!
   .status-right {
     display: flex;
     align-items: center;
-  }
-
-  .status-badge {
-    padding: 0.2rem 0.5rem;
-    background: #6366f1;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: white;
   }
 
   /* Scrollbar Styling */

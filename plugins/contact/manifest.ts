@@ -3,7 +3,7 @@ const manifest = {
   name: 'Contact',
   version: '1.0.0',
   type: 'native',
-  icon: 'mail',
+  icon: '✉️',
   description: 'Contact form to reach out to rdtect',
   access: 'free',
   entry: './src/Contact.svelte',

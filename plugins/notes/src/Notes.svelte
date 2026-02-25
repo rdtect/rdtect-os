@@ -39,13 +39,10 @@
         }
 
         connectedCallback() {
-          const windowId = this.getAttribute('window-id');
-          console.log('Notes WebComponent connected, window:', windowId);
         }
 
         disconnectedCallback() {
           this.saveNotes();
-          console.log('Notes WebComponent disconnected');
         }
 
         private loadNotes(): void {
@@ -169,8 +166,8 @@
                 display: block;
                 height: 100%;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                background: var(--notes-bg, #1a1a2e);
-                color: var(--notes-text, #e2e8f0);
+                background: var(--desktop-bg, #0f172a);
+                color: var(--desktop-text, #e2e8f0);
               }
 
               * {
@@ -185,8 +182,8 @@
               /* Sidebar */
               .sidebar {
                 width: 220px;
-                background: linear-gradient(180deg, rgba(30, 30, 50, 0.95) 0%, rgba(20, 20, 35, 0.98) 100%);
-                border-right: 1px solid rgba(255, 255, 255, 0.08);
+                background: var(--desktop-surface, #1e293b);
+                border-right: 1px solid var(--desktop-border, #334155);
                 display: flex;
                 flex-direction: column;
               }
@@ -358,7 +355,7 @@
                 flex: 1;
                 display: flex;
                 flex-direction: column;
-                background: linear-gradient(180deg, #0f172a 0%, #1e1e32 100%);
+                background: var(--desktop-bg, #0f172a);
               }
 
               .editor-header {
@@ -554,7 +551,6 @@
               </div>
             </div>
 
-            <div class="badge">WebComponent Plugin</div>
           `;
 
           // Attach event listeners
@@ -597,7 +593,6 @@
       customElements.define('notes-widget', NotesElement);
     }
     isRegistered = true;
-    console.log(`Notes wrapper mounted (window: ${windowId})`);
   });
 </script>
 

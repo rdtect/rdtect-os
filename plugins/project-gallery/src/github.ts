@@ -51,7 +51,7 @@ export async function fetchGitHubRepos(username: string = 'rdtect'): Promise<Git
   return filtered;
 }
 
-// Language color mapping
+// Language color mapping (GitHub linguist colors)
 export const languageColors: Record<string, string> = {
   TypeScript: '#3178c6',
   JavaScript: '#f1e05a',
@@ -61,6 +61,30 @@ export const languageColors: Record<string, string> = {
   Shell: '#89e051',
   CSS: '#563d7c',
   HTML: '#e34c26',
+  Go: '#00ADD8',
+  Java: '#b07219',
+  'C++': '#f34b7d',
+  C: '#555555',
+  'C#': '#178600',
+  Ruby: '#701516',
+  PHP: '#4F5D95',
+  Dart: '#00B4AB',
+  Kotlin: '#A97BFF',
+  Swift: '#F05138',
+  Lua: '#000080',
+  Vim: '#199f4b',
+  Dockerfile: '#384d54',
+  Makefile: '#427819',
+  SCSS: '#c6538c',
+  Vue: '#41b883',
+  Astro: '#ff5a03',
+  Nix: '#7e7eff',
+  Zig: '#ec915c',
+  Haskell: '#5e5086',
+  Elixir: '#6e4a7e',
+  Markdown: '#083fa1',
+  Jupyter: '#DA5B0B',
+  WASM: '#04133b',
 };
 
 export type { GitHubRepo };

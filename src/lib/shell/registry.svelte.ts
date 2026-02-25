@@ -10,6 +10,7 @@
 import type { AppDefinition, SnapZone } from './types';
 import { Window, detectSnapZone, getSnapZoneBounds } from './window.svelte';
 import { eventBus } from '$lib/core/event-bus';
+import { mobile } from '$lib/core/mobile.svelte';
 
 // Re-export for convenience
 export { detectSnapZone, getSnapZoneBounds };
@@ -84,20 +85,23 @@ class WindowManager {
     const id = `${appId}-${Date.now()}-${this.idCounter++}`;
     const offset = (this.windows.length % 8) * 30;
 
+    // On mobile, windows open fullscreen
+    const isMobileView = mobile.isMobile;
+
     // Create new Window instance
     const win = new Window({
       id,
       appId,
       title: app.title,
-      x: 80 + offset,
-      y: 60 + offset,
-      width: app.defaultWidth ?? 800,
-      height: app.defaultHeight ?? 600,
+      x: isMobileView ? 0 : 80 + offset,
+      y: isMobileView ? 0 : 60 + offset,
+      width: isMobileView ? mobile.viewportWidth : (app.defaultWidth ?? 800),
+      height: isMobileView ? mobile.viewportHeight : (app.defaultHeight ?? 600),
       minWidth: app.minWidth ?? 300,
       minHeight: app.minHeight ?? 200,
       zIndex: this.nextZIndex++,
       isMinimized: false,
-      isMaximized: false,
+      isMaximized: isMobileView,
       isFocused: true,
       isResizing: false,
       isRinging: false,

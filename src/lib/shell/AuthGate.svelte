@@ -81,6 +81,7 @@
           bind:value={email}
           placeholder="Email"
           required
+          aria-label="Email address"
           class="w-full px-4 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
         />
       </div>
@@ -90,6 +91,7 @@
           bind:value={password}
           placeholder="Password"
           required
+          aria-label="Password"
           class="w-full px-4 py-2.5 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm"
         />
       </div>

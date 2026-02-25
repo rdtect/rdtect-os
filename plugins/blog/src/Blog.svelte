@@ -290,12 +290,23 @@
             </h2>
           {/if}
 
-          <PostList
-            posts={listPosts()}
-            onSelectPost={handleSelectPost}
-            {loading}
-            emptyMessage={searchQuery ? 'No posts match your search' : 'No posts found'}
-          />
+          {#if listPosts().length === 0 && (selectedTag || searchQuery.trim())}
+            <div class="empty-filter-state">
+              <div class="empty-filter-icon">🔍</div>
+              <p class="empty-filter-title">No posts found</p>
+              <p class="empty-filter-hint">Try adjusting your filters or search query</p>
+              <button class="empty-filter-clear" onclick={clearFilters} type="button">
+                Clear filters
+              </button>
+            </div>
+          {:else}
+            <PostList
+              posts={listPosts()}
+              onSelectPost={handleSelectPost}
+              {loading}
+              emptyMessage={searchQuery ? 'No posts match your search' : 'No posts found'}
+            />
+          {/if}
         </section>
       {/if}
     </main>
@@ -303,7 +314,6 @@
     <!-- Footer -->
     <footer class="blog-footer">
       <span class="post-count">{posts.length} articles</span>
-      <span class="plugin-badge">Native Plugin</span>
     </footer>
   {/if}
 </div>
@@ -685,15 +695,49 @@
     color: #64748b;
   }
 
-  .plugin-badge {
-    padding: 0.25rem 0.5rem;
-    background: #6366f1;
-    border-radius: 4px;
-    font-size: 0.625rem;
+  /* Empty Filter State */
+  .empty-filter-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .empty-filter-icon {
+    font-size: 2.5rem;
+    opacity: 0.5;
+  }
+
+  .empty-filter-title {
+    margin: 0;
+    font-size: 1rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #94a3b8;
+  }
+
+  .empty-filter-hint {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+  }
+
+  .empty-filter-clear {
+    margin-top: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: #6366f1;
+    border: none;
+    border-radius: 8px;
     color: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .empty-filter-clear:hover {
+    background: #4f46e5;
   }
 
   /* Scrollbar */

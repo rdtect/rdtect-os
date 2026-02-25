@@ -420,7 +420,6 @@
 
   onDestroy(() => {
     window.removeEventListener('keydown', handleKeydown);
-    console.log(`Calculator destroyed (window: ${windowId})`);
   });
 </script>
 
@@ -606,8 +605,7 @@
   .calculator {
     display: flex;
     height: 100%;
-    background: linear-gradient(145deg, #0a0f1a 0%, #111827 50%, #0f172a 100%);
-    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    background: #0f172a;
     position: relative;
     overflow: hidden;
   }
@@ -750,6 +748,8 @@
     align-items: center;
     gap: 0.35rem;
     padding: 0.4rem 0.6rem;
+    min-height: 44px;
+    min-width: 44px;
     background: rgba(30, 41, 59, 0.6);
     border: 1px solid rgba(99, 102, 241, 0.15);
     border-radius: 8px;

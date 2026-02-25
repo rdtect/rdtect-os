@@ -3,7 +3,7 @@ const manifest = {
   name: 'Blog',
   version: '1.0.0',
   type: 'native',
-  icon: 'article',
+  icon: '📰',
   description: 'Technical blog with articles and thoughts',
   access: 'free',
   entry: './src/Blog.svelte',

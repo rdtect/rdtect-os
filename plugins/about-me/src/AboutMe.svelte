@@ -122,7 +122,7 @@
       animateSkills();
     }
 
-    console.log(`About Me plugin mounted (window: ${windowId})`);
+    // Plugin mounted successfully
   });
 
   // Animate skills progressively
@@ -188,7 +188,16 @@
           <!-- Avatar -->
           <div class="avatar-container">
             <div class="avatar-ring"></div>
-            <img src={data.avatar} alt={data.name} class="avatar" />
+            {#if data.avatar}
+              <img src={data.avatar} alt={data.name} class="avatar" />
+            {:else}
+              <div class="avatar avatar-fallback">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+            {/if}
             <div class="availability-indicator" style="background: {getAvailabilityStyles().dot}"></div>
           </div>
 
@@ -531,8 +540,7 @@
   .about-me {
     width: 100%;
     height: 100%;
-    background: linear-gradient(145deg, #0a0f1a 0%, #111827 50%, #0f172a 100%);
-    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    background: #0f172a;
     position: relative;
     overflow: hidden;
     color: #e2e8f0;
@@ -678,6 +686,14 @@
     border: 4px solid #0f172a;
     object-fit: cover;
     background: #1e293b;
+  }
+
+  .avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: #6366f1;
   }
 
   .availability-indicator {

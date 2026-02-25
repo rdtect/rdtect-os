@@ -358,6 +358,7 @@ print(f"Factorial of 5: {factorial(5)}")
     align-items: center;
     gap: 4px;
     padding: 6px 12px;
+    min-height: 44px;
     background-color: #334155;
     border: none;
     border-radius: 4px;
@@ -396,6 +397,7 @@ print(f"Factorial of 5: {factorial(5)}")
     align-items: center;
     gap: 6px;
     padding: 8px 20px;
+    min-height: 44px;
     background-color: #6366f1;
     border: none;
     border-radius: 4px;
@@ -444,8 +446,8 @@ print(f"Factorial of 5: {factorial(5)}")
   }
 
   .status-indicator.ready {
-    color: #4ec9b0;
-    background-color: rgba(78, 201, 176, 0.1);
+    color: #22c55e;
+    background-color: rgba(34, 197, 94, 0.1);
   }
 
   /* Tabs */
@@ -502,7 +504,7 @@ print(f"Factorial of 5: {factorial(5)}")
   }
 
   .dirty-indicator {
-    color: #f14c4c;
+    color: #ef4444;
     font-size: 16px;
   }
 

@@ -9,6 +9,7 @@
     type ResizeDirection
   } from '$lib/core/attachments';
   import FederationOffline from './FederationOffline.svelte';
+  import { mobile } from '$lib/core/mobile.svelte';
 
   // Track current snap zone during drag
   let currentSnapZone = $state<SnapZone>(null);
@@ -70,7 +71,7 @@
   // Draggable attachment for title bar with snap zone detection
   const titleBarDraggable = $derived(
     draggable({
-      disabled: win.isMaximized,
+      disabled: win.isMaximized || mobile.isMobile,
       onStart: () => {
         wm.focusWindow(win.id);
         // If window is snapped, unsnap it when starting to drag
@@ -265,29 +266,47 @@
   bind:this={windowElement}
   class="absolute flex flex-col overflow-hidden transition-shadow duration-200 ease-out window-chrome
     {win.isFocused ? 'window-focused' : 'window-unfocused'}
-    {win.isMaximized ? 'rounded-none' : 'rounded-xl'}
+    {win.isMaximized || mobile.isMobile ? 'rounded-none' : 'rounded-xl'}
     {win.isResizing ? 'select-none [&_iframe]:pointer-events-none' : ''}
     {animationClass()}
     {shadowClass()}"
-  style:left="{win.x}px"
-  style:top="{win.y}px"
-  style:width="{win.width}px"
-  style:height="{win.height}px"
+  style:left={mobile.isMobile ? '0px' : `${win.x}px`}
+  style:top={mobile.isMobile ? '0px' : `${win.y}px`}
+  style:width={mobile.isMobile ? '100vw' : `${win.width}px`}
+  style:height={mobile.isMobile ? '100vh' : `${win.height}px`}
   style:z-index={win.zIndex}
   onclick={onWindowClick}
 >
   <!-- Title Bar with Glass Effect - Using Svelte 5 Attachments -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
-    class="flex items-center h-10 px-3 titlebar-glass border-b border-white/5 cursor-grab active:cursor-grabbing select-none shrink-0
+    class="flex items-center h-10 px-3 titlebar-glass border-b border-white/5 select-none shrink-0
+      {mobile.isMobile ? '' : 'cursor-grab active:cursor-grabbing'}
       {win.isFocused ? 'titlebar-focused' : 'titlebar-unfocused'}"
     {@attach titleBarDraggable}
     {@attach titleBarDoubleClick}
     oncontextmenu={handleTitleBarContextMenu}
   >
-    <!-- macOS-style Traffic Light Buttons (Left side) -->
-    <div class="flex items-center gap-2 traffic-lights">
-      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
+    {#if mobile.isMobile}
+      <!-- Mobile: Back button + centered title -->
+      <button
+        class="flex items-center gap-1 px-2 py-1 -ml-1 rounded-lg text-desktop-accent active:bg-white/10 min-w-[44px] min-h-[44px]"
+        onclick={handleClose}
+        aria-label="Close"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M15 19l-7-7 7-7"/>
+        </svg>
+        <span class="text-sm">Back</span>
+      </button>
+      <div class="flex-1 flex items-center justify-center gap-2 min-w-0">
+        <span class="text-sm shrink-0">{app?.icon}</span>
+        <span class="text-[13px] font-semibold text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">{win.title}</span>
+      </div>
+      <div class="w-[68px]"></div>
+    {:else}
+      <!-- Desktop: macOS-style Traffic Light Buttons (Left side) -->
+      <div class="flex items-center gap-2 traffic-lights p-2 min-h-[44px]">
         <button
           class="traffic-light traffic-light-close group"
           onclick={handleClose}
@@ -299,8 +318,6 @@
             <line x1="9" y1="3" x2="3" y2="9"/>
           </svg>
         </button>
-      </div>
-      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
         <button
           class="traffic-light traffic-light-minimize group"
           onclick={handleMinimize}
@@ -311,37 +328,35 @@
             <line x1="2" y1="6" x2="10" y2="6"/>
           </svg>
         </button>
-      </div>
-      <div class="min-w-[44px] min-h-[44px] flex items-center justify-center">
         <button
           class="traffic-light traffic-light-maximize group"
           onclick={handleMaximize}
           aria-label={win.isMaximized ? 'Restore window' : 'Maximize window'}
           title={win.isMaximized ? 'Restore' : 'Maximize'}
         >
-        {#if win.isMaximized}
-          <svg class="traffic-light-icon" viewBox="0 0 12 12">
-            <rect x="2.5" y="4" width="5" height="5" fill="none" rx="0.5"/>
-            <path d="M4.5 4V2.5a.5.5 0 0 1 .5-.5H9.5a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H8" fill="none"/>
-          </svg>
-        {:else}
-          <svg class="traffic-light-icon" viewBox="0 0 12 12">
-            <path d="M2 6L6 2L10 6L6 10Z" fill="none"/>
-          </svg>
-        {/if}
+          {#if win.isMaximized}
+            <svg class="traffic-light-icon" viewBox="0 0 12 12">
+              <rect x="2.5" y="4" width="5" height="5" fill="none" rx="0.5"/>
+              <path d="M4.5 4V2.5a.5.5 0 0 1 .5-.5H9.5a.5.5 0 0 1 .5.5V7a.5.5 0 0 1-.5.5H8" fill="none"/>
+            </svg>
+          {:else}
+            <svg class="traffic-light-icon" viewBox="0 0 12 12">
+              <path d="M2 6L6 2L10 6L6 10Z" fill="none"/>
+            </svg>
+          {/if}
         </button>
       </div>
-    </div>
 
-    <!-- Centered Title with App Icon -->
-    <div class="flex-1 flex items-center justify-center gap-2 min-w-0 px-4">
-      <span class="text-sm shrink-0 drop-shadow-sm">{app?.icon}</span>
-      <span class="text-[13px] font-medium whitespace-nowrap overflow-hidden text-ellipsis
-        {win.isFocused ? 'text-slate-100' : 'text-slate-400'}">{win.title}</span>
-    </div>
+      <!-- Centered Title with App Icon -->
+      <div class="flex-1 flex items-center justify-center gap-2 min-w-0 px-4">
+        <span class="text-sm shrink-0 drop-shadow-sm">{app?.icon}</span>
+        <span class="text-[13px] font-medium whitespace-nowrap overflow-hidden text-ellipsis
+          {win.isFocused ? 'text-slate-100' : 'text-slate-400'}">{win.title}</span>
+      </div>
 
-    <!-- Spacer to balance the traffic lights -->
-    <div class="w-[68px]"></div>
+      <!-- Spacer to balance the traffic lights -->
+      <div class="w-[68px]"></div>
+    {/if}
   </div>
 
   <!-- Content: Renders based on plugin type -->
@@ -350,7 +365,7 @@
       {@const mode = renderMode()}
       {#if mode?.kind === 'iframe'}
         <iframe
-          class="w-full h-full border-none bg-white"
+          class="w-full h-full border-none bg-[#0f172a]"
           src={mode.url}
           title={win.title}
           sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
@@ -387,7 +402,7 @@
   </div>
 
   <!-- Resize handles (all 8 directions) - Using Svelte 5 Attachments -->
-  {#if app?.resizable !== false && !win.isMaximized}
+  {#if app?.resizable !== false && !win.isMaximized && !mobile.isMobile}
     <!-- Edge resize areas (invisible) -->
     <div class="absolute z-10 top-0 left-3 right-3 h-1" {@attach createResizeAttachment('n')}></div>
     <div class="absolute z-10 bottom-0 left-3 right-3 h-1" {@attach createResizeAttachment('s')}></div>
@@ -447,12 +462,12 @@
 
   /* Focused Window State */
   .window-focused {
-    border-color: rgba(99, 102, 241, 0.45);
+    border-color: rgba(var(--desktop-accent-rgb), 0.45);
   }
 
   .window-unfocused {
     border-color: rgba(71, 85, 105, 0.25);
-    opacity: 0.92;
+    opacity: 1;
   }
 
   /* Enhanced Shadow Classes with Layered Depth */
@@ -462,9 +477,9 @@
       0 32px 64px -20px rgba(0, 0, 0, 0.55),
       0 16px 32px -12px rgba(0, 0, 0, 0.45),
       /* Accent glow */
-      0 0 0 1px rgba(99, 102, 241, 0.35),
-      0 0 60px -15px rgba(99, 102, 241, 0.25),
-      0 0 30px -10px rgba(99, 102, 241, 0.15),
+      0 0 0 1px rgba(var(--desktop-accent-rgb), 0.35),
+      0 0 60px -15px rgba(var(--desktop-accent-rgb), 0.25),
+      0 0 30px -10px rgba(var(--desktop-accent-rgb), 0.15),
       /* Inner highlight */
       inset 0 1px 1px rgba(255, 255, 255, 0.06),
       inset 0 -1px 1px rgba(0, 0, 0, 0.05);
@@ -551,7 +566,7 @@
 
   .traffic-light:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(15, 23, 42, 1), 0 0 0 4px rgba(99, 102, 241, 0.8);
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, 1), 0 0 0 4px rgba(var(--desktop-accent-rgb), 0.8);
   }
 
   .traffic-light-icon {
@@ -680,7 +695,7 @@
   }
 
   .resize-handle-se:hover::after {
-    background: linear-gradient(135deg, transparent 50%, rgba(99, 102, 241, 0.6) 50%);
+    background: linear-gradient(135deg, transparent 50%, rgba(var(--desktop-accent-rgb), 0.6) 50%);
   }
 
   .resize-handle-sw::after {
@@ -696,7 +711,7 @@
   }
 
   .resize-handle-sw:hover::after {
-    background: linear-gradient(225deg, transparent 50%, rgba(99, 102, 241, 0.6) 50%);
+    background: linear-gradient(225deg, transparent 50%, rgba(var(--desktop-accent-rgb), 0.6) 50%);
   }
 
   .resize-handle-ne::after {
@@ -712,7 +727,7 @@
   }
 
   .resize-handle-ne:hover::after {
-    background: linear-gradient(45deg, transparent 50%, rgba(99, 102, 241, 0.6) 50%);
+    background: linear-gradient(45deg, transparent 50%, rgba(var(--desktop-accent-rgb), 0.6) 50%);
   }
 
   .resize-handle-nw::after {
@@ -728,7 +743,7 @@
   }
 
   .resize-handle-nw:hover::after {
-    background: linear-gradient(315deg, transparent 50%, rgba(99, 102, 241, 0.6) 50%);
+    background: linear-gradient(315deg, transparent 50%, rgba(var(--desktop-accent-rgb), 0.6) 50%);
   }
 
   /* Window animations */

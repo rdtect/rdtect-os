@@ -10,15 +10,7 @@
 
   let { project, onClose, onOpenDemo }: Props = $props();
 
-  let currentScreenshotIndex = $state(0);
   let isClosing = $state(false);
-
-  // Reset screenshot index when project changes
-  $effect(() => {
-    if (project) {
-      currentScreenshotIndex = 0;
-    }
-  });
 
   function handleClose() {
     isClosing = true;
@@ -37,25 +29,7 @@
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       handleClose();
-    } else if (e.key === 'ArrowLeft') {
-      prevScreenshot();
-    } else if (e.key === 'ArrowRight') {
-      nextScreenshot();
     }
-  }
-
-  function prevScreenshot() {
-    if (!project) return;
-    currentScreenshotIndex = currentScreenshotIndex === 0
-      ? project.screenshots.length - 1
-      : currentScreenshotIndex - 1;
-  }
-
-  function nextScreenshot() {
-    if (!project) return;
-    currentScreenshotIndex = currentScreenshotIndex === project.screenshots.length - 1
-      ? 0
-      : currentScreenshotIndex + 1;
   }
 
   function handleOpenDemo() {
@@ -92,40 +66,9 @@
         </svg>
       </button>
 
-      <!-- Screenshot Carousel -->
-      <div class="carousel">
-        <div class="carousel-inner">
-          <img
-            src={project.screenshots[currentScreenshotIndex]}
-            alt="{project.title} screenshot {currentScreenshotIndex + 1}"
-            class="screenshot"
-          />
-        </div>
-
-        {#if project.screenshots.length > 1}
-          <button class="carousel-btn prev" onclick={prevScreenshot} aria-label="Previous screenshot">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15,18 9,12 15,6"/>
-            </svg>
-          </button>
-          <button class="carousel-btn next" onclick={nextScreenshot} aria-label="Next screenshot">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9,18 15,12 9,6"/>
-            </svg>
-          </button>
-
-          <!-- Dots -->
-          <div class="carousel-dots">
-            {#each project.screenshots as _, i}
-              <button
-                class="dot"
-                class:active={i === currentScreenshotIndex}
-                onclick={() => currentScreenshotIndex = i}
-                aria-label="Go to screenshot {i + 1}"
-              />
-            {/each}
-          </div>
-        {/if}
+      <!-- Project Hero -->
+      <div class="project-hero" style="background: {project.gradient}">
+        <span class="hero-icon">{project.icon}</span>
       </div>
 
       <!-- Content -->
@@ -290,85 +233,20 @@
     color: #fca5a5;
   }
 
-  /* Carousel */
-  .carousel {
+  /* Project Hero */
+  .project-hero {
     position: relative;
     width: 100%;
-    height: 280px;
-    background: rgba(0, 0, 0, 0.3);
-    flex-shrink: 0;
-  }
-
-  .carousel-inner {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .screenshot {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-  }
-
-  .carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 40px;
-    height: 40px;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: #f1f5f9;
-    cursor: pointer;
-    transition: all 0.2s;
-    backdrop-filter: blur(8px);
+    flex-shrink: 0;
   }
 
-  .carousel-btn:hover {
-    background: rgba(99, 102, 241, 0.4);
-    border-color: rgba(99, 102, 241, 0.5);
-  }
-
-  .carousel-btn.prev {
-    left: 16px;
-  }
-
-  .carousel-btn.next {
-    right: 16px;
-  }
-
-  .carousel-dots {
-    position: absolute;
-    bottom: 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 8px;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .dot:hover {
-    background: rgba(255, 255, 255, 0.5);
-  }
-
-  .dot.active {
-    background: #6366f1;
-    transform: scale(1.2);
+  .hero-icon {
+    font-size: 5rem;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
   }
 
   /* Content */

@@ -747,7 +747,6 @@
     position: relative;
     height: 100%;
     overflow: hidden;
-    font-family: 'SF Pro Display', system-ui, -apple-system, sans-serif;
     border-radius: 12px;
   }
 

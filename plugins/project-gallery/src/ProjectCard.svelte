@@ -11,17 +11,6 @@
   let { project, onSelect, onOpenDemo }: Props = $props();
 
   let isHovered = $state(false);
-  let imageLoaded = $state(false);
-  let imageError = $state(false);
-
-  function handleImageLoad() {
-    imageLoaded = true;
-  }
-
-  function handleImageError() {
-    imageError = true;
-    imageLoaded = true;
-  }
 
   function handleOpenDemo(e: MouseEvent) {
     e.stopPropagation();
@@ -43,26 +32,8 @@
   {/if}
 
   <!-- Thumbnail -->
-  <div class="thumbnail-container">
-    {#if !imageLoaded}
-      <div class="thumbnail-skeleton">
-        <div class="skeleton-shimmer"></div>
-      </div>
-    {/if}
-    {#if imageError}
-      <div class="thumbnail-fallback">
-        <span class="fallback-icon">{categoryInfo[project.category].icon}</span>
-      </div>
-    {:else}
-      <img
-        src={project.thumbnail}
-        alt={project.title}
-        class="thumbnail"
-        class:loaded={imageLoaded}
-        onload={handleImageLoad}
-        onerror={handleImageError}
-      />
-    {/if}
+  <div class="thumbnail-container" style="background: {project.gradient}">
+    <span class="thumbnail-icon">{project.icon}</span>
 
     <!-- Hover Overlay -->
     <div class="overlay" class:visible={isHovered}>
@@ -170,61 +141,20 @@
     width: 100%;
     height: 160px;
     overflow: hidden;
-    background: rgba(15, 23, 42, 0.8);
-  }
-
-  .thumbnail-skeleton {
-    position: absolute;
-    inset: 0;
-    background: rgba(30, 41, 59, 0.8);
-    overflow: hidden;
-  }
-
-  .skeleton-shimmer {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(99, 102, 241, 0.1) 50%,
-      transparent 100%
-    );
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-  }
-
-  .thumbnail-fallback {
-    position: absolute;
-    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
   }
 
-  .fallback-icon {
-    font-size: 3rem;
-    opacity: 0.5;
+  .thumbnail-icon {
+    font-size: 3.5rem;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
   }
 
-  .thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .thumbnail.loaded {
-    opacity: 1;
-  }
-
-  .card:hover .thumbnail {
-    transform: scale(1.05);
+  .card:hover .thumbnail-icon {
+    transform: scale(1.15);
   }
 
   /* Overlay */

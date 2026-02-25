@@ -332,7 +332,6 @@
     setupNetworkObserver();
     totalWindowsOpened = wm.windows.length;
 
-    console.log(`System Monitor started (window: ${windowId})`);
   });
 
   onDestroy(() => {
@@ -341,7 +340,6 @@
     if (perfObserver) {
       perfObserver.disconnect();
     }
-    console.log(`System Monitor destroyed (window: ${windowId})`);
   });
 </script>
 
@@ -724,7 +722,6 @@
 
   <!-- Footer -->
   <div class="footer">
-    <span class="plugin-badge">Native Svelte Widget</span>
     <span class="refresh-info">Auto-refresh: 500ms</span>
   </div>
 </div>
@@ -734,8 +731,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    font-family: system-ui, -apple-system, sans-serif;
+    background: #0f172a;
     font-size: 12px;
     color: #e2e8f0;
     overflow: hidden;

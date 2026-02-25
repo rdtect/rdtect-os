@@ -1,6 +1,7 @@
 <script lang="ts">
   import { wm } from './registry.svelte';
   import type { AppDefinition } from './types';
+  import { mobile } from '$lib/core/mobile.svelte';
 
   const STORAGE_KEY = 'desktop-hidden-icons';
   const POSITIONS_STORAGE_KEY = 'desktop-icon-positions';
@@ -320,96 +321,118 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div
-  bind:this={containerRef}
-  class="absolute top-20 left-4 right-4 bottom-20 p-3"
-  onclick={handleDesktopClick}
->
-  {#each desktopApps as app, index (app.id)}
-    {@const pos = getIconPosition(app.id, index)}
-    {@const isDragging = draggingId === app.id}
-    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-    <div
-      class="icon group absolute flex flex-col items-center justify-start p-2 rounded-xl select-none
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-desktop-accent focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
-        {isDragging ? 'cursor-grabbing z-50 scale-105 opacity-90' : 'cursor-grab'}
-        {!isDragging ? 'transition-all duration-200 ease-out hover:bg-white/[0.06] hover:backdrop-blur-sm hover:scale-105 active:scale-95' : ''}
-        {selectedId === app.id && !isDragging ? 'bg-desktop-accent/20 ring-1 ring-desktop-accent/40 backdrop-blur-sm' : ''}"
-      style="
-        left: {pos.x}px;
-        top: {pos.y}px;
-        width: {ICON_WIDTH}px;
-        height: {ICON_HEIGHT}px;
-        animation-delay: {index * 50}ms;
-        {isDragging ? 'filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));' : ''}
-      "
-      ondblclick={() => handleDoubleClick(app.id)}
-      onclick={(e) => handleClick(e, app.id)}
-      oncontextmenu={(e) => handleContextMenu(e, app)}
-      onkeydown={(e) => handleKeydown(e, app.id)}
-      onmousedown={(e) => handleMouseDown(e, app.id, index)}
-      tabindex="0"
-      role="button"
-      aria-label="Open {app.title}"
-    >
-      <!-- Quick remove button (x) - appears on hover -->
-      <button
-        class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500/80 text-white text-xs flex items-center justify-center
-          opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10
-          hover:bg-red-600 hover:scale-110 shadow-md"
-        onclick={(e) => handleRemoveClick(e, app.id)}
-        title="Remove from Desktop"
-        aria-label="Remove {app.title} from Desktop"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-        </svg>
-      </button>
-
-      <!-- Drag indicator - shows during drag -->
-      {#if isDragging}
-        <div class="absolute inset-0 rounded-xl border-2 border-dashed border-desktop-accent/60 pointer-events-none"></div>
-      {/if}
-
-      <!-- Icon container with glow effect -->
-      <div class="relative w-14 h-14 flex items-center justify-center mb-2">
-        <!-- Glow effect on hover -->
-        <div class="absolute inset-0 rounded-2xl bg-desktop-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300
-          {isDragging ? 'opacity-100' : ''}"></div>
-
-        <!-- Icon background -->
-        <div class="relative w-12 h-12 flex items-center justify-center rounded-[14px] bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-black/20
-          transition-all duration-200
-          group-hover:shadow-xl group-hover:shadow-desktop-accent/20 group-hover:border-desktop-accent/30
-          {selectedId === app.id ? 'shadow-desktop-accent/30 border-desktop-accent/40' : ''}
-          {isDragging ? 'shadow-xl shadow-desktop-accent/40 border-desktop-accent/50' : ''}">
-          <span class="text-[26px] leading-none drop-shadow-md">{app.icon}</span>
-        </div>
+{#if mobile.isMobile}
+  <!-- Mobile: iOS-style centered icon grid -->
+  <div class="absolute inset-0 flex flex-col items-center pt-12 px-4 overflow-y-auto" onclick={handleDesktopClick}>
+    <!-- Status bar area (time) -->
+    <div class="text-center mb-6">
+      <div class="text-white/90 text-4xl font-light tabular-nums">
+        {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
       </div>
-
-      <!-- Label with text shadow for readability -->
-      <span class="text-[11px] text-slate-200 text-center leading-tight max-w-[76px] px-1 py-0.5 rounded
-        font-medium tracking-wide
-        overflow-hidden text-ellipsis line-clamp-2
-        drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]
-        {selectedId === app.id ? 'bg-desktop-accent/30 text-white' : ''}">
-        {app.title}
-      </span>
+      <div class="text-white/60 text-sm mt-1">
+        {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+      </div>
     </div>
-  {/each}
 
-  <!-- Grid preview overlay during drag -->
-  {#if draggingId && currentDragPos}
-    {@const snappedPos = snapToGrid(clampToBounds(currentDragPos))}
-    <div class="absolute inset-0 pointer-events-none">
-      <!-- Show snap grid indicator -->
+    <!-- App grid -->
+    <div class="grid grid-cols-4 gap-x-6 gap-y-4 w-full max-w-[340px]">
+      {#each desktopApps as app, index (app.id)}
+        <button
+          class="flex flex-col items-center gap-1.5 active:scale-90 transition-transform duration-100"
+          style="animation-delay: {index * 30}ms"
+          onclick={() => { wm.openWindow(app.id); }}
+          oncontextmenu={(e) => handleContextMenu(e, app)}
+          aria-label="Open {app.title}"
+        >
+          <div class="w-14 h-14 flex items-center justify-center rounded-[16px] bg-gradient-to-br from-white/15 to-white/5 border border-white/10 shadow-lg">
+            <span class="text-[28px] leading-none">{app.icon}</span>
+          </div>
+          <span class="text-[11px] text-white/80 text-center leading-tight line-clamp-2 max-w-[64px]">
+            {app.title}
+          </span>
+        </button>
+      {/each}
+    </div>
+  </div>
+{:else}
+  <!-- Desktop: Absolute-positioned draggable icons -->
+  <div
+    bind:this={containerRef}
+    class="absolute top-20 left-4 right-4 bottom-20 p-3"
+    onclick={handleDesktopClick}
+  >
+    {#each desktopApps as app, index (app.id)}
+      {@const pos = getIconPosition(app.id, index)}
+      {@const isDragging = draggingId === app.id}
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
       <div
-        class="absolute w-[88px] h-[96px] rounded-xl border-2 border-desktop-accent/30 bg-desktop-accent/10 transition-all duration-75"
-        style="left: {snappedPos.x}px; top: {snappedPos.y}px;"
-      ></div>
-    </div>
-  {/if}
-</div>
+        class="icon group absolute flex flex-col items-center justify-start p-2 rounded-xl select-none
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-desktop-accent focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+          {isDragging ? 'cursor-grabbing z-50 scale-105 opacity-90' : 'cursor-grab'}
+          {!isDragging ? 'transition-all duration-200 ease-out hover:bg-white/[0.06] hover:backdrop-blur-sm hover:scale-105 active:scale-95' : ''}
+          {selectedId === app.id && !isDragging ? 'bg-desktop-accent/20 ring-1 ring-desktop-accent/40 backdrop-blur-sm' : ''}"
+        style="
+          left: {pos.x}px;
+          top: {pos.y}px;
+          width: {ICON_WIDTH}px;
+          height: {ICON_HEIGHT}px;
+          animation-delay: {index * 50}ms;
+          {isDragging ? 'filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));' : ''}
+        "
+        ondblclick={() => handleDoubleClick(app.id)}
+        onclick={(e) => handleClick(e, app.id)}
+        oncontextmenu={(e) => handleContextMenu(e, app)}
+        onkeydown={(e) => handleKeydown(e, app.id)}
+        onmousedown={(e) => handleMouseDown(e, app.id, index)}
+        tabindex="0"
+        role="button"
+        aria-label="Open {app.title}"
+      >
+        <!-- Drag indicator - shows during drag -->
+        {#if isDragging}
+          <div class="absolute inset-0 rounded-xl border-2 border-dashed border-desktop-accent/60 pointer-events-none"></div>
+        {/if}
+
+        <!-- Icon container with glow effect -->
+        <div class="relative w-14 h-14 flex items-center justify-center mb-2">
+          <!-- Glow effect on hover -->
+          <div class="absolute inset-0 rounded-2xl bg-desktop-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300
+            {isDragging ? 'opacity-100' : ''}"></div>
+
+          <!-- Icon background -->
+          <div class="relative w-12 h-12 flex items-center justify-center rounded-[14px] bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg shadow-black/20
+            transition-all duration-200
+            group-hover:shadow-xl group-hover:shadow-desktop-accent/20 group-hover:border-desktop-accent/30
+            {selectedId === app.id ? 'shadow-desktop-accent/30 border-desktop-accent/40' : ''}
+            {isDragging ? 'shadow-xl shadow-desktop-accent/40 border-desktop-accent/50' : ''}">
+            <span class="text-[26px] leading-none drop-shadow-md">{app.icon}</span>
+          </div>
+        </div>
+
+        <!-- Label with text shadow for readability -->
+        <span class="text-[11px] text-slate-200 text-center leading-tight max-w-[76px] px-1 py-0.5 rounded
+          font-medium tracking-wide
+          overflow-hidden text-ellipsis line-clamp-2
+          drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]
+          {selectedId === app.id ? 'bg-desktop-accent/30 text-white' : ''}">
+          {app.title}
+        </span>
+      </div>
+    {/each}
+
+    <!-- Grid preview overlay during drag -->
+    {#if draggingId && currentDragPos}
+      {@const snappedPos = snapToGrid(clampToBounds(currentDragPos))}
+      <div class="absolute inset-0 pointer-events-none">
+        <!-- Show snap grid indicator -->
+        <div
+          class="absolute w-[88px] h-[96px] rounded-xl border-2 border-desktop-accent/30 bg-desktop-accent/10 transition-all duration-75"
+          style="left: {snappedPos.x}px; top: {snappedPos.y}px;"
+        ></div>
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style>
   .line-clamp-2 {

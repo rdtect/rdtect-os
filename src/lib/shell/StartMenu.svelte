@@ -1,7 +1,9 @@
 <script lang="ts">
   import { wm } from './registry.svelte';
   import type { AppDefinition } from './types';
-  import type { PluginType } from '$lib/core/types';
+  import { mobile } from '$lib/core/mobile.svelte';
+  import { pluginBadges } from './constants';
+  import { getAuthState } from '$lib/core/pocketbase';
 
   // Props
   let {
@@ -16,15 +18,6 @@
   let searchQuery = $state('');
   let searchInput: HTMLInputElement;
   let showAllApps = $state(false);
-
-  // Plugin type badge colors
-  const pluginBadges: Record<PluginType, { label: string; color: string }> = {
-    native: { label: 'Native', color: 'bg-emerald-500' },
-    webcomponent: { label: 'Web', color: 'bg-blue-500' },
-    wasm: { label: 'WASM', color: 'bg-amber-500' },
-    iframe: { label: 'App', color: 'bg-purple-500' },
-    federation: { label: 'Cloud', color: 'bg-rose-500' },
-  };
 
   // Pinned apps (first 8-12 apps for quick access)
   const pinnedApps = $derived(() => {
@@ -48,6 +41,12 @@
 
   // Check if searching
   const isSearching = $derived(searchQuery.trim().length > 0);
+
+  // Auth state
+  let isAuthenticated = $derived(getAuthState().isValid);
+  let authModel = $derived(getAuthState().model);
+  let userInitial = $derived(authModel?.name?.[0]?.toUpperCase() || (isAuthenticated ? '?' : 'G'));
+  let userName = $derived(isAuthenticated ? (authModel?.name || authModel?.email || 'User') : 'Guest');
 
   // Recent apps (last opened - mock for now)
   const recentApps = $derived(() => {
@@ -111,8 +110,9 @@
   <div class="start-menu-overlay fixed inset-0 z-[9998]" onclick={handleOverlayClick}></div>
 
   <!-- Start Menu Panel -->
-  <div class="start-menu fixed bottom-[70px] left-1/2 -translate-x-1/2 z-[9999] w-[600px] max-h-[620px]">
-    <div class="menu-container rounded-xl overflow-hidden flex flex-col">
+  <div class="start-menu fixed z-[9999]
+    {mobile.isMobile ? 'inset-0' : 'bottom-[70px] left-1/2 -translate-x-1/2 w-[600px] max-h-[620px]'}">
+    <div class="menu-container overflow-hidden flex flex-col {mobile.isMobile ? 'rounded-none h-full' : 'rounded-xl'}">
 
       <!-- Search Bar -->
       <div class="search-section px-5 pt-5 pb-3">
@@ -223,7 +223,7 @@
                 </svg>
               </button>
             </div>
-            <div class="pinned-grid grid grid-cols-6 gap-2">
+            <div class="pinned-grid grid grid-cols-4 sm:grid-cols-6 gap-2">
               {#each pinnedApps() as app, index (app.id)}
                 {@const badge = pluginBadges[app.pluginType]}
                 <button
@@ -273,9 +273,9 @@
         <!-- User Profile -->
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-full bg-gradient-to-br from-desktop-accent to-purple-500 flex items-center justify-center text-white text-sm font-medium">
-            U
+            {userInitial}
           </div>
-          <span class="text-sm text-slate-300">User</span>
+          <span class="text-sm text-slate-300">{userName}</span>
         </div>
 
         <!-- Power Options -->
@@ -346,7 +346,7 @@
   }
 
   .search-input:focus {
-    border-color: rgba(99, 102, 241, 0.5);
+    border-color: rgba(var(--desktop-accent-rgb), 0.5);
     background: rgba(255, 255, 255, 0.08);
   }
 
@@ -436,7 +436,7 @@
     transform: translateY(-50%);
     width: 2px;
     height: 10px;
-    background: linear-gradient(180deg, rgb(99, 102, 241), rgb(139, 92, 246));
+    background: linear-gradient(180deg, rgb(var(--desktop-accent-rgb)), rgb(139, 92, 246));
     border-radius: 1px;
     opacity: 0.8;
   }
