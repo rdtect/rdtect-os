@@ -1,0 +1,6 @@
+{
+  "name": "@desktop-os/plugin-ai-chat",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module"
+}

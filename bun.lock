@@ -4,12 +4,16 @@
   "workspaces": {
     "": {
       "name": "rdtect-os",
+    },
+    "apps/desktop": {
+      "name": "@desktop-os/desktop",
+      "version": "1.0.0",
       "dependencies": {
+        "@desktop-os/plugin-sdk": "workspace:*",
         "pocketbase": "^0.26.6",
       },
       "devDependencies": {
         "@originjs/vite-plugin-federation": "^1.4.1",
-        "@sveltejs/adapter-auto": "^7.0.0",
         "@sveltejs/adapter-node": "^5.5.3",
         "@sveltejs/kit": "^2.50.0",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -23,6 +27,116 @@
         "typescript": "^5.9.3",
         "vite": "^7.3.1",
       },
+    },
+    "apps/desktop/plugins/about-me": {
+      "name": "@desktop-os/plugin-about-me",
+      "version": "1.0.0",
+      "devDependencies": {
+        "typescript": "^5.0.0",
+      },
+      "peerDependencies": {
+        "svelte": "^5.0.0",
+      },
+    },
+    "apps/desktop/plugins/agent-manager": {
+      "name": "@desktop-os/plugin-agent-manager",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/ai-chat": {
+      "name": "@desktop-os/plugin-ai-chat",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/blog": {
+      "name": "@desktop-os/blog",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/calculator": {
+      "name": "@desktop-os/plugin-calculator",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/clock": {
+      "name": "@desktop-os/plugin-clock",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/code-editor": {
+      "name": "@desktop-os/code-editor",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/contact": {
+      "name": "@desktop-os/contact",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/excalidraw": {
+      "name": "@desktop-os/plugin-excalidraw",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/file-browser": {
+      "name": "@desktop-os/plugin-file-browser",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/flappy-bird": {
+      "name": "@desktop-os/plugin-flappy-bird",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/github-globe": {
+      "name": "@desktop-os/plugin-github-globe",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/image-filter": {
+      "name": "@desktop-os/plugin-image-filter",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/knowledge-base": {
+      "name": "@desktop-os/plugin-knowledge-base",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/markdown-editor": {
+      "name": "@desktop-os/plugin-markdown-editor",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/notes": {
+      "name": "@desktop-os/plugin-notes",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/plugin-registry": {
+      "name": "@desktop-os/plugin-plugin-registry",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/pocketbase-admin": {
+      "name": "@desktop-os/pocketbase-admin",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/project-gallery": {
+      "name": "@desktop-os/plugin-project-gallery",
+      "version": "1.0.0",
+      "devDependencies": {
+        "svelte": "^5.0.0",
+        "svelte-check": "^4.0.0",
+        "typescript": "^5.0.0",
+      },
+      "peerDependencies": {
+        "svelte": "^5.0.0",
+      },
+    },
+    "apps/desktop/plugins/prompt-manager": {
+      "name": "@desktop-os/plugin-prompt-manager",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/system-monitor": {
+      "name": "@desktop-os/plugin-system-monitor",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/terminal": {
+      "name": "@desktop-os/plugin-terminal",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/weather": {
+      "name": "@desktop-os/plugin-weather",
+      "version": "1.0.0",
+    },
+    "apps/desktop/plugins/welcome": {
+      "name": "@desktop-os/welcome",
+      "version": "1.0.0",
     },
     "apps/excalidraw-remote": {
       "name": "@desktop-os/excalidraw-remote",
@@ -47,48 +161,6 @@
       "peerDependencies": {
         "typescript": "^5.0.0",
       },
-    },
-    "plugins/about-me": {
-      "name": "@desktop-os/plugin-about-me",
-      "version": "1.0.0",
-      "devDependencies": {
-        "typescript": "^5.0.0",
-      },
-      "peerDependencies": {
-        "svelte": "^5.0.0",
-      },
-    },
-    "plugins/blog": {
-      "name": "@desktop-os/blog",
-      "version": "1.0.0",
-    },
-    "plugins/code-editor": {
-      "name": "@desktop-os/code-editor",
-      "version": "1.0.0",
-    },
-    "plugins/contact": {
-      "name": "@desktop-os/contact",
-      "version": "1.0.0",
-    },
-    "plugins/pocketbase-admin": {
-      "name": "@desktop-os/pocketbase-admin",
-      "version": "1.0.0",
-    },
-    "plugins/project-gallery": {
-      "name": "@desktop-os/plugin-project-gallery",
-      "version": "1.0.0",
-      "devDependencies": {
-        "svelte": "^5.0.0",
-        "svelte-check": "^4.0.0",
-        "typescript": "^5.0.0",
-      },
-      "peerDependencies": {
-        "svelte": "^5.0.0",
-      },
-    },
-    "plugins/welcome": {
-      "name": "@desktop-os/welcome",
-      "version": "1.0.0",
     },
   },
   "packages": {
@@ -132,23 +204,59 @@
 
     "@babel/types": ["@babel/types@7.29.0", "", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.28.5" } }, "sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A=="],
 
-    "@desktop-os/blog": ["@desktop-os/blog@workspace:plugins/blog"],
+    "@desktop-os/blog": ["@desktop-os/blog@workspace:apps/desktop/plugins/blog"],
 
-    "@desktop-os/code-editor": ["@desktop-os/code-editor@workspace:plugins/code-editor"],
+    "@desktop-os/code-editor": ["@desktop-os/code-editor@workspace:apps/desktop/plugins/code-editor"],
 
-    "@desktop-os/contact": ["@desktop-os/contact@workspace:plugins/contact"],
+    "@desktop-os/contact": ["@desktop-os/contact@workspace:apps/desktop/plugins/contact"],
+
+    "@desktop-os/desktop": ["@desktop-os/desktop@workspace:apps/desktop"],
 
     "@desktop-os/excalidraw-remote": ["@desktop-os/excalidraw-remote@workspace:apps/excalidraw-remote"],
 
-    "@desktop-os/plugin-about-me": ["@desktop-os/plugin-about-me@workspace:plugins/about-me"],
+    "@desktop-os/plugin-about-me": ["@desktop-os/plugin-about-me@workspace:apps/desktop/plugins/about-me"],
 
-    "@desktop-os/plugin-project-gallery": ["@desktop-os/plugin-project-gallery@workspace:plugins/project-gallery"],
+    "@desktop-os/plugin-agent-manager": ["@desktop-os/plugin-agent-manager@workspace:apps/desktop/plugins/agent-manager"],
+
+    "@desktop-os/plugin-ai-chat": ["@desktop-os/plugin-ai-chat@workspace:apps/desktop/plugins/ai-chat"],
+
+    "@desktop-os/plugin-calculator": ["@desktop-os/plugin-calculator@workspace:apps/desktop/plugins/calculator"],
+
+    "@desktop-os/plugin-clock": ["@desktop-os/plugin-clock@workspace:apps/desktop/plugins/clock"],
+
+    "@desktop-os/plugin-excalidraw": ["@desktop-os/plugin-excalidraw@workspace:apps/desktop/plugins/excalidraw"],
+
+    "@desktop-os/plugin-file-browser": ["@desktop-os/plugin-file-browser@workspace:apps/desktop/plugins/file-browser"],
+
+    "@desktop-os/plugin-flappy-bird": ["@desktop-os/plugin-flappy-bird@workspace:apps/desktop/plugins/flappy-bird"],
+
+    "@desktop-os/plugin-github-globe": ["@desktop-os/plugin-github-globe@workspace:apps/desktop/plugins/github-globe"],
+
+    "@desktop-os/plugin-image-filter": ["@desktop-os/plugin-image-filter@workspace:apps/desktop/plugins/image-filter"],
+
+    "@desktop-os/plugin-knowledge-base": ["@desktop-os/plugin-knowledge-base@workspace:apps/desktop/plugins/knowledge-base"],
+
+    "@desktop-os/plugin-markdown-editor": ["@desktop-os/plugin-markdown-editor@workspace:apps/desktop/plugins/markdown-editor"],
+
+    "@desktop-os/plugin-notes": ["@desktop-os/plugin-notes@workspace:apps/desktop/plugins/notes"],
+
+    "@desktop-os/plugin-plugin-registry": ["@desktop-os/plugin-plugin-registry@workspace:apps/desktop/plugins/plugin-registry"],
+
+    "@desktop-os/plugin-project-gallery": ["@desktop-os/plugin-project-gallery@workspace:apps/desktop/plugins/project-gallery"],
+
+    "@desktop-os/plugin-prompt-manager": ["@desktop-os/plugin-prompt-manager@workspace:apps/desktop/plugins/prompt-manager"],
 
     "@desktop-os/plugin-sdk": ["@desktop-os/plugin-sdk@workspace:packages/plugin-sdk"],
 
-    "@desktop-os/pocketbase-admin": ["@desktop-os/pocketbase-admin@workspace:plugins/pocketbase-admin"],
+    "@desktop-os/plugin-system-monitor": ["@desktop-os/plugin-system-monitor@workspace:apps/desktop/plugins/system-monitor"],
 
-    "@desktop-os/welcome": ["@desktop-os/welcome@workspace:plugins/welcome"],
+    "@desktop-os/plugin-terminal": ["@desktop-os/plugin-terminal@workspace:apps/desktop/plugins/terminal"],
+
+    "@desktop-os/plugin-weather": ["@desktop-os/plugin-weather@workspace:apps/desktop/plugins/weather"],
+
+    "@desktop-os/pocketbase-admin": ["@desktop-os/pocketbase-admin@workspace:apps/desktop/plugins/pocketbase-admin"],
+
+    "@desktop-os/welcome": ["@desktop-os/welcome@workspace:apps/desktop/plugins/welcome"],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.27.3", "", { "os": "aix", "cpu": "ppc64" }, "sha512-9fJMTNFTWZMh5qwrBItuziu834eOCUcEqymSH7pY+zoMVEZg3gcPuBNxH1EvfVYe9h0x/Ptw8KBzv7qxb7l8dg=="],
 
@@ -287,8 +395,6 @@
     "@standard-schema/spec": ["@standard-schema/spec@1.1.0", "", {}, "sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w=="],
 
     "@sveltejs/acorn-typescript": ["@sveltejs/acorn-typescript@1.0.9", "", { "peerDependencies": { "acorn": "^8.9.0" } }, "sha512-lVJX6qEgs/4DOcRTpo56tmKzVPtoWAaVbL4hfO7t7NVwl9AAXzQR6cihesW1BmNMPl+bK6dreu2sOKBP2Q9CIA=="],
-
-    "@sveltejs/adapter-auto": ["@sveltejs/adapter-auto@7.0.1", "", { "peerDependencies": { "@sveltejs/kit": "^2.0.0" } }, "sha512-dvuPm1E7M9NI/+canIQ6KKQDU2AkEefEZ2Dp7cY6uKoPq9Z/PhOXABe526UdW2mN986gjVkuSLkOYIBnS/M2LQ=="],
 
     "@sveltejs/adapter-node": ["@sveltejs/adapter-node@5.5.3", "", { "dependencies": { "@rollup/plugin-commonjs": "^29.0.0", "@rollup/plugin-json": "^6.1.0", "@rollup/plugin-node-resolve": "^16.0.0", "rollup": "^4.9.5" }, "peerDependencies": { "@sveltejs/kit": "^2.4.0" } }, "sha512-yeWbKXBL9vqDb/7R8ebvRHeuBHN4cRYYBSquNJSMQtS6rIYkXxsVSveaMTUaLvHYQsb1zNa+nH2iLTOMawBohA=="],
 
