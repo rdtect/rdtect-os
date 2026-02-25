@@ -6,6 +6,7 @@
   import { initVirtualFilesystems } from "$lib/core/vfs";
   import { startFileHandler, stopFileHandler } from "$lib/core/file-associations";
   import { agentRuntime } from "$lib/core/agents/runtime.svelte";
+  import { apiStatus } from "$lib/core";
   import type { PluginManifest, LoadedPlugin } from "$lib/core/types";
 
   /**
@@ -33,6 +34,9 @@
   // Discover and load plugins on mount
   onMount(async () => {
     console.log("[rdtect OS] Starting plugin discovery...");
+
+    // Check API availability
+    apiStatus.check();
 
     // Initialize virtual filesystems with reactive providers
     initVirtualFilesystems(wm, agentRuntime);

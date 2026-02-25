@@ -2,11 +2,10 @@
  * AI Chat Remote Functions
  *
  * Server-side functions for AI chat using SvelteKit remote functions.
- * These run on the server but can be called from components like regular functions.
+ * Proxies to the Python backend (Claude API + RAG).
  */
 
 import { command, query } from '$app/server';
-import { env } from '$env/dynamic/private';
 
 export interface ChatMessage {
 	role: 'user' | 'assistant' | 'system';
@@ -15,94 +14,85 @@ export interface ChatMessage {
 
 export interface ChatResponse {
 	message: ChatMessage;
-	usage?: {
-		promptTokens: number;
-		completionTokens: number;
-		totalTokens: number;
-	};
 }
 
 interface SendMessageInput {
 	sessionId: string;
 	message: string;
-	model?: string;
+	useRag?: boolean;
 }
 
 interface SessionInput {
 	sessionId: string;
 }
 
-// In-memory chat history (per-session, would use DB in production)
+// In-memory chat history (per-session)
 const chatHistories = new Map<string, ChatMessage[]>();
 
 /**
- * Send a message to the AI and get a response
+ * Send a message to the AI and get a response (non-streaming fallback)
  */
 export const sendMessage = command(
 	'unchecked',
 	async (input: SendMessageInput) => {
-		const { sessionId, message, model = 'gpt-4o-mini' } = input;
+		const { sessionId, message, useRag = true } = input;
 
-		// Get or create chat history for this session
 		if (!chatHistories.has(sessionId)) {
-			chatHistories.set(sessionId, [
-				{
-					role: 'system',
-					content: 'You are a helpful AI assistant in rdtect OS, a web-based desktop environment. Be concise and helpful.'
-				}
-			]);
+			chatHistories.set(sessionId, []);
 		}
 
 		const history = chatHistories.get(sessionId)!;
-
-		// Add user message to history
 		history.push({ role: 'user', content: message });
 
-		const apiKey = env.OPENAI_API_KEY;
-		if (!apiKey) {
-			history.pop();
-			throw new Error('OPENAI_API_KEY not configured');
-		}
-
 		try {
-			const response = await fetch('https://api.openai.com/v1/chat/completions', {
+			const pythonUrl = process.env.PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+			const response = await fetch(`${pythonUrl}/api/chat/stream`, {
 				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${apiKey}`
-				},
+				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					model,
 					messages: history,
-					max_tokens: 2048,
-					temperature: 0.7
+					use_rag: useRag,
+					system: null
 				})
 			});
 
 			if (!response.ok) {
 				const error = await response.text();
-				throw new Error(`OpenAI API error: ${error}`);
+				throw new Error(`Backend API error: ${error}`);
 			}
 
-			const data = await response.json();
+			// Collect streamed tokens into a single response
+			const reader = response.body?.getReader();
+			const decoder = new TextDecoder();
+			let fullContent = '';
+
+			if (reader) {
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+					const chunk = decoder.decode(value, { stream: true });
+					for (const line of chunk.split('\n')) {
+						if (line.startsWith('data: ')) {
+							const data = line.slice(6);
+							if (data === '[DONE]') continue;
+							try {
+								const parsed = JSON.parse(data);
+								if (parsed.token) fullContent += parsed.token;
+							} catch { /* skip */ }
+						}
+					}
+				}
+			}
+
 			const assistantMessage: ChatMessage = {
 				role: 'assistant',
-				content: data.choices[0].message.content
+				content: fullContent
 			};
 
-			// Add assistant response to history
 			history.push(assistantMessage);
 
-			return {
-				message: assistantMessage,
-				usage: data.usage ? {
-					promptTokens: data.usage.prompt_tokens,
-					completionTokens: data.usage.completion_tokens,
-					totalTokens: data.usage.total_tokens
-				} : undefined
-			} satisfies ChatResponse;
+			return { message: assistantMessage } satisfies ChatResponse;
 		} catch (error) {
-			// Remove failed user message from history
 			history.pop();
 			throw error;
 		}
@@ -117,7 +107,6 @@ export const getChatHistory = query(
 	async (input: SessionInput) => {
 		const { sessionId } = input;
 		const history = chatHistories.get(sessionId) ?? [];
-		// Filter out system messages for display
 		return history.filter(msg => msg.role !== 'system');
 	}
 );
@@ -139,9 +128,7 @@ export const clearChatHistory = command(
  */
 export const getAvailableModels = query(async () => {
 	return [
-		{ id: 'gpt-4o-mini', name: 'GPT-4o Mini', description: 'Fast and efficient' },
-		{ id: 'gpt-4o', name: 'GPT-4o', description: 'Most capable' },
-		{ id: 'gpt-4-turbo', name: 'GPT-4 Turbo', description: 'Balanced performance' },
-		{ id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo', description: 'Legacy fast model' }
+		{ id: 'claude-haiku-4-5-20251001', name: 'Claude Haiku', description: 'Fast & efficient' },
+		{ id: 'claude-sonnet-4-6', name: 'Claude Sonnet', description: 'Balanced' },
 	];
 });

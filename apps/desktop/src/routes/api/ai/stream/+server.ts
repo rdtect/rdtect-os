@@ -1,16 +1,18 @@
 /**
- * Streaming AI Chat Endpoint
+ * Streaming AI Chat Endpoint — Proxy to Python Backend
  *
- * Uses Server-Sent Events (SSE) for real-time streaming of AI responses.
- * This complements the remote functions for when streaming is needed.
+ * Forwards requests to the Python backend's /api/chat/stream endpoint.
+ * Streams SSE responses back to the client.
  */
 
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 import type { RequestHandler } from './$types';
 
+const PYTHON_API_URL = env.PUBLIC_PYTHON_API_URL || 'http://localhost:8000';
+
 export const POST: RequestHandler = async ({ request }) => {
-	const { messages, model = 'gpt-4o-mini' } = await request.json();
-	const apiKey = env.OPENAI_API_KEY;
+	const body = await request.json();
+	const { messages, use_rag = true, system = null } = body;
 
 	if (!messages || !Array.isArray(messages)) {
 		return new Response(JSON.stringify({ error: 'Messages array required' }), {
@@ -19,99 +21,23 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	}
 
-	// Add system message if not present
-	const fullMessages = messages[0]?.role === 'system'
-		? messages
-		: [
-			{
-				role: 'system',
-				content: 'You are a helpful AI assistant in rdtect OS, a web-based desktop environment. Be concise and helpful.'
-			},
-			...messages
-		];
-
-	if (!apiKey) {
-		return new Response(JSON.stringify({ error: 'OPENAI_API_KEY not configured' }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' }
-		});
-	}
-
 	try {
-		const response = await fetch('https://api.openai.com/v1/chat/completions', {
+		const response = await fetch(`${PYTHON_API_URL}/api/chat/stream`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${apiKey}`
-			},
-			body: JSON.stringify({
-				model,
-				messages: fullMessages,
-				max_tokens: 2048,
-				temperature: 0.7,
-				stream: true
-			})
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ messages, use_rag, system })
 		});
 
 		if (!response.ok) {
 			const error = await response.text();
-			return new Response(JSON.stringify({ error: `OpenAI API error: ${error}` }), {
+			return new Response(JSON.stringify({ error: `Backend API error: ${error}` }), {
 				status: response.status,
 				headers: { 'Content-Type': 'application/json' }
 			});
 		}
 
-		// Create a TransformStream to process the SSE data
-		const encoder = new TextEncoder();
-		const decoder = new TextDecoder();
-
-		const stream = new ReadableStream({
-			async start(controller) {
-				const reader = response.body?.getReader();
-				if (!reader) {
-					controller.close();
-					return;
-				}
-
-				try {
-					while (true) {
-						const { done, value } = await reader.read();
-						if (done) break;
-
-						const chunk = decoder.decode(value, { stream: true });
-						const lines = chunk.split('\n');
-
-						for (const line of lines) {
-							if (line.startsWith('data: ')) {
-								const data = line.slice(6);
-								if (data === '[DONE]') {
-									controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-									continue;
-								}
-
-								try {
-									const parsed = JSON.parse(data);
-									const content = parsed.choices?.[0]?.delta?.content;
-									if (content) {
-										controller.enqueue(
-											encoder.encode(`data: ${JSON.stringify({ content })}\n\n`)
-										);
-									}
-								} catch {
-									// Skip malformed JSON
-								}
-							}
-						}
-					}
-				} catch (error) {
-					controller.error(error);
-				} finally {
-					controller.close();
-				}
-			}
-		});
-
-		return new Response(stream, {
+		// Pass through the SSE stream from the Python backend
+		return new Response(response.body, {
 			headers: {
 				'Content-Type': 'text/event-stream',
 				'Cache-Control': 'no-cache',

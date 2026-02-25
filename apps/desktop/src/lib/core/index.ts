@@ -37,5 +37,8 @@ export * from './keyboard-shortcuts';
 export * from './attachments';
 export * from './widget-registry.svelte';
 
+// === API Status ===
+export { apiStatus } from './api-status.svelte';
+
 // === Core Types ===
 export * from './types';

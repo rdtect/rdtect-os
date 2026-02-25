@@ -1,18 +1,16 @@
 <script lang="ts">
   /**
-   * AI Chat - Native Component using SvelteKit Remote Functions
+   * AI Chat - Native Component connecting to Python backend (Claude API + RAG)
    *
-   * Uses remote functions for server-side AI communication.
-   * Supports both instant responses and streaming.
+   * Streams responses via SSE from the Python backend.
+   * Supports RAG (Retrieval-Augmented Generation) toggle.
    */
-  import { onMount } from "svelte";
-  import {
-    sendMessage,
-    getChatHistory,
-    clearChatHistory,
-    getAvailableModels,
-    type ChatMessage
-  } from "$lib/ai/chat.remote";
+  import { PUBLIC_PYTHON_API_URL } from "$env/static/public";
+
+  interface ChatMessage {
+    role: "user" | "assistant" | "system";
+    content: string;
+  }
 
   interface Props {
     windowId?: string;
@@ -20,34 +18,20 @@
 
   let { windowId = "ai-chat-default" }: Props = $props();
 
+  const MODELS = [
+    { id: "claude-haiku-4-5-20251001", name: "Claude Haiku", description: "Fast & efficient" },
+    { id: "claude-sonnet-4-6", name: "Claude Sonnet", description: "Balanced" },
+  ];
+
   let messages = $state<ChatMessage[]>([]);
   let inputValue = $state("");
   let isLoading = $state(false);
   let error = $state<string | null>(null);
-  let selectedModel = $state("gpt-4o-mini");
-  let models = $state<Array<{ id: string; name: string; description: string }>>([]);
+  let selectedModel = $state("claude-haiku-4-5-20251001");
   let useStreaming = $state(true);
+  let useRag = $state(true);
   let streamingContent = $state("");
   let messagesContainer: HTMLDivElement;
-
-  const sessionId = `${windowId}-${Date.now()}`;
-
-  onMount(async () => {
-    // Load available models
-    try {
-      models = await getAvailableModels();
-    } catch (e) {
-      console.error("Failed to load models:", e);
-      models = [{ id: "gpt-4o-mini", name: "GPT-4o Mini", description: "Default" }];
-    }
-
-    // Load existing history
-    try {
-      messages = await getChatHistory({ sessionId });
-    } catch (e) {
-      console.error("Failed to load history:", e);
-    }
-  });
 
   function scrollToBottom() {
     if (messagesContainer) {
@@ -83,7 +67,7 @@
     messages = [...messages, { role: "assistant", content: "" }];
 
     try {
-      const response = await fetch("/api/ai/stream", {
+      const response = await fetch(`${PUBLIC_PYTHON_API_URL}/api/chat/stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -91,13 +75,14 @@
             role: m.role,
             content: m.content
           })),
-          model: selectedModel
+          use_rag: useRag,
+          system: null
         })
       });
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Stream failed");
+        throw new Error(data.error || data.detail || "Stream failed");
       }
 
       const reader = response.body?.getReader();
@@ -119,8 +104,8 @@
 
             try {
               const parsed = JSON.parse(data);
-              if (parsed.content) {
-                streamingContent += parsed.content;
+              if (parsed.token) {
+                streamingContent += parsed.token;
                 // Update the last message with streaming content
                 messages = messages.map((m, i) =>
                   i === messages.length - 1 ? { ...m, content: streamingContent } : m
@@ -145,12 +130,45 @@
 
   async function sendWithRemoteFunction(text: string) {
     try {
-      const result = await sendMessage({
-        sessionId,
-        message: text,
-        model: selectedModel
+      const response = await fetch(`${PUBLIC_PYTHON_API_URL}/api/chat/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: messages.map((m) => ({ role: m.role, content: m.content })),
+          use_rag: useRag,
+          system: null
+        })
       });
-      messages = [...messages, result.message];
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || data.detail || "Request failed");
+      }
+
+      // Collect entire streamed response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let fullContent = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          for (const line of chunk.split("\n")) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6);
+              if (data === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.token) fullContent += parsed.token;
+              } catch { /* skip */ }
+            }
+          }
+        }
+      }
+
+      messages = [...messages, { role: "assistant", content: fullContent }];
       scrollToBottom();
     } catch (e) {
       error = e instanceof Error ? e.message : "Failed to send message";
@@ -159,14 +177,9 @@
     }
   }
 
-  async function handleClear() {
-    try {
-      await clearChatHistory({ sessionId });
-      messages = [];
-      error = null;
-    } catch (e) {
-      error = "Failed to clear history";
-    }
+  function handleClear() {
+    messages = [];
+    error = null;
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -186,10 +199,14 @@
     </div>
     <div class="header-right">
       <select bind:value={selectedModel} class="model-select" disabled={isLoading}>
-        {#each models as model}
+        {#each MODELS as model}
           <option value={model.id}>{model.name}</option>
         {/each}
       </select>
+      <label class="stream-toggle">
+        <input type="checkbox" bind:checked={useRag} />
+        <span>RAG</span>
+      </label>
       <label class="stream-toggle">
         <input type="checkbox" bind:checked={useStreaming} />
         <span>Stream</span>
@@ -206,7 +223,7 @@
       <div class="empty-state">
         <span class="empty-icon">💬</span>
         <p>Start a conversation with AI</p>
-        <p class="hint">Using SvelteKit remote functions</p>
+        <p class="hint">Powered by Claude + RAG</p>
       </div>
     {:else}
       {#each messages as message, i (i)}
