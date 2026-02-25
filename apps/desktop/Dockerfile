@@ -1,5 +1,7 @@
 # =============================================================================
-# rdtect OS Frontend - Multi-stage Dockerfile with Bun
+# rdtect OS Desktop — Multi-stage Dockerfile with Bun
+# Build context: repository root (not this directory)
+# Usage: docker build -f apps/desktop/Dockerfile .
 # =============================================================================
 
 # Stage 1: Dependencies

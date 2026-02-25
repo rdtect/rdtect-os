@@ -5,6 +5,8 @@ import federation from '@originjs/vite-plugin-federation';
 const isDev = process.env.NODE_ENV !== 'production';
 
 export default defineConfig({
+	// Load .env from repo root (where docker-compose.yml also reads it)
+	envDir: '../../',
 	plugins: [
 		sveltekit(),
 		// Module Federation for loading external apps

@@ -13,6 +13,10 @@ const config = {
 
 	kit: {
 		adapter: adapterNode(),
+		// Load .env from repo root (shared with docker-compose)
+		env: {
+			dir: '../../'
+		},
 		experimental: {
 			remoteFunctions: true
 		}

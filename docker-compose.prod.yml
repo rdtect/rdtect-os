@@ -7,7 +7,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: apps/desktop/Dockerfile
     environment:
       SERVICE_FQDN_FRONTEND_3000: ''
       NODE_ENV: production

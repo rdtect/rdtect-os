@@ -5,7 +5,6 @@
   "type": "module",
   "workspaces": [
     "apps/*",
-    "apps/desktop/plugins/*",
     "packages/*"
   ],
   "scripts": {
@@ -16,16 +15,17 @@
     "dev:excalidraw": "bun run --filter @desktop-os/excalidraw-remote preview",
     "build": "bun run --filter @desktop-os/desktop build",
     "build:excalidraw": "bun run --filter @desktop-os/excalidraw-remote build",
+    "build:all": "bun run build && bun run build:excalidraw",
     "build:docker": "docker compose -f docker-compose.prod.yml build",
     "preview": "bun run --filter @desktop-os/desktop preview",
     "start": "docker compose -f docker-compose.prod.yml up -d",
     "stop": "docker compose down",
+    "stop:all": "docker compose --profile all down",
     "logs": "docker compose logs -f",
     "check": "bun run --filter @desktop-os/desktop check",
     "typecheck": "bun run --filter @desktop-os/desktop typecheck",
     "clean": "bun run --filter @desktop-os/desktop clean",
     "db:admin": "echo 'Open http://localhost:8090/_/ in your browser'",
-    "db:backup": "docker compose exec pocketbase ./pocketbase backup",
-    "prepare": "bun run --filter @desktop-os/desktop check"
+    "db:backup": "docker compose exec pocketbase ./pocketbase backup"
   }
 }

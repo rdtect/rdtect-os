@@ -144,15 +144,15 @@ Desktop OS uses a **Hybrid Domain-Driven + Layered Architecture** with three dis
 ```
 +------------------------------------------------------------------+
 |                        Layer 3: Plugins                           |
-|                     (plugins/*, apps/*)                           |
+|              (apps/desktop/plugins/*)                             |
 |  Excalidraw | Calculator | AI Chat | Terminal | File Browser     |
 +------------------------------------------------------------------+
 |                        Layer 2: Shell/Domain                      |
-|                      (src/lib/shell/)                             |
+|              (apps/desktop/src/lib/shell/)                        |
 |  Window | Desktop | Taskbar | AppLauncher | ContextMenu          |
 +------------------------------------------------------------------+
 |                        Layer 1: Core Services                     |
-|                      (src/lib/core/)                              |
+|              (apps/desktop/src/lib/core/)                         |
 |  VFS | Agents | MessageBus | EventBus | PluginLoader | Theme     |
 +------------------------------------------------------------------+
 |                        Browser APIs                               |
@@ -160,7 +160,7 @@ Desktop OS uses a **Hybrid Domain-Driven + Layered Architecture** with three dis
 +------------------------------------------------------------------+
 ```
 
-### Layer 1: Core Services (`src/lib/core/`)
+### Layer 1: Core Services (`apps/desktop/src/lib/core/`)
 
 Foundational services that provide OS-like capabilities:
 
@@ -180,7 +180,7 @@ Foundational services that provide OS-like capabilities:
 | `widget-registry.svelte.ts` | Desktop widget management |
 | `attachments.ts` | Svelte 5 attachments (drag, resize, etc.) |
 
-### Layer 2: Shell/Domain (`src/lib/shell/`)
+### Layer 2: Shell/Domain (`apps/desktop/src/lib/shell/`)
 
 Desktop environment UI and window management:
 
@@ -201,26 +201,36 @@ Desktop environment UI and window management:
 | `AppInfoModal.svelte` | App information display |
 | `FederationOffline.svelte` | Fallback for offline federation apps |
 
-### Layer 3: Plugins (`plugins/`)
+### Layer 3: Plugins (`apps/desktop/plugins/`)
 
-User-facing applications built on top of core services:
+User-facing applications (24 plugins, auto-discovered via `import.meta.glob`):
 
 ```
-plugins/
+apps/desktop/plugins/
+  about-me/         # About me / portfolio page
   agent-manager/    # AI agent management UI
   ai-chat/          # AI chat interface
+  blog/             # Blog reader
   calculator/       # Calculator (native)
   clock/            # Clock widget
+  code-editor/      # Code editor
+  contact/          # Contact form
   excalidraw/       # Drawing whiteboard (federation)
   file-browser/     # VFS file browser
   flappy-bird/      # Game (potentially WASM)
+  github-globe/     # GitHub contribution globe
   image-filter/     # Image processing
+  knowledge-base/   # Knowledge base viewer
   markdown-editor/  # Markdown editor
   notes/            # Note-taking app
+  plugin-registry/  # Plugin management UI
+  pocketbase-admin/ # PocketBase admin panel
+  project-gallery/  # Project showcase gallery
   prompt-manager/   # AI prompt management
   system-monitor/   # System monitoring
   terminal/         # Terminal emulator
   weather/          # Weather widget
+  welcome/          # Welcome/onboarding screen
 ```
 
 ### Dependency Flow
@@ -252,161 +262,122 @@ Rules:
 ## 3. Directory Structure
 
 ```
-desktop-os/
-├── apps/                          # Monorepo applications
-│   ├── desktop-host/              # Main SvelteKit frontend (unused, merged to root)
-│   └── python-backend/            # FastAPI backend for AI
+desktop-os/                          # Workspace root (orchestrator only)
+├── package.json                     # workspaces: ["apps/*", "packages/*"] — NO deps
+├── bun.lock
+├── bunfig.toml
+├── docker-compose.yml               # Dev services (PocketBase, Python backend)
+├── docker-compose.prod.yml          # Production compose
+├── Makefile                         # Convenience targets (delegates via bun run)
+├── .env / .env.example              # Shared env (Vite reads via envDir: '../../')
+├── CLAUDE.md                        # Claude Code guidance
+├── ARCHITECTURE.md                  # This file
+│
+├── apps/
+│   ├── desktop/                     # @desktop-os/desktop (SvelteKit 2 app)
+│   │   ├── package.json             # All SvelteKit deps + scripts
+│   │   ├── svelte.config.js
+│   │   ├── vite.config.ts           # envDir: '../../' to read root .env
+│   │   ├── tsconfig.json
+│   │   ├── tailwind.config.js
+│   │   ├── postcss.config.js
+│   │   ├── Dockerfile               # Build context = repo root
+│   │   │
+│   │   ├── src/                     # Main application source
+│   │   │   ├── app.html
+│   │   │   ├── app.d.ts             # SvelteKit type definitions
+│   │   │   ├── lib/                 # Library code ($lib alias)
+│   │   │   │   ├── index.ts         # Main exports
+│   │   │   │   │
+│   │   │   │   ├── core/            # Layer 1: Core Services
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── types.ts
+│   │   │   │   │   ├── vfs/         # Virtual File System
+│   │   │   │   │   ├── agents/      # Multi-Agent System
+│   │   │   │   │   ├── message-bus/ # Inter-Plugin Communication
+│   │   │   │   │   ├── plugin-loader/    # Plugin Loading System
+│   │   │   │   │   ├── plugin-discovery/ # Plugin Scanning
+│   │   │   │   │   ├── config/      # Configuration Management
+│   │   │   │   │   ├── file-associations/
+│   │   │   │   │   ├── theme/       # Theme System
+│   │   │   │   │   ├── persistence/ # State Persistence
+│   │   │   │   │   ├── event-bus.ts
+│   │   │   │   │   ├── keyboard-shortcuts.ts
+│   │   │   │   │   ├── widget-registry.svelte.ts
+│   │   │   │   │   ├── attachments.ts
+│   │   │   │   │   └── cleanup.ts
+│   │   │   │   │
+│   │   │   │   ├── shell/           # Layer 2: Shell/Domain
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── types.ts
+│   │   │   │   │   ├── registry.svelte.ts  # WindowManager singleton
+│   │   │   │   │   ├── window.svelte.ts    # Window class
+│   │   │   │   │   ├── Desktop.svelte
+│   │   │   │   │   ├── Window.svelte
+│   │   │   │   │   ├── Taskbar.svelte
+│   │   │   │   │   ├── AppLauncher.svelte
+│   │   │   │   │   ├── StartMenu.svelte
+│   │   │   │   │   ├── ContextMenu.svelte
+│   │   │   │   │   └── ...
+│   │   │   │   │
+│   │   │   │   ├── ai/              # AI Integration
+│   │   │   │   │   └── chat.remote.ts
+│   │   │   │   │
+│   │   │   │   ├── server/          # Server-side utilities
+│   │   │   │   │   ├── index.ts
+│   │   │   │   │   ├── db.ts
+│   │   │   │   │   ├── notes.ts
+│   │   │   │   │   └── markdown.ts
+│   │   │   │   │
+│   │   │   │   ├── types/           # Additional type definitions
+│   │   │   │   │   └── federation.d.ts
+│   │   │   │   │
+│   │   │   │   └── assets/          # Static assets
+│   │   │   │
+│   │   │   └── routes/              # SvelteKit routes
+│   │   │       ├── +layout.svelte
+│   │   │       ├── +page.svelte     # Main desktop entry (plugin discovery here)
+│   │   │       └── api/
+│   │   │           ├── notes/
+│   │   │           │   ├── +server.ts
+│   │   │           │   └── [id]/+server.ts
+│   │   │           └── ai/
+│   │   │               └── stream/+server.ts
+│   │   │
+│   │   ├── plugins/                 # Layer 3: 24 plugins (NOT workspace packages)
+│   │   │   ├── calculator/
+│   │   │   │   ├── manifest.ts      # Plugin manifest (default export)
+│   │   │   │   └── src/
+│   │   │   │       └── Calculator.svelte
+│   │   │   ├── excalidraw/
+│   │   │   │   ├── manifest.ts
+│   │   │   │   └── src/
+│   │   │   │       └── ExcalidrawApp.svelte
+│   │   │   └── ...                  # 22 more plugins
+│   │   │
+│   │   └── static/                  # Static files
+│   │
+│   ├── excalidraw-remote/           # @desktop-os/excalidraw-remote (React + Federation)
+│   │   ├── package.json
+│   │   ├── vite.config.ts
+│   │   └── src/
+│   │
+│   └── python-backend/              # FastAPI backend (Docker only, no package.json)
 │       └── src/
 │           └── main.py
 │
-├── packages/                      # Shared packages
-│   └── shared-types/              # TypeScript type definitions
-│       └── src/
-│           ├── plugin.ts          # PluginManifest, LoadedPlugin
-│           ├── message.ts         # Message types
-│           └── window.ts          # WindowState types
-│
-├── plugins/                       # Plugin applications
-│   ├── calculator/
-│   │   ├── manifest.ts            # Plugin manifest
-│   │   └── src/
-│   │       └── Calculator.svelte  # Main component
-│   ├── excalidraw/
-│   │   ├── manifest.ts
-│   │   └── src/
-│   │       └── ExcalidrawApp.svelte
-│   └── ...                        # Other plugins
-│
-├── src/                           # Main application source
-│   ├── app.d.ts                   # SvelteKit type definitions
-│   ├── lib/                       # Library code
-│   │   ├── index.ts               # Main exports
-│   │   │
-│   │   ├── core/                  # Layer 1: Core Services
-│   │   │   ├── index.ts           # Core exports
-│   │   │   ├── types.ts           # Core type definitions
-│   │   │   │
-│   │   │   ├── vfs/               # Virtual File System
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── types.ts       # FileEntry, FileStat, FSEvent
-│   │   │   │   ├── vfs.svelte.ts  # VFS implementation (IndexedDB)
-│   │   │   │   ├── proc.ts        # /proc filesystem
-│   │   │   │   ├── dev.ts         # /dev filesystem
-│   │   │   │   └── init.ts        # VFS initialization
-│   │   │   │
-│   │   │   ├── agents/            # Multi-Agent System
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── types.ts       # Agent, AgentTool, AgentCapability
-│   │   │   │   ├── runtime.svelte.ts  # AgentRuntime singleton
-│   │   │   │   └── tools.ts       # Built-in agent tools
-│   │   │   │
-│   │   │   ├── message-bus/       # Inter-Plugin Communication
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── types.ts       # Message, Subscription
-│   │   │   │   ├── bus.ts         # MessageBus implementation
-│   │   │   │   └── adapters/
-│   │   │   │       └── iframe-adapter.ts  # postMessage bridge
-│   │   │   │
-│   │   │   ├── plugin-loader/     # Plugin Loading System
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── loader.ts      # Main PluginLoader
-│   │   │   │   └── loaders/       # Type-specific loaders
-│   │   │   │       ├── native-loader.ts
-│   │   │   │       ├── iframe-loader.ts
-│   │   │   │       ├── webcomponent-loader.ts
-│   │   │   │       ├── federation-loader.ts
-│   │   │   │       └── wasm-loader.ts
-│   │   │   │
-│   │   │   ├── plugin-discovery/  # Plugin Scanning
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── scanner.ts     # Vite glob-based discovery
-│   │   │   │   └── validator.ts   # Manifest validation
-│   │   │   │
-│   │   │   ├── config/            # Configuration Management
-│   │   │   │   ├── index.ts
-│   │   │   │   └── config.svelte.ts  # ConfigManager (XDG-style)
-│   │   │   │
-│   │   │   ├── file-associations/ # File Type Handling
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── associations.svelte.ts
-│   │   │   │   └── file-handler.svelte.ts
-│   │   │   │
-│   │   │   ├── theme/             # Theme System
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── themes.ts      # Theme definitions
-│   │   │   │   ├── theme.svelte.ts   # ThemeStore
-│   │   │   │   └── ThemeProvider.svelte
-│   │   │   │
-│   │   │   ├── persistence/       # State Persistence
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── storage.ts     # localStorage wrapper
-│   │   │   │   ├── window-state.ts
-│   │   │   │   └── hooks.ts
-│   │   │   │
-│   │   │   ├── event-bus.ts       # Typed event system
-│   │   │   ├── keyboard-shortcuts.ts
-│   │   │   ├── widget-registry.svelte.ts
-│   │   │   ├── attachments.ts     # Svelte 5 attachments
-│   │   │   └── cleanup.ts         # Resource cleanup
-│   │   │
-│   │   ├── shell/                 # Layer 2: Shell/Domain
-│   │   │   ├── index.ts           # Shell exports
-│   │   │   ├── types.ts           # AppDefinition, WindowState, SnapZone
-│   │   │   ├── registry.svelte.ts # WindowManager singleton
-│   │   │   ├── window.svelte.ts   # Window class
-│   │   │   ├── Desktop.svelte
-│   │   │   ├── Window.svelte
-│   │   │   ├── Taskbar.svelte
-│   │   │   ├── DesktopIcons.svelte
-│   │   │   ├── DesktopWidgets.svelte
-│   │   │   ├── AppLauncher.svelte
-│   │   │   ├── StartMenu.svelte
-│   │   │   ├── ContextMenu.svelte
-│   │   │   ├── WindowSwitcher.svelte
-│   │   │   ├── AppInfoModal.svelte
-│   │   │   └── FederationOffline.svelte
-│   │   │
-│   │   ├── ai/                    # AI Integration
-│   │   │   └── chat.remote.ts     # Remote AI chat client
-│   │   │
-│   │   ├── server/                # Server-side utilities
-│   │   │   ├── index.ts
-│   │   │   ├── db.ts
-│   │   │   ├── notes.ts
-│   │   │   └── markdown.ts
-│   │   │
-│   │   ├── types/                 # Additional type definitions
-│   │   │   └── federation.d.ts
-│   │   │
-│   │   └── assets/                # Static assets
-│   │
-│   └── routes/                    # SvelteKit routes
-│       ├── +layout.svelte
-│       ├── +page.svelte
-│       └── api/
-│           ├── notes/
-│           │   ├── +server.ts
-│           │   └── [id]/+server.ts
-│           └── ai/
-│               └── stream/+server.ts
-│
-├── static/                        # Static files
-├── data/                          # Data files
-├── scripts/                       # Build/dev scripts
-│
-├── package.json                   # Bun workspace root
-├── bun.lock
-├── bunfig.toml
-├── svelte.config.js
-├── vite.config.ts
-├── tsconfig.json
-├── tailwind.config.js
-├── postcss.config.js
-├── docker-compose.yml
-├── .env.example
-├── CLAUDE.md                      # Claude Code guidance
-└── ARCHITECTURE.md                # This file
+└── packages/
+    └── plugin-sdk/                  # @desktop-os/plugin-sdk (WIP/future)
+        ├── package.json
+        └── src/
 ```
+
+**Key design decisions:**
+- Root `package.json` has NO dependencies — only workspace globs and orchestration scripts
+- Plugins live inside `apps/desktop/` because they use `$lib` aliases and `import.meta.glob`
+- Plugins are NOT workspace packages (no `package.json`) — they're Vite-glob-discovered
+- Each app has its own Dockerfile (build context is always repo root for JS apps)
+- `.env` lives at repo root (shared by Docker Compose + Vite via `envDir: '../../'`)
 
 ---
 
@@ -603,7 +574,7 @@ Desktop OS supports **5 plugin types** to accommodate different isolation and in
 Each plugin must have a `manifest.ts` file:
 
 ```typescript
-// plugins/my-plugin/manifest.ts
+// apps/desktop/plugins/my-plugin/manifest.ts
 const manifest = {
   // Required fields
   id: 'my-plugin',           // Unique identifier
@@ -764,10 +735,10 @@ WASM modules with Svelte wrapper:
 Plugins are discovered at build time using Vite's glob imports:
 
 ```typescript
-// In initialization code
+// In apps/desktop/src/routes/+page.svelte (initialization)
 import { pluginScanner, discoverPlugins } from '$lib/core/plugin-discovery';
 
-// Initialize with glob imports
+// Vite resolves this relative to apps/desktop/ (the SvelteKit app root)
 const manifests = import.meta.glob('/plugins/*/manifest.ts');
 const { plugins } = await discoverPlugins(manifests);
 

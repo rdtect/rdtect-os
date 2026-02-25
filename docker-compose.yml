@@ -63,7 +63,7 @@ services:
       - NODE_ENV=development
       - PUBLIC_POCKETBASE_URL=http://pocketbase:8090
       - PUBLIC_PYTHON_API_URL=http://python-backend:8000
-    command: sh -c "bun install && bun run dev --host 0.0.0.0 --port 5173"
+    command: sh -c "bun install && bun run --filter @desktop-os/desktop dev -- --host 0.0.0.0 --port 5173"
     depends_on:
       pocketbase:
         condition: service_healthy
