@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🧠',
   description: 'Obsidian-like knowledge management with backlinks and graph view',
+  category: 'tools',
   access: 'protected',
   entry: './src/KnowledgeBase.svelte',
   defaultWidth: 950,

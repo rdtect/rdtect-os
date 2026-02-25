@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🌤️',
   description: 'A beautiful weather widget with current conditions and 5-day forecast',
+  category: 'utilities',
   access: 'free',
   entry: './src/Weather.svelte',
   defaultWidth: 350,

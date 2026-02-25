@@ -95,6 +95,7 @@
         title: manifest.name,
         icon: manifest.icon,
         pluginType: manifest.type,
+        category: manifest.category,
         type: getAppType(plugin),
         component: getComponent(plugin) as Component,
         url: getUrl(plugin),

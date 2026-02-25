@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📰',
   description: 'Technical blog with articles and thoughts',
+  category: 'portfolio',
   access: 'free',
   entry: './src/Blog.svelte',
   defaultWidth: 900,

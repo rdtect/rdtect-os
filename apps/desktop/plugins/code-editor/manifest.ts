@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '💻',
   description: 'A code editor with Python execution support via Pyodide (WebAssembly)',
+  category: 'tools',
   access: 'protected',
   entry: './src/CodeEditor.svelte',
   defaultWidth: 900,

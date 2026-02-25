@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🏪',
   description: 'Browse and launch all available apps',
+  category: 'utilities',
   access: 'free',
   entry: './src/PluginRegistry.svelte',
   defaultWidth: 780,

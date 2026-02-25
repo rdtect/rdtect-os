@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '👤',
   description: 'Personal portfolio and about me showcase',
+  category: 'portfolio',
   access: 'free',
   entry: './src/AboutMe.svelte',
   defaultWidth: 800,

@@ -18,6 +18,9 @@ export interface AppDefinition {
   pluginType: PluginType;
   plugin: LoadedPlugin;
 
+  // Category for Start Menu grouping
+  category?: 'portfolio' | 'ai' | 'tools' | 'utilities' | 'creative' | 'system';
+
   // Window defaults
   defaultWidth?: number;
   defaultHeight?: number;

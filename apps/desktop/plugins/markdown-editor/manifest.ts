@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📝',
   description: 'A full-featured Markdown editor with live preview, syntax highlighting, and keyboard shortcuts',
+  category: 'tools',
   access: 'protected',
   entry: './src/MarkdownEditor.svelte',
   defaultWidth: 900,

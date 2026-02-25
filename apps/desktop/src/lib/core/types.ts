@@ -51,6 +51,9 @@ export interface PluginManifest {
   widgetWidth?: number;   // Default widget width
   widgetHeight?: number;  // Default widget height
 
+  // Application category for grouping in Start Menu
+  category?: 'portfolio' | 'ai' | 'tools' | 'utilities' | 'creative' | 'system';
+
   // Permissions (future)
   permissions?: string[];
 

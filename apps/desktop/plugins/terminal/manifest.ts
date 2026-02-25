@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '💻',
   description: 'A terminal emulator with simulated commands and fake filesystem',
+  category: 'tools',
   access: 'protected',
   entry: './src/Terminal.svelte',
   defaultWidth: 600,

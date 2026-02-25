@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🌍',
   description: 'Interactive 3D globe visualization',
+  category: 'portfolio',
   access: 'free',
   entry: './src/GithubGlobe.svelte',
   defaultWidth: 600,

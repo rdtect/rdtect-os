@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📒',
   description: 'Simple notes app using Web Components',
+  category: 'tools',
   access: 'protected',
   entry: './src/Notes.svelte',
   defaultWidth: 400,

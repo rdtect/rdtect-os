@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📊',
   description: 'Comprehensive system monitor with FPS tracking, memory usage, network activity, app usage statistics, and plugin analytics in a tabbed interface',
+  category: 'utilities',
   access: 'protected',
   entry: './src/SystemMonitor.svelte',
   defaultWidth: 480,

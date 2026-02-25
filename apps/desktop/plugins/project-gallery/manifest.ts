@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🖼️',
   description: 'A stunning portfolio gallery showcasing projects with live demos',
+  category: 'portfolio',
   access: 'free',
   entry: './src/ProjectGallery.svelte',
   defaultWidth: 900,

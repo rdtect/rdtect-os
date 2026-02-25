@@ -476,7 +476,8 @@
 <style>
   /* Taskbar Container Animation */
   .taskbar-container {
-    animation: taskbar-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: taskbar-appear var(--transition-slow) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    font-family: var(--desktop-font-sans);
   }
 
   @keyframes taskbar-appear {
@@ -496,13 +497,11 @@
       rgba(30, 41, 59, 0.85) 0%,
       rgba(15, 23, 42, 0.9) 100%
     );
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.4),
-      0 2px 8px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--glass-shadow-lg);
   }
 
   /* Divider */
@@ -521,6 +520,7 @@
   /* Start Button */
   .start-button {
     background: transparent;
+    transition: background-color var(--transition-fast) var(--transition-easing);
   }
 
   .start-button:hover {
@@ -535,6 +535,7 @@
   /* Taskbar Icon */
   .taskbar-icon {
     background: transparent;
+    transition: background-color var(--transition-fast) var(--transition-easing), transform var(--transition-fast) var(--transition-easing);
   }
 
   .taskbar-icon:hover {
@@ -564,7 +565,7 @@
 
   /* Running Indicator */
   .running-indicator {
-    transition: width 0.2s ease, background-color 0.2s ease;
+    transition: width var(--transition-normal) ease, background-color var(--transition-normal) ease;
   }
 
   .running-indicator.multi-window {
@@ -575,7 +576,7 @@
 
   /* System Tray Icons */
   .tray-icon {
-    transition: background-color 0.15s ease;
+    transition: background-color var(--transition-fast) var(--transition-easing);
   }
 
   .tray-icon:hover {
@@ -584,7 +585,8 @@
 
   /* Clock Area */
   .clock-area {
-    transition: background-color 0.15s ease;
+    transition: background-color var(--transition-fast) var(--transition-easing);
+    border-radius: var(--radius-md);
   }
 
   .clock-area:hover {
@@ -593,7 +595,7 @@
 
   /* Notification Button */
   .notification-btn {
-    transition: background-color 0.15s ease;
+    transition: background-color var(--transition-fast) var(--transition-easing);
   }
 
   .notification-btn:hover {
@@ -602,11 +604,11 @@
 
   /* Preview Popup */
   .preview-popup {
-    animation: preview-appear 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: preview-appear var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .tooltip-popup {
-    animation: tooltip-appear 0.15s ease forwards;
+    animation: tooltip-appear var(--transition-fast) ease forwards;
   }
 
   @keyframes preview-appear {
@@ -638,6 +640,7 @@
 
   .preview-container {
     min-width: 180px;
+    border-radius: var(--radius-lg);
   }
 
   /* Mobile Dock Styles */
@@ -646,9 +649,10 @@
       rgba(30, 41, 59, 0.9) 0%,
       rgba(15, 23, 42, 0.95) 100%
     );
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-family: var(--desktop-font-sans);
   }
 
   .mobile-dock-icon:active {
@@ -666,6 +670,15 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .taskbar-container,
+    .preview-popup,
+    .tooltip-popup {
+      animation: none !important;
+    }
   }
 
   /* Custom scrollbar for preview */

@@ -191,15 +191,16 @@
       rgba(15, 23, 42, 0.92) 100%
     );
     border: 1px solid rgba(148, 163, 184, 0.15);
-    border-radius: 12px;
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    font-family: var(--desktop-font-sans);
     box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.45),
       0 4px 12px rgba(0, 0, 0, 0.25),
       inset 0 1px 1px rgba(255, 255, 255, 0.06),
       inset 0 -1px 1px rgba(0, 0, 0, 0.08);
-    animation: menu-appear 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: menu-appear var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: top left;
   }
 
@@ -244,10 +245,11 @@
   /* Menu Item Base Styles */
   .menu-item {
     color: rgb(226, 232, 240);
+    font-size: var(--text-sm);
     transition:
-      background-color 0.15s ease,
-      color 0.15s ease,
-      box-shadow 0.15s ease;
+      background-color var(--transition-fast) ease,
+      color var(--transition-fast) ease,
+      box-shadow var(--transition-fast) ease;
     position: relative;
   }
 
@@ -284,7 +286,7 @@
   /* Menu Icon */
   .menu-icon {
     font-size: 14px;
-    transition: transform 0.15s ease;
+    transition: transform var(--transition-fast) ease;
   }
 
   .menu-item:hover:not(.menu-item-disabled) .menu-icon {
@@ -343,7 +345,7 @@
 
   /* Submenu container animation */
   .submenu {
-    animation: submenu-appear 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: submenu-appear var(--transition-fast) cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   @keyframes submenu-appear {
@@ -368,7 +370,7 @@
   .menu-arrow {
     display: flex;
     align-items: center;
-    transition: color 0.15s ease, transform 0.15s ease;
+    transition: color var(--transition-fast) ease, transform var(--transition-fast) ease;
   }
 
   .menu-item:hover:not(.menu-item-disabled) .menu-arrow {
@@ -377,6 +379,14 @@
 
   /* Shortcut styling */
   .menu-shortcut {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: var(--desktop-font-mono);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .context-menu,
+    .submenu {
+      animation: none !important;
+    }
   }
 </style>

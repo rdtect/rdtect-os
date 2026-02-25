@@ -326,10 +326,10 @@
   <div class="absolute inset-0 flex flex-col items-center pt-12 px-4 overflow-y-auto" onclick={handleDesktopClick}>
     <!-- Status bar area (time) -->
     <div class="text-center mb-6">
-      <div class="text-white/90 text-4xl font-light tabular-nums">
+      <div class="text-white/90 font-light tabular-nums" style="font-size: var(--text-4xl); font-family: var(--desktop-font-sans);">
         {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
       </div>
-      <div class="text-white/60 text-sm mt-1">
+      <div class="text-white/60 mt-1" style="font-size: var(--text-sm); font-family: var(--desktop-font-sans);">
         {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
       </div>
     </div>

@@ -266,7 +266,7 @@
   bind:this={windowElement}
   class="absolute flex flex-col overflow-hidden transition-shadow duration-200 ease-out window-chrome
     {win.isFocused ? 'window-focused' : 'window-unfocused'}
-    {win.isMaximized || mobile.isMobile ? 'rounded-none' : 'rounded-xl'}
+    {win.isMaximized || mobile.isMobile ? 'rounded-none' : ''}
     {win.isResizing ? 'select-none [&_iframe]:pointer-events-none' : ''}
     {animationClass}
     {shadowClass}"
@@ -275,6 +275,7 @@
   style:width={mobile.isMobile ? '100vw' : `${win.width}px`}
   style:height={mobile.isMobile ? '100vh' : `${win.height}px`}
   style:z-index={win.zIndex}
+  style:border-radius={win.isMaximized || mobile.isMobile ? '0' : 'var(--radius-lg)'}
   onclick={onWindowClick}
 >
   <!-- Title Bar with Glass Effect - Using Svelte 5 Attachments -->
@@ -438,12 +439,13 @@
       rgba(15, 23, 42, 0.98) 100%
     );
     border: 1px solid rgba(148, 163, 184, 0.12);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    font-family: var(--desktop-font-sans);
     transition:
-      border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-      transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-color var(--transition-normal) var(--transition-easing),
+      transform var(--transition-normal) var(--transition-easing),
+      opacity var(--transition-normal) var(--transition-easing);
     will-change: transform, box-shadow;
   }
 
@@ -501,7 +503,8 @@
     );
     backdrop-filter: blur(12px) saturate(150%);
     -webkit-backdrop-filter: blur(12px) saturate(150%);
-    transition: background 0.2s ease-out;
+    font-family: var(--desktop-font-sans);
+    transition: background var(--transition-normal) ease-out;
     position: relative;
   }
 
@@ -551,7 +554,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-fast) var(--transition-easing);
     position: relative;
     transform-origin: center;
   }
@@ -575,7 +578,7 @@
     stroke: transparent;
     stroke-width: 1.5;
     fill: none;
-    transition: stroke 0.15s ease, transform 0.15s ease;
+    transition: stroke var(--transition-fast) ease, transform var(--transition-fast) ease;
   }
 
   .traffic-lights:hover .traffic-light-icon {
@@ -671,7 +674,7 @@
   /* Visible Corner Resize Handles - Enhanced */
   .resize-handle-corner {
     opacity: 0;
-    transition: opacity 0.25s ease-out, transform 0.2s ease-out;
+    transition: opacity var(--transition-normal) ease-out, transform var(--transition-normal) ease-out;
   }
 
   .window-chrome:hover .resize-handle-corner {
@@ -691,7 +694,7 @@
     height: 10px;
     background: linear-gradient(135deg, transparent 50%, rgba(148, 163, 184, 0.5) 50%);
     border-radius: 0 0 4px 0;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) ease;
   }
 
   .resize-handle-se:hover::after {
@@ -707,7 +710,7 @@
     height: 10px;
     background: linear-gradient(225deg, transparent 50%, rgba(148, 163, 184, 0.5) 50%);
     border-radius: 0 0 0 4px;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) ease;
   }
 
   .resize-handle-sw:hover::after {
@@ -723,7 +726,7 @@
     height: 10px;
     background: linear-gradient(45deg, transparent 50%, rgba(148, 163, 184, 0.5) 50%);
     border-radius: 0 4px 0 0;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) ease;
   }
 
   .resize-handle-ne:hover::after {
@@ -739,7 +742,7 @@
     height: 10px;
     background: linear-gradient(315deg, transparent 50%, rgba(148, 163, 184, 0.5) 50%);
     border-radius: 4px 0 0 0;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) ease;
   }
 
   .resize-handle-nw:hover::after {
@@ -816,5 +819,16 @@
 
   .animate-window-restore {
     animation: window-restore 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-window-open,
+    .animate-window-close,
+    .animate-window-minimize,
+    .animate-window-maximize,
+    .animate-window-restore {
+      animation: none !important;
+    }
   }
 </style>

@@ -7,6 +7,7 @@ const manifest: PluginManifest & { autoOpen: boolean; storageKey: string } = {
   type: 'native',
   icon: '👋',
   description: 'Welcome wizard for first-time visitors to rdtect OS',
+  category: 'system',
   access: 'free',
   entry: './src/Welcome.svelte',
   defaultWidth: 700,

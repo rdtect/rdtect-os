@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🤖',
   description: 'AI-powered chat assistant using SvelteKit remote functions',
+  category: 'ai',
   access: 'protected',
   entry: './src/AIChat.svelte',
   defaultWidth: 500,

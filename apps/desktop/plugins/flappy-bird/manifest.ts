@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🐦',
   description: 'Classic Flappy Bird game using Canvas',
+  category: 'creative',
   access: 'free',
   entry: './src/FlappyBird.svelte',
   defaultWidth: 400,

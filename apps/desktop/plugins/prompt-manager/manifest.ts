@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📝',
   description: 'Manage and organize AI prompts',
+  category: 'ai',
   access: 'protected',
   entry: './src/PromptManager.svelte',
   defaultWidth: 600,

@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🕐',
   description: 'A beautiful native clock widget with alarm notification support',
+  category: 'utilities',
   access: 'free',
   entry: './src/ClockApp.svelte',
   // Widget is intentionally NOT auto-registered as a floating desktop widget.

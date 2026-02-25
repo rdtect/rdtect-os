@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '✉️',
   description: 'Contact form to reach out to rdtect',
+  category: 'portfolio',
   access: 'free',
   entry: './src/Contact.svelte',
   defaultWidth: 480,

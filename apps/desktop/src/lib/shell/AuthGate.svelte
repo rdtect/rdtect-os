@@ -58,9 +58,10 @@
   aria-modal="true"
   aria-label="Sign in to access this app"
 >
-  <div class="w-full max-w-sm mx-4 rounded-2xl border border-white/10 bg-slate-900/90 backdrop-blur-xl p-8 shadow-2xl animate-in">
+  <div class="w-full max-w-sm mx-4 border border-white/10 bg-slate-900/90 backdrop-blur-xl p-8 shadow-2xl animate-in"
+       style="border-radius: var(--radius-xl); font-family: var(--desktop-font-sans);">
     <div class="text-center mb-6">
-      <div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3">
+      <div class="w-12 h-12 bg-indigo-500/20 flex items-center justify-center mx-auto mb-3" style="border-radius: var(--radius-lg)">
         <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
         </svg>
@@ -131,10 +132,17 @@
 
 <style>
   .animate-in {
-    animation: authGateIn 0.2s ease-out;
+    animation: authGateIn var(--transition-normal) ease-out;
   }
   @keyframes authGateIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in {
+      animation: none !important;
+    }
   }
 </style>

@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🖼️',
   description: 'Apply image filters - grayscale, brightness, contrast, blur, sharpen, and more',
+  category: 'creative',
   access: 'free',
   entry: './src/ImageFilter.svelte',
   defaultWidth: 600,

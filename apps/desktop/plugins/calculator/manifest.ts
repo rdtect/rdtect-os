@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🧮',
   description: 'A full-featured calculator with memory functions and keyboard support',
+  category: 'utilities',
   access: 'free',
   entry: './src/Calculator.svelte',
   defaultWidth: 320,

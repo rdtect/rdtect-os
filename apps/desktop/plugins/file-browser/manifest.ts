@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '📁',
   description: 'Full-featured file manager with grid/list views, breadcrumb navigation, and file operations',
+  category: 'tools',
   access: 'protected',
   entry: './src/FileBrowser.svelte',
   defaultWidth: 900,

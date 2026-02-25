@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🤖',
   description: 'Monitor and manage AI agents - like a Task Manager for AI',
+  category: 'ai',
   access: 'protected',
   entry: './src/AgentManager.svelte',
   defaultWidth: 720,

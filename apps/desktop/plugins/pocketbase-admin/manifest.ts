@@ -7,6 +7,7 @@ const manifest: PluginManifest = {
   type: 'native',
   icon: '🗄️',
   description: 'PocketBase Admin Dashboard',
+  category: 'system',
   access: 'protected',
   entry: './src/PocketBaseAdmin.svelte',
   defaultWidth: 1200,

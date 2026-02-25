@@ -276,7 +276,8 @@
   <!-- Modal Container -->
   <div
     bind:this={modalEl}
-    class="relative w-full max-w-xl bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-scale-in"
+    class="relative w-full max-w-xl bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-scale-in"
+    style="border-radius: var(--radius-xl); font-family: var(--desktop-font-sans);"
   >
     <!-- Glass highlight effect -->
     <div class="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
@@ -533,10 +534,18 @@
   }
 
   .animate-fade-in {
-    animation: fade-in 0.2s ease-out forwards;
+    animation: fade-in var(--transition-normal) ease-out forwards;
   }
 
   .animate-scale-in {
-    animation: scale-in 0.25s ease-out forwards;
+    animation: scale-in var(--transition-normal) ease-out forwards;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-scale-in {
+      animation: none !important;
+    }
   }
 </style>
