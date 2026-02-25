@@ -391,7 +391,7 @@
     height: 100%;
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
     color: #e2e8f0;
-    font-family: system-ui, -apple-system, sans-serif;
+    font-family: var(--desktop-font-sans);
   }
 
   /* Tab Bar */
@@ -410,12 +410,13 @@
     align-items: center;
     gap: 4px;
     padding: 8px;
+    min-height: 44px;
     background: transparent;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #64748b;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .tab-btn:hover {
@@ -433,7 +434,7 @@
   }
 
   .tab-label {
-    font-size: 10px;
+    font-size: var(--text-xs);
     font-weight: 500;
   }
 
@@ -454,13 +455,15 @@
 
   .face-btn {
     padding: 8px 16px;
-    background: rgba(30, 41, 59, 0.6);
+    min-height: 44px;
+    min-width: 44px;
+    background: var(--glass-bg-default);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #94a3b8;
     cursor: pointer;
     font-size: 18px;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .face-btn:hover {
@@ -490,7 +493,7 @@
 
   .time-main {
     display: block;
-    font-size: 64px;
+    font-size: var(--text-4xl);
     font-weight: 300;
     background: linear-gradient(135deg, #6366f1, #a855f7);
     -webkit-background-clip: text;
@@ -503,7 +506,7 @@
     display: block;
     margin-top: 8px;
     color: #64748b;
-    font-size: 14px;
+    font-size: var(--text-base);
   }
 
   /* Analog Clock */
@@ -663,8 +666,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px 16px;
-    background: rgba(30, 41, 59, 0.6);
-    border-radius: 12px;
+    background: var(--glass-bg-default);
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(99, 102, 241, 0.1);
   }
 
@@ -742,8 +745,8 @@
     flex-direction: column;
     gap: 12px;
     padding: 16px;
-    background: rgba(30, 41, 59, 0.4);
-    border-radius: 12px;
+    background: var(--glass-bg-subtle);
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(99, 102, 241, 0.1);
   }
 
@@ -751,9 +754,9 @@
     padding: 10px 14px;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #e2e8f0;
-    font-size: 14px;
+    font-size: var(--text-base);
   }
 
   .time-input:focus, .label-input:focus {
@@ -768,16 +771,17 @@
   }
 
   .day-btn {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
     border-radius: 50%;
     background: rgba(71, 85, 105, 0.4);
     border: 1px solid transparent;
     color: #94a3b8;
-    font-size: 12px;
+    font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .day-btn:hover {
@@ -1071,16 +1075,17 @@
 
   .world-clock-card {
     padding: 16px;
-    background: rgba(30, 41, 59, 0.6);
-    border-radius: 12px;
+    background: var(--glass-bg-default);
+    border-radius: var(--radius-lg);
     text-align: center;
     border: 1px solid rgba(99, 102, 241, 0.1);
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .world-clock-card:hover {
     border-color: rgba(99, 102, 241, 0.3);
-    transform: translateY(-2px);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .wc-city {

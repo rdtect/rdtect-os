@@ -730,8 +730,7 @@
     flex-direction: column;
     height: 100%;
     background: #0f172a;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      sans-serif;
+    font-family: var(--desktop-font-sans);
     overflow: hidden;
   }
 
@@ -793,11 +792,11 @@
     background: #6366f1;
     color: white;
     padding: 6px 14px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 12px;
+    font-size: var(--text-sm);
     font-weight: 500;
-    transition: background 0.2s;
+    transition: background var(--transition-normal) var(--transition-easing);
   }
 
   .upload-btn:hover {
@@ -813,7 +812,7 @@
     position: relative;
     background: #1e293b;
     margin: 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: 2px dashed #334155;
     min-height: 200px;
     max-height: 340px;
@@ -839,7 +838,7 @@
 
   .drop-icon {
     font-size: 48px;
-    color: #475569;
+    color: #64748b;
     margin-bottom: 8px;
   }
 
@@ -849,7 +848,7 @@
 
   .hint {
     font-size: 11px;
-    color: #475569;
+    color: #64748b;
   }
 
   .processing-overlay {
@@ -893,7 +892,7 @@
     margin-bottom: 16px;
     padding: 12px;
     background: #1e293b;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
   }
 
   .filter-buttons {
@@ -907,10 +906,10 @@
     border: none;
     color: #94a3b8;
     padding: 6px 12px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 11px;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .filter-btn:hover:not(:disabled) {
@@ -999,10 +998,10 @@
     border: none;
     color: #94a3b8;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: 10px;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     flex-shrink: 0;
   }
 
@@ -1026,7 +1025,7 @@
     gap: 8px;
     padding: 12px;
     background: #1e293b;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
   }
 
   .reset-btn,
@@ -1034,11 +1033,11 @@
     flex: 1;
     padding: 10px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
     font-weight: 600;
     font-size: 12px;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .reset-btn {

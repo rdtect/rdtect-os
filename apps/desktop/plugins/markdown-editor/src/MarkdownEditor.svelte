@@ -555,7 +555,7 @@ Enjoy writing!
     height: 100%;
     background: #0f172a;
     color: #f1f5f9;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--desktop-font-sans);
   }
 
   /* Toolbar */
@@ -647,8 +647,8 @@ Enjoy writing!
     background: #0f172a;
     border: none;
     color: #f1f5f9;
-    font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
-    font-size: 14px;
+    font-family: var(--desktop-font-mono);
+    font-size: var(--text-base);
     line-height: 1.6;
     resize: none;
     outline: none;
@@ -656,7 +656,7 @@ Enjoy writing!
   }
 
   .editor-textarea::placeholder {
-    color: #475569;
+    color: #64748b;
   }
 
   .preview-pane {
@@ -876,23 +876,23 @@ Enjoy writing!
   /* Scrollbar Styling */
   .preview-pane::-webkit-scrollbar,
   .editor-textarea::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: var(--scrollbar-width);
+    height: var(--scrollbar-width);
   }
 
   .preview-pane::-webkit-scrollbar-track,
   .editor-textarea::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: transparent;
   }
 
   .preview-pane::-webkit-scrollbar-thumb,
   .editor-textarea::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .preview-pane::-webkit-scrollbar-thumb:hover,
   .editor-textarea::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--scrollbar-thumb-hover);
   }
 </style>

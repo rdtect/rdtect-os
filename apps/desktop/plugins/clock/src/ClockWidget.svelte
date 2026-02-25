@@ -129,16 +129,17 @@
     justify-content: center;
     padding: 12px 16px;
     background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
     border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     box-shadow:
       0 4px 20px rgba(0, 0, 0, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.05);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
     min-width: 120px;
+    font-family: var(--desktop-font-sans);
   }
 
   .clock-widget:hover {
@@ -167,7 +168,7 @@
 
   .colon {
     opacity: 1;
-    transition: opacity 0.15s ease;
+    transition: opacity var(--transition-fast) var(--transition-easing);
   }
 
   .colon.blink {
@@ -212,7 +213,7 @@
   }
 
   .marker {
-    stroke: #475569;
+    stroke: #64748b;
     stroke-width: 1.5;
   }
 

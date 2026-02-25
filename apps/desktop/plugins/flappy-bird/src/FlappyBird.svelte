@@ -235,7 +235,7 @@
     flex-direction: column;
     height: 100%;
     background: #0f172a;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--desktop-font-sans);
     overflow: hidden;
   }
 
@@ -280,7 +280,7 @@
     padding: 12px;
     background: #1e293b;
     margin: 12px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: 1px solid #334155;
     cursor: pointer;
   }
@@ -288,7 +288,7 @@
   canvas {
     max-width: 100%;
     max-height: 100%;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     display: block;
   }
 
@@ -305,11 +305,11 @@
     color: white;
     border: none;
     padding: 12px 32px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .start-btn:hover,

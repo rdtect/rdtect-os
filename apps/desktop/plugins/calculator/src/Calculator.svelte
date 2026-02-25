@@ -630,10 +630,10 @@
     width: 280px;
     height: 100%;
     background: rgba(15, 23, 42, 0.98);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(var(--glass-blur));
     border-left: 1px solid rgba(99, 102, 241, 0.2);
     transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform var(--transition-slow) var(--transition-easing);
     z-index: 100;
     display: flex;
     flex-direction: column;
@@ -665,8 +665,8 @@
     color: #64748b;
     cursor: pointer;
     padding: 0.5rem;
-    border-radius: 6px;
-    transition: all 0.2s;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .history-clear:hover {
@@ -682,8 +682,8 @@
 
   .history-empty {
     text-align: center;
-    color: #475569;
-    font-size: 0.85rem;
+    color: #64748b;
+    font-size: var(--text-sm);
     padding: 2rem;
   }
 
@@ -694,11 +694,11 @@
     width: 100%;
     padding: 0.75rem;
     margin-bottom: 0.5rem;
-    background: rgba(30, 41, 59, 0.5);
+    background: var(--glass-bg-subtle);
     border: 1px solid rgba(99, 102, 241, 0.1);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     text-align: right;
   }
 
@@ -727,7 +727,8 @@
     padding: 1rem;
     position: relative;
     z-index: 1;
-    transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--desktop-font-sans);
+    transition: margin-right var(--transition-slow) var(--transition-easing);
   }
 
   .calculator.scientific-mode .calculator-main {
@@ -750,15 +751,15 @@
     padding: 0.4rem 0.6rem;
     min-height: 44px;
     min-width: 44px;
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #64748b;
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     font-weight: 600;
     letter-spacing: 0.05em;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .mode-toggle:hover,
@@ -809,14 +810,14 @@
   .display-area {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%);
     border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     padding: 1rem 1.25rem;
     margin-bottom: 0.75rem;
     text-align: right;
     box-shadow:
       inset 0 2px 4px rgba(0, 0, 0, 0.2),
       0 4px 20px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .history-line {
@@ -957,11 +958,11 @@
   /* Button Base Styles */
   .btn {
     border: none;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     font-size: 1.25rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-fast) var(--transition-easing);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1097,7 +1098,7 @@
 
   /* Scrollbar styling for history */
   .history-list::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width);
   }
 
   .history-list::-webkit-scrollbar-track {
@@ -1105,11 +1106,11 @@
   }
 
   .history-list::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .history-list::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.5);
+    background: var(--scrollbar-thumb-hover);
   }
 </style>

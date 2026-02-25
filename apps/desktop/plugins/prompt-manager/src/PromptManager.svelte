@@ -310,7 +310,7 @@
     flex-direction: column;
     height: 100%;
     background: rgba(15, 23, 42, 0.95);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--desktop-font-sans);
   }
 
   .header {
@@ -364,10 +364,10 @@
     width: 100%;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(51, 65, 85, 0.5);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     padding: 8px 12px;
     color: #f1f5f9;
-    font-size: 13px;
+    font-size: var(--text-sm);
     margin-bottom: 10px;
   }
 
@@ -384,12 +384,13 @@
   .category-btn {
     background: rgba(51, 65, 85, 0.4);
     border: 1px solid rgba(71, 85, 105, 0.3);
-    border-radius: 14px;
-    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    padding: 6px 12px;
+    min-height: 44px;
     color: #94a3b8;
-    font-size: 12px;
+    font-size: var(--text-sm);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .category-btn:hover {
@@ -415,9 +416,9 @@
   }
 
   .prompt-card {
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(51, 65, 85, 0.5);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 14px;
   }
 
@@ -491,11 +492,15 @@
     background: rgba(51, 65, 85, 0.4);
     border: none;
     color: #94a3b8;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 8px 12px;
+    min-height: 44px;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .action-btn:hover {
@@ -509,9 +514,9 @@
   }
 
   .edit-form {
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(51, 65, 85, 0.5);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 16px;
   }
 

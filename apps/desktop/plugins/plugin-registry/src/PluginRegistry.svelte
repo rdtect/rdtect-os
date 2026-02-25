@@ -190,11 +190,11 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: linear-gradient(145deg, #0a0f1a 0%, #111827 50%, #0f172a 100%);
-    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    background: #0f172a;
+    font-family: var(--desktop-font-sans);
     opacity: 0;
     transform: translateY(10px);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-slow) var(--transition-easing);
   }
 
   .app-store.visible {
@@ -274,13 +274,13 @@
   .search-input {
     width: 100%;
     padding: 10px 36px 10px 42px;
-    background: rgba(30, 41, 59, 0.8);
+    background: var(--glass-bg-strong);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     color: #f1f5f9;
-    font-size: 0.9rem;
+    font-size: var(--text-base);
     outline: none;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     box-sizing: border-box;
   }
 
@@ -336,16 +336,17 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 20px;
+    border-radius: var(--radius-full);
     color: #94a3b8;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     white-space: nowrap;
     flex-shrink: 0;
+    min-height: 44px;
   }
 
   .category-tab:hover {
@@ -376,7 +377,7 @@
   }
 
   .grid-container::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .grid-container::-webkit-scrollbar-track {
@@ -384,12 +385,12 @@
   }
 
   .grid-container::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .grid-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.5);
+    background: var(--scrollbar-thumb-hover);
   }
 
   .plugin-grid {
@@ -409,13 +410,13 @@
     display: flex;
     flex-direction: column;
     padding: 20px;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(51, 65, 85, 0.6);
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-normal) var(--transition-easing);
     text-align: left;
-    animation: fadeInUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation: fadeInUp 0.35s var(--transition-easing) backwards;
     animation-delay: calc(var(--index) * 0.04s);
   }
 

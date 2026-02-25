@@ -747,7 +747,8 @@
     position: relative;
     height: 100%;
     overflow: hidden;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
+    font-family: var(--desktop-font-sans);
   }
 
   /* Background Styles */
@@ -968,9 +969,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     font-size: 0.75rem;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .severity-low {
@@ -1051,11 +1052,11 @@
     padding: 0.5rem 0.75rem 0.5rem 2rem;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #fff;
     font-size: 0.8rem;
-    backdrop-filter: blur(10px);
-    transition: all 0.2s;
+    backdrop-filter: blur(var(--glass-blur));
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .location-input::placeholder {
@@ -1087,13 +1088,14 @@
     padding: 0.5rem 0.75rem;
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #fff;
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    min-width: 36px;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .unit-toggle:hover {
@@ -1539,9 +1541,9 @@
   /* Hourly Forecast */
   .hourly-forecast {
     background: rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     padding: 0.5rem;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .hourly-scroll {
@@ -1573,8 +1575,8 @@
     gap: 0.15rem;
     padding: 0.35rem 0.5rem;
     min-width: 45px;
-    border-radius: 8px;
-    transition: background 0.2s;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-normal) var(--transition-easing);
   }
 
   .hourly-item:hover {
@@ -1612,8 +1614,8 @@
     gap: 0.4rem;
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .indicator-icon {
@@ -1655,8 +1657,8 @@
   .sun-times {
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .sun-progress-bar {
@@ -1728,10 +1730,10 @@
     padding: 0.4rem 0.2rem;
     background: rgba(0, 0, 0, 0.15);
     border: 1px solid transparent;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(var(--glass-blur));
     cursor: pointer;
-    transition: all 0.2s ease-out;
+    transition: all var(--transition-normal) var(--transition-easing);
     color: inherit;
     font-family: inherit;
     text-shadow: inherit;
