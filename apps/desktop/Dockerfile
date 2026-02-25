@@ -13,10 +13,11 @@ WORKDIR /app
 # We need devDependencies (vite, svelte, adapter-node) to build.
 ENV NODE_ENV=development
 
-# Copy workspace manifests for dependency resolution
-COPY package.json bun.lock* bun.lockb* ./
-COPY packages/ ./packages/
-COPY apps/ ./apps/
+# Copy only workspace manifests for dependency resolution (better layer caching)
+COPY package.json bun.lock* bun.lockb* bunfig.toml ./
+COPY apps/desktop/package.json ./apps/desktop/
+COPY apps/excalidraw-remote/package.json ./apps/excalidraw-remote/
+COPY packages/plugin-sdk/package.json ./packages/plugin-sdk/
 
 # Install ALL dependencies (including devDependencies needed for build)
 RUN bun install --frozen-lockfile || bun install
@@ -35,7 +36,12 @@ ENV NODE_ENV=production
 # Build the SvelteKit application (runs apps/desktop/package.json#build)
 RUN bun run --filter @desktop-os/desktop build
 
-# Copy pre-built excalidraw federation remote into SvelteKit client output
+# Build excalidraw federation remote (or use pre-built dist if available)
+RUN if [ ! -f apps/excalidraw-remote/dist/assets/remoteEntry.js ]; then \
+      bun run --filter @desktop-os/excalidraw-remote build; \
+    fi
+
+# Copy excalidraw federation remote into SvelteKit client output
 RUN mkdir -p /app/apps/desktop/build/client/federation/excalidraw && \
     cp -r apps/excalidraw-remote/dist/* /app/apps/desktop/build/client/federation/excalidraw/
 
@@ -49,8 +55,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=sveltekit:nodejs /app/apps/desktop/build ./build
 COPY --from=builder --chown=sveltekit:nodejs /app/apps/desktop/package.json ./
 
-# Only production runtime deps
-COPY --from=deps /app/node_modules ./node_modules
+# Install production-only dependencies for the runner
+# (avoids shipping vite, svelte, tailwind, etc. in the production image)
+RUN bun install --production --frozen-lockfile || bun install --production
 
 ENV NODE_ENV=production
 ENV PORT=3000

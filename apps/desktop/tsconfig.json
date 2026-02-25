@@ -13,8 +13,6 @@
 		"moduleResolution": "bundler"
 	},
 	"exclude": [
-		"pb_migrations",
-		"pb_data",
 		"node_modules"
 	]
 }

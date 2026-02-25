@@ -17,7 +17,7 @@ services:
       - "8090:8090"
     volumes:
       - pocketbase_data:/pb_data
-      - ./data/pb_migrations:/pb_migrations:ro
+      - ./pb_migrations:/pb_migrations:ro
     environment:
       - PB_ENCRYPTION_KEY=${PB_ENCRYPTION_KEY:-}
     healthcheck:

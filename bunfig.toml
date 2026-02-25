@@ -1,5 +1,5 @@
 [install]
-lockfile = "bun.lockb"
+lockfile = "bun.lock"
 
 [run]
 bun = true
