@@ -1,7 +1,4 @@
-// Database utilities
-export { pool, query, queryOne, testConnection } from './db';
-
-// Notes CRUD operations
+// Notes CRUD operations (filesystem-backed)
 export {
   getAllNotes,
   getNote,

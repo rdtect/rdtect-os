@@ -1,36 +1,27 @@
 # ==============================================
 # rdtect OS - Makefile
 # ==============================================
-# Common development and build commands
 
-.PHONY: dev dev-docker dev-services dev-full build build-docker build-all \
+.PHONY: dev dev-docker dev-services dev-full build build-docker \
         start stop preview clean check typecheck db-admin db-backup help
 
-# Default target
 .DEFAULT_GOAL := help
 
-# ----------------------------------------------
-# Development Commands
-# ----------------------------------------------
+# --- Development ---
 
-dev: ## Start frontend development server
+dev: ## Start frontend dev server (bun)
 	bun run dev
 
-dev-docker: ## Start full dev environment via Docker
-	docker compose -f docker-compose.dev.yml up
-
-dev-services: ## Start only backend services (PocketBase + Python)
+dev-services: ## Start PocketBase + Python backend
 	docker compose up pocketbase python-backend
 
-dev-full: ## Start full stack with all services
-	docker compose -f docker-compose.dev.yml --profile full up
+dev-full: ## Start full stack in Docker
+	docker compose --profile full up
 
-dev-all: ## Start frontend + federation apps
-	bun run dev:all
+dev-all: ## Start everything including federation apps
+	docker compose --profile all up
 
-# ----------------------------------------------
-# Build Commands
-# ----------------------------------------------
+# --- Build ---
 
 build: ## Build frontend for production
 	bun run build
@@ -38,25 +29,18 @@ build: ## Build frontend for production
 build-docker: ## Build Docker images for production
 	docker compose -f docker-compose.prod.yml build
 
-build-all: ## Build frontend and all federation apps
-	bun run build:all
+# --- Production ---
 
-# ----------------------------------------------
-# Production Commands
-# ----------------------------------------------
-
-start: ## Start production environment (detached)
+start: ## Start production stack (detached)
 	docker compose -f docker-compose.prod.yml up -d
 
-stop: ## Stop production environment
+stop: ## Stop production stack
 	docker compose -f docker-compose.prod.yml down
 
 preview: ## Preview production build locally
 	bun run preview
 
-# ----------------------------------------------
-# Database Commands
-# ----------------------------------------------
+# --- Database ---
 
 db-admin: ## Open PocketBase admin panel URL
 	@echo "Open http://localhost:8090/_/ in your browser"
@@ -64,9 +48,7 @@ db-admin: ## Open PocketBase admin panel URL
 db-backup: ## Create PocketBase backup
 	docker compose exec pocketbase ./pocketbase backup
 
-# ----------------------------------------------
-# Quality & Utilities
-# ----------------------------------------------
+# --- Quality ---
 
 check: ## Run Svelte type checking
 	bun run check
@@ -80,33 +62,9 @@ clean: ## Clean build artifacts and caches
 install: ## Install dependencies
 	bun install
 
-# ----------------------------------------------
-# Federation Apps
-# ----------------------------------------------
+# --- Help ---
 
-dev-excalidraw: ## Start Excalidraw remote app
-	bun run dev:excalidraw
-
-build-excalidraw: ## Build Excalidraw remote app
-	bun run build:excalidraw
-
-dev-ai-chat: ## Start AI Chat remote app
-	bun run dev:ai-chat
-
-build-ai-chat: ## Build AI Chat remote app
-	bun run build:ai-chat
-
-dev-prompt-manager: ## Start Prompt Manager remote app
-	bun run dev:prompt-manager
-
-build-prompt-manager: ## Build Prompt Manager remote app
-	bun run build:prompt-manager
-
-# ----------------------------------------------
-# Help
-# ----------------------------------------------
-
-help: ## Show this help message
-	@echo "rdtect OS - Available Commands"
+help: ## Show this help
+	@echo "rdtect OS — Available Commands"
 	@echo "=============================="
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
