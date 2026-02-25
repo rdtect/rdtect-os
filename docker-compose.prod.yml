@@ -55,7 +55,7 @@ services:
       context: ./apps/python-backend
       dockerfile: Dockerfile
     environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
       POCKETBASE_URL: http://pocketbase:8090
       PYTHONUNBUFFERED: '1'
