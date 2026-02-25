@@ -16,7 +16,7 @@
 
   // Search state
   let searchQuery = $state('');
-  let searchInput: HTMLInputElement;
+  let searchInput = $state<HTMLInputElement | null>(null);
   let showAllApps = $state(false);
 
   // Pinned apps (first 8-12 apps for quick access)

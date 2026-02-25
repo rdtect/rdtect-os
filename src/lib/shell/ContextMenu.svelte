@@ -2,6 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { clickOutside, escapeKey } from '$lib/core/attachments';
   import type { MenuItem } from './types';
+  import ContextMenu from './ContextMenu.svelte';
 
   interface Props {
     items: MenuItem[];
@@ -172,7 +173,7 @@
     onmouseenter={handleSubmenuStay}
     onmouseleave={handleSubmenuLeave}
   >
-    <svelte:self
+    <ContextMenu
       items={activeSubmenu.item.submenu ?? []}
       x={activeSubmenu.x}
       y={activeSubmenu.y}
