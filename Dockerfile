@@ -34,10 +34,9 @@ ENV NODE_ENV=production
 # Build the SvelteKit application
 RUN bun run build
 
-# Build excalidraw federation remote and embed in SvelteKit client output
+# Copy pre-built excalidraw federation remote into SvelteKit client output
 RUN mkdir -p /app/build/client/federation/excalidraw && \
-    cd apps/excalidraw-remote && bun run build && \
-    cp -r dist/* /app/build/client/federation/excalidraw/
+    cp -r apps/excalidraw-remote/dist/* /app/build/client/federation/excalidraw/
 
 # Stage 3: Production Runner
 FROM oven/bun:1.3-alpine AS runner
