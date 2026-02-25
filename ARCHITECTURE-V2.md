@@ -16,6 +16,10 @@
 5. [Plugin Responsibility Matrix](#5-plugin-responsibility-matrix)
 6. [Data Flow Diagrams](#6-data-flow-diagrams)
 7. [Frontend Architecture Decisions](#7-frontend-architecture-decisions)
+   - [ADR-F07: Error & Degradation Strategy](#adr-f07-error--degradation-strategy)
+   - [ADR-F08: Anonymous User Cost Controls](#adr-f08-anonymous-user-cost-controls)
+   - [ADR-F09: Mobile / Responsive Strategy](#adr-f09-mobile--responsive-strategy)
+   - [ADR-F10: Testing Strategy](#adr-f10-testing-strategy)
 8. [The Showcase Angle](#8-the-showcase-angle)
 9. [Implementation Phases](#9-implementation-phases)
 
@@ -61,14 +65,27 @@ Browser (rdtect.com)          VPS (api.rdtect.com)
 - Agent runtime with capability-based permissions and tool definitions
 - PocketBase typed client with real-time subscriptions
 
-### What Changes
+### What Already Exists (More Than Expected)
 
-- Python backend evolves from Ollama-proxy to proper API gateway
-- AI chat switches from OpenAI-direct to Anthropic Claude API (via gateway)
-- RAG pipeline: ChromaDB becomes the brain, Obsidian vault is the corpus
-- VFS gets server-side sync (already scaffolded in `routers/vfs.py`)
-- Agent runtime connects to real LLM APIs (currently TODO placeholder)
-- System Monitor connects to real VPS metrics (currently browser-only)
+The Python backend (`apps/python-backend/`) is further along than a minimal proxy. The following are **already implemented and functional**:
+
+- **AI service** (`services/ai.py`) -- Anthropic Claude SDK with 3-tier fallback: Claude via Cloudflare AI Gateway → Claude direct → CF Workers AI (Llama 3.1 8B)
+- **RAG service** (`services/rag.py`) -- ChromaDB client with `retrieve()` and `build_context()`, L2 distance filtering, graceful degradation
+- **Agent executor** (`services/agent_executor.py`) -- Full Claude tool-use agentic loop with 4 tools, SSE streaming, configurable max iterations
+- **VPS monitor** (`services/vps_monitor.py`) -- psutil system metrics + Docker container stats + Ollama model listing, all with graceful degradation
+- **4 mounted routers** -- `/api/chat` (SSE streaming with RAG), `/api/knowledge` (search + context), `/api/vps` (system/containers/ollama), `/api/agents` (agentic execution)
+- **2 unmounted routers** (implemented but dead code) -- `routers/vfs.py` (14 POSIX-like endpoints over SQLite), `routers/pocketbase.py` (8 proxy endpoints)
+
+### What Actually Needs to Change
+
+- **Frontend AI path is wrong** -- ai-chat plugin hits SvelteKit `/api/ai/stream` which proxies to OpenAI. Needs to switch to the Python gateway (which already uses Claude)
+- **Unmounted routers need activation** -- VFS and PocketBase routers exist but aren't registered in `main.py`, and CORS only allows GET/POST (VFS needs PUT/DELETE)
+- **Chat session persistence** -- No conversation history; add PocketBase collections + gateway endpoints
+- **Content pipeline** -- No blog/project content endpoints; no Obsidian indexing pipeline
+- **Plugin integration** -- Most plugins are self-contained islands that don't use core systems (terminal has mock FS, knowledge-base is local-only, system-monitor is browser-only)
+- **Agent runtime client-server bridge** -- `runAutonomousLoop` is a placeholder; needs to call `/api/agents/run`
+- **VFS server sync** -- `vfs.sync()` logs "not implemented"
+- **Docker import bug** -- `main.py` uses `from src.routers import ...` but Dockerfile flattens `src/` into `/app/`, breaking imports in container
 
 ---
 
@@ -138,7 +155,11 @@ Nothing else is publicly accessible.
 
 ## 3. API Contract (api.rdtect.com)
 
-The Python FastAPI gateway replaces the current minimal backend. All endpoints use JSON. Authentication is via PocketBase token passed in `Authorization: Bearer <token>` header.
+The Python FastAPI gateway **extends the existing backend** (which already has 14 live endpoints across 4 routers, plus 22 additional endpoints in 2 unmounted routers). All endpoints use JSON. Authentication is via PocketBase token passed in `Authorization: Bearer <token>` header.
+
+> **Auth enforcement**: The gateway validates PocketBase tokens by calling `POST /api/collections/users/auth-refresh` on the internal PocketBase instance. Tokens are stateless JWTs; the gateway does not maintain sessions. Expired tokens return 401; the frontend refreshes via the PocketBase SDK and retries. Anonymous access (no token) is allowed for Tier 1 plugin endpoints with stricter rate limits (see Section 7.7).
+
+> **Existing provider chain**: The current `ai.py` service supports a 3-tier fallback: Claude via Cloudflare AI Gateway (logging + caching) -> Claude direct Anthropic API -> CF Workers AI (Llama 3.1 8B). This fallback chain is preserved. The CF Gateway tier is preferred in production because it provides request logging, response caching, and rate limiting at the edge for free.
 
 ### 3.1 Health and Meta
 
@@ -152,7 +173,9 @@ Response: { "name": "rdtect-os-api", "version": "1.0.0", "docs": "/docs" }
 
 ### 3.2 AI Chat (`/api/chat`)
 
-Replaces the current OpenAI-only WebSocket. Supports multiple providers, conversation persistence, and streaming.
+Extends the existing `/api/chat/stream` endpoint. The current endpoint already streams Claude responses with RAG context injection. Changes: rename path for clarity, add session persistence, add model selection, unify SSE event format with the agent endpoint (Section 3.7).
+
+> **SSE Event Format (unified across chat and agents)**: All streaming endpoints use the same event schema. This matches the existing `AgentEvent` types in `agent_executor.py`: `thinking`, `tool_call`, `tool_result`, `text`, `done`, `error`. The frontend parses one event vocabulary regardless of whether it's a chat response or agent execution.
 
 ```
 POST /api/chat/completions
@@ -173,11 +196,11 @@ Body: {
 }
 Response (stream=true): Server-Sent Events
   data: {"type":"start","session_id":"sess_abc123"}
-  data: {"type":"content_block_delta","delta":{"text":"The MRAX..."}}
-  data: {"type":"tool_use","tool":"rag_search","input":{"query":"..."}}
+  data: {"type":"text","content":"The MRAX..."}
+  data: {"type":"tool_call","tool":"rag_search","input":{"query":"..."}}
   data: {"type":"tool_result","content":"...relevant chunks..."}
-  data: {"type":"content_block_delta","delta":{"text":"...continuing..."}}
-  data: {"type":"message_stop","usage":{"input_tokens":150,"output_tokens":342}}
+  data: {"type":"text","content":"...continuing..."}
+  data: {"type":"done","usage":{"input_tokens":150,"output_tokens":342}}
 
 Response (stream=false): {
   "content": "The MRAX pattern...",
@@ -250,7 +273,7 @@ Response: {
 }
 
 GET  /api/knowledge/graph
-Body: { "root": "MRAX", "depth": 2 }
+Query: ?root=MRAX&depth=2
 Response: {
   "nodes": [
     { "id": "mrax", "label": "MRAX", "type": "concept" },
@@ -261,6 +284,8 @@ Response: {
   ]
 }
 ```
+
+> **Implementation note for `/api/knowledge/graph`**: ChromaDB is a vector store, not a graph database. The graph is constructed during indexing by parsing Obsidian `[[backlinks]]` and `#tags` from markdown files. Relationships are stored as metadata in ChromaDB documents (`links_to: ["page-a", "page-b"]`) and as a lightweight adjacency list in a `knowledge_graph` PocketBase collection (or JSON file). The graph endpoint reads this pre-built adjacency data -- it does not compute relationships at query time. **Phase 2 deliverable**: backlink/tag extraction during indexing. **Deferred**: Full entity extraction via NLP.
 
 ### 3.4 Content (`/api/content`)
 
@@ -376,7 +401,9 @@ Response: {
 
 ### 3.7 Agents (`/api/agents`)
 
-Connects the client-side agent runtime to actual LLM execution.
+Extends the existing `/api/agents/run` endpoint. The current endpoint already implements a full Claude tool-use agentic loop with 4 tools (`search_knowledge_base`, `get_vps_status`, `list_projects`, `get_current_time`) and SSE streaming. Changes: rename path for consistency, add config CRUD via PocketBase, wire `list_projects` to real data.
+
+> **SSE events use the same unified format as chat** (Section 3.2): `thinking`, `tool_call`, `tool_result`, `text`, `done`, `error`.
 
 ```
 POST /api/agents/execute
@@ -399,9 +426,10 @@ Body: {
 }
 Response (SSE):
   data: {"type":"thinking","content":"I need to read the blog posts..."}
-  data: {"type":"tool_use","name":"rag_search","input":{"query":"blog posts","collections":["blog"]}}
+  data: {"type":"tool_call","tool":"rag_search","input":{"query":"blog posts","collections":["blog"]}}
   data: {"type":"tool_result","content":"Found 5 posts: ..."}
-  data: {"type":"response","content":"Here is a summary of your 5 most recent blog posts:\n\n1. ..."}
+  data: {"type":"text","content":"Here is a summary of your 5 most recent blog posts:\n\n1. ..."}
+  data: {"type":"done"}
 
 GET  /api/agents/configs
 Headers: Authorization: Bearer <pb_token>
@@ -488,6 +516,8 @@ API rules:
 - createRule: `session.user = @request.auth.id`
 - updateRule: `session.user = @request.auth.id`
 - deleteRule: `session.user = @request.auth.id`
+
+> **Pragmatic alternative**: For a single-user portfolio, chat persistence via IndexedDB (which the VFS already provides at `/home/user/.config/ai-chat/`) may be sufficient for V1. PocketBase chat persistence is warranted if cross-device session continuity or recruiter-visible conversation history is desired. Start with IndexedDB; add PocketBase persistence as a Phase 3 enhancement.
 
 #### `agent_configs`
 
@@ -580,14 +610,26 @@ The "meta" layer -- observing and controlling the system itself.
 
 ### 6.1 Blog / Obsidian Sync
 
+> **Transfer mechanism**: The Obsidian vault lives on the dev machine (`D:\rdtect` on Windows). It is synced to the VPS via a **private Git repository** (`github.com/rdtect/vault`, private). The flow:
+> 1. Local: Obsidian Git plugin auto-commits and pushes changes on a schedule (or manually)
+> 2. VPS: n8n workflow triggers `git pull` on the vault clone at `/data/obsidian-vault/`
+> 3. VPS: n8n then calls `POST /api/content/blog/sync` to process new/changed files
+>
+> **Alternative** (simpler, deferred): Skip n8n. Run a cron job on the VPS that pulls the vault repo and calls the sync endpoint. n8n adds observability but isn't strictly required for Phase 2.
+>
+> **Prerequisite**: The `scripts/index-vault-chromadb.py` file referenced below does NOT exist in the current repo. The embedding generation logic must be written from scratch in `services/embeddings.py`, using `all-MiniLM-L6-v2` via the `sentence-transformers` library or ONNX runtime.
+
 ```
-Obsidian Vault (D:\rdtect)
-     |
-     | [n8n scheduled workflow, every 4 hours]
-     | OR
-     | [manual trigger via /api/content/blog/sync]
-     |
-     v
+Private Git Repo (github.com/rdtect/vault)
+     ^                              |
+     | [Obsidian Git plugin push]   | [n8n: git pull on schedule / webhook]
+     |                              v
+Obsidian Vault (D:\rdtect)    VPS clone (/data/obsidian-vault/)
+                                    |
+                                    | [n8n triggers, or cron]
+                                    v
+                              POST /api/content/blog/sync
+                                    |
 Python API Gateway (/api/content/blog/sync)
      |
      +---> 1. Read .md files from Obsidian vault path (4_Logs/blog/)
@@ -852,6 +894,97 @@ private async executeAction(agent: Agent, action: AgentAction): Promise<unknown>
 
 These virtual proc entries are populated by polling the API gateway.
 
+### ADR-F07: Error & Degradation Strategy
+
+**Context**: The API gateway (Python backend on VPS) will occasionally be unreachable -- during deployments, VPS restarts, or network issues. Plugins must degrade gracefully rather than showing broken UIs to portfolio visitors.
+
+**Decision**: Each plugin defines a degradation behavior based on its server dependency:
+
+| Plugin | Gateway Down Behavior |
+|--------|-----------------------|
+| **ai-chat** | Show "AI service temporarily unavailable" banner. Disable send button. Preserve local message history (IndexedDB). |
+| **knowledge-base** | Fall back to local notes (IndexedDB). RAG search disabled with "offline" badge. Graph view shows local-only data. |
+| **system-monitor** | Server tab shows "VPS unreachable" with last-known values (cached). Client/browser tab works normally. |
+| **terminal** | Works locally -- VFS is IndexedDB-primary. Remote commands (`curl`, `ssh`) show connection errors naturally. |
+| **file-browser** | Works fully -- VFS is IndexedDB-primary. Sync indicator shows "offline" if sync is enabled. |
+| **agent-manager** | Local agent CRUD works. Server execution shows "gateway offline". Client-side tool execution still available. |
+| **blog** | Show cached/sample posts (already implemented as fallback). |
+| **contact** | Show form but disable submit with "service offline" message. Or fall back to mailto: link. |
+| **project-gallery** | Show cached project data. GitHub stats show "last updated: [date]". |
+
+**Implementation**: Create a shared `$lib/core/gateway-status.svelte.ts` singleton that polls `/api/health` every 30s. Plugins import `gatewayStatus.isOnline` (reactive) and conditionally render degraded UI. This is a Svelte 5 `$state` value, so reactivity is automatic.
+
+### ADR-F08: Anonymous User Cost Controls
+
+**Context**: Claude API calls cost money. Anonymous portfolio visitors will trigger AI chat interactions. Without controls, a viral HN post could generate thousands of dollars in API costs overnight.
+
+**Decision**: Implement tiered rate limiting and cost controls:
+
+| Control | Value | Env Var |
+|---------|-------|---------|
+| Anonymous message limit | 10 messages/hour per IP | `CHAT_RATE_LIMIT_ANON` |
+| Anonymous model | claude-haiku (cheapest) | `CHAT_MODEL_ANON` |
+| Authenticated model | claude-sonnet (default) | `CHAT_MODEL_AUTH` |
+| Max tokens per response | 1024 (anon) / 4096 (auth) | `CHAT_MAX_TOKENS_ANON`, `CHAT_MAX_TOKENS_AUTH` |
+| Monthly budget alert | $50 | `CHAT_BUDGET_ALERT_USD` |
+| Monthly hard cap | $100 (disable API) | `CHAT_BUDGET_CAP_USD` |
+
+**Additional measures**:
+- **Canned responses**: For common portfolio questions ("tell me about yourself", "what is this project", "what tech do you use"), return pre-written responses without hitting Claude. Detection via simple keyword matching in the gateway, not the LLM.
+- **Token budget monitoring**: VPS monitor tracks daily/monthly spend via Anthropic usage API. Surface in System Monitor's Server tab.
+- **Abuse detection**: If a single IP sends >50 messages/hour, block for 24h. Log to `/var/log/abuse.log` in VFS.
+
+### ADR-F09: Mobile / Responsive Strategy
+
+**Context**: `mobile.svelte.ts` exists in the codebase (30 lines, viewport detection via `$state`) but no plugin adapts to it. The desktop window manager metaphor breaks on mobile screens.
+
+**Decision**: Adopt a progressive degradation approach rather than building a separate mobile UI:
+
+**Tier 1 plugins (portfolio-facing)** -- full mobile support:
+- `blog`, `project-gallery`, `contact`, `about`, `ai-chat`
+- On mobile: plugins render full-screen, no window chrome (title bar, resize handles)
+- Taskbar becomes a bottom navigation bar with icons for Tier 1 plugins
+- Window stacking/tiling disabled; one plugin visible at a time
+- Swipe gestures: left/right to switch between open plugins
+
+**Tier 2 plugins (workspace)** -- "best on desktop" prompt:
+- `terminal`, `file-browser`, `knowledge-base`, `agent-manager`, `system-monitor`
+- On mobile: show a centered card with plugin icon + "This app works best on desktop" + option to open anyway in full-screen mode
+- If opened: render full-screen with simplified controls
+
+**Implementation**: `WindowManager` checks `mobileState.isMobile` before applying window positioning. Shell layout component switches between desktop layout and mobile layout. Each plugin's manifest can declare `mobileSupport: 'full' | 'limited' | 'none'`.
+
+### ADR-F10: Testing Strategy
+
+**Context**: The codebase currently has zero automated tests. For a portfolio project, exhaustive test coverage is not the goal -- but demonstrating testing competence and preventing regressions during V2 implementation is.
+
+**Decision**: Implement a minimal but meaningful test suite across three layers:
+
+**CI checks (already passing locally, add to GitHub Actions)**:
+- `bun run check` -- svelte-check (type errors in Svelte components)
+- `bun run typecheck` -- tsc --noEmit (TypeScript type checking)
+- `ruff check` -- Python linting for API gateway
+
+**API gateway tests (pytest)**:
+- Health endpoint returns 200
+- Chat endpoint streams SSE events in correct format
+- Knowledge search returns results (requires ChromaDB test fixture)
+- VPS metrics returns valid JSON shape (mock psutil)
+- Agent execution streams events in unified format
+- Rate limiting blocks after threshold
+
+**Frontend smoke tests (Playwright)**:
+- Desktop boots and renders taskbar with plugin icons
+- Clicking a plugin icon opens a window
+- Window can be moved, resized, minimized, closed
+- File browser can navigate VFS directories
+- AI chat renders (even if gateway is offline -- tests degradation)
+
+**Not in scope (explicitly deferred)**:
+- Unit tests for individual plugins (plugin architecture makes these independently testable later)
+- E2E tests for full chat flow (requires live Claude API key)
+- Visual regression tests (premature for active UI development)
+
 ---
 
 ## 8. The Showcase Angle
@@ -957,49 +1090,58 @@ This is exactly how a Solutions Architect would design a customer deployment.
 
 ### Phase 1: API Gateway Foundation (Week 1)
 
-**Goal**: Replace current Python backend with structured FastAPI gateway.
+**Goal**: Activate and extend the existing Python backend into a complete API gateway.
+
+> **Prerequisite (Day 0)**: Fix the Docker import path bug. `main.py` uses `from src.routers import ...` but the Dockerfile copies `src/` contents into `/app/`, breaking the `src.` package prefix. Fix: either restructure imports to be relative, or adjust the Dockerfile to preserve the `src/` directory.
 
 Files to create/modify in `apps/python-backend/src/`:
 ```
+main.py            -> MODIFY  (mount vfs + pocketbase routers, add PUT/DELETE to CORS, fix imports)
 routers/
-  chat.py          -> REWRITE: Claude API integration with SSE streaming
-  vfs.py           -> KEEP: Already functional, add delta-sync
-  pocketbase.py    -> KEEP: Already functional
-  knowledge.py     -> NEW: RAG search and indexing endpoints
-  vps.py           -> NEW: VPS health and metrics endpoints
-  agents.py        -> NEW: Agent execution endpoint
-  contact.py       -> NEW: Extracted from pocketbase.py
+  chat.py          -> MODIFY: Rename /stream to /completions, add /sessions CRUD, add /models
+  vfs.py           -> ACTIVATE: Already implemented (14 endpoints), just mount in main.py
+  pocketbase.py    -> ACTIVATE: Already implemented (8 endpoints), fix auth Header() pattern, mount
+  knowledge.py     -> EXISTS: Add /index and /status endpoints (search + context already work)
+  vps.py           -> EXISTS: Already has /metrics, /system, /containers, /ollama -- add /health aggregate
+  agents.py        -> EXISTS: Rename /run to /execute, add /configs CRUD endpoints
+  contact.py       -> NEW: Extract from pocketbase.py for independent rate limiting
 services/
-  ai.py            -> REWRITE: Switch from OpenAI to Anthropic SDK
-  rag.py           -> NEW: ChromaDB client, embedding generation, retrieval
-  vps_monitor.py   -> NEW: Docker/psutil metrics collection
-  agent_executor.py -> NEW: Agentic loop with tool execution
+  ai.py            -> KEEP: Already uses Anthropic SDK with 3-tier CF Gateway fallback -- no rewrite needed
+  rag.py           -> KEEP: Already connects to ChromaDB with retrieve() + build_context()
+  vps_monitor.py   -> KEEP: Already has psutil + Docker + Ollama metrics
+  agent_executor.py -> MODIFY: Wire list_projects tool to PocketBase (currently hardcoded)
 models/
-  chat.py          -> NEW: Pydantic models for chat endpoints
-  knowledge.py     -> NEW: Pydantic models for RAG endpoints
-  agents.py        -> NEW: Pydantic models for agent endpoints
+  chat.py          -> NEW: Extract inline Pydantic models from routers into shared models/
+  knowledge.py     -> NEW
+  agents.py        -> NEW
+  vps.py           -> NEW
 ```
 
 Deliverables:
-- [ ] `/api/chat/completions` with Claude API + SSE streaming
-- [ ] `/api/chat/models` listing available models
-- [ ] `/api/vps/health` with real service checks
-- [ ] `/health` with aggregated service status
-- [ ] Delete SvelteKit `/api/ai/stream` route
+- [ ] Fix Docker import path bug (Day 0 blocker)
+- [ ] Mount VFS and PocketBase routers, add PUT/DELETE to CORS allowed methods
+- [ ] `/api/chat/completions` (renamed from `/stream`, same Claude SSE implementation)
+- [ ] `/api/chat/models` listing available models from provider chain
+- [ ] `/api/vps/health` aggregated service health (compose existing per-service checks)
+- [ ] `/health` with aggregated service status (already exists, extend)
+- [ ] SvelteKit `/api/ai/stream` route kept alive until Phase 4 (do NOT delete yet)
 
 ### Phase 2: RAG Pipeline (Week 2)
 
-**Goal**: Connect Obsidian vault and blog posts to ChromaDB, expose via API.
+**Goal**: Add document indexing to the existing RAG search infrastructure. Search and context-building already work via `rag.py`; what's missing is the ingestion pipeline.
 
 Files to create/modify:
 ```
 services/
-  rag.py           -> ChromaDB client wrapper
-  indexer.py       -> Document processing pipeline
-  embeddings.py    -> ONNX embedding generation (reuse existing scripts/index-vault-chromadb.py)
+  rag.py           -> KEEP: Already has ChromaDB client, retrieve(), build_context()
+  indexer.py       -> NEW: Document processing pipeline (markdown parsing, frontmatter extraction, chunking)
+  embeddings.py    -> NEW: Embedding generation via sentence-transformers or ONNX (all-MiniLM-L6-v2)
 routers/
-  knowledge.py     -> Search and index endpoints
+  knowledge.py     -> MODIFY: Add /index trigger and /status endpoints (search already works)
+  content.py       -> NEW: Blog and project content endpoints with server-side enrichment
 ```
+
+> **Note**: `scripts/index-vault-chromadb.py` does NOT exist in the repo. The embedding logic must be written from scratch. Consider using `sentence-transformers` (simpler) over raw ONNX for Phase 2, with ONNX optimization deferred to Phase 6.
 
 Deliverables:
 - [ ] `/api/knowledge/search` with multi-collection search
@@ -1032,17 +1174,21 @@ Deliverables:
 
 ### Phase 4: Frontend Plugin Updates (Week 3-4)
 
-**Goal**: Connect existing plugins to new API endpoints.
+**Goal**: Connect plugins to the API gateway. Some plugins need minor wiring; others need substantial rewrites.
 
-| Plugin | Changes |
-|--------|---------|
-| ai-chat | Switch from OpenAI SSE to `/api/chat/completions`, add session selector, add model selector, add RAG toggle |
-| knowledge-base | Connect to `/api/knowledge/search`, implement graph view from `/api/knowledge/graph` |
-| system-monitor | Add "Server" tab with `/api/vps/health` and `/api/vps/metrics` data |
-| agent-manager | Connect to `/api/agents/execute` for real agentic execution, load/save configs from PB |
-| blog | Switch to `/api/content/blog` for enriched data (related posts, reading time) |
-| project-gallery | Add GitHub stats from `/api/content/projects/{slug}` |
-| contact | Use `/api/contact` instead of PB SDK directly (for rate limiting) |
+> **Scope reality check**: ai-chat and knowledge-base are not "connect existing" tasks -- they are **rewrites**. terminal needs VFS integration it never had. Budget accordingly.
+
+| Plugin | Effort | Changes |
+|--------|--------|---------|
+| **ai-chat** | **REWRITE (2-3 days)** | Currently hits SvelteKit `/api/ai/stream` which proxies to OpenAI. Must switch to Python gateway `/api/chat/completions` (Claude), adopt unified SSE event format, add session selector, model selector, RAG toggle. Delete SvelteKit `/api/ai/stream` route after this plugin is migrated. |
+| **knowledge-base** | **REWRITE (2-3 days)** | Currently a local IndexedDB note-taking app with `[[backlinks]]` and `#tags`. V2 wants a RAG search interface backed by `/api/knowledge/search` + graph view from `/api/knowledge/graph`. These are fundamentally different applications. Consider keeping the local note-taking as a separate mode ("My Notes" tab + "Knowledge Search" tab). |
+| **terminal** | **REWRITE (1-2 days)** | Currently has a hardcoded mock filesystem object with ~20 paths. Does NOT import `$lib/core/vfs`. Must be rewired to use the real VFS for `ls`, `cd`, `cat`, `mkdir`, etc. This is a prerequisite for the "working workspace" story. |
+| **system-monitor** | **Medium (1 day)** | Add "Server" tab calling `/api/vps/health` and `/api/vps/metrics`. Keep existing browser-only tabs (FPS, memory, network). Fix hardcoded plugin stats to query dynamically. |
+| **agent-manager** | **Medium (1 day)** | Already imports `agentRuntime` and has full CRUD UI. Wire "Execute" to `/api/agents/execute` SSE stream. Add PocketBase load/save for `agent_configs`. |
+| **blog** | **Small (0.5 days)** | Currently tries PocketBase, falls back to sample data. Switch to `/api/content/blog` for enriched data (related posts, reading time). PocketBase fallback can stay as degraded mode. |
+| **project-gallery** | **Small (0.5 days)** | Currently fetches GitHub API client-side. Add server-side GitHub stats from `/api/content/projects/{slug}`. |
+| **contact** | **Trivial** | Switch from direct PocketBase SDK to `/api/contact` (adds rate limiting at gateway). |
+| **file-browser** | **Small (0.5 days)** | Already uses VFS + EventBus. Add "Sync" button that calls `vfs.sync()` once delta-sync is implemented. |
 
 ### Phase 5: Agent Runtime Integration (Week 4)
 
@@ -1082,45 +1228,68 @@ Deliverables:
 
 ## Appendix A: Environment Variables
 
+> **Naming convention**: Use the existing variable names where they already exist in the codebase. New variables follow the same patterns. The root `.env.example` needs cleanup: remove legacy `OPENAI_API_KEY`, `OPENAI_MODEL`, `DB_*` (MySQL), and `PISTON_PORT` vars.
+
 ### Frontend (.env at repo root)
 
 ```env
 # PocketBase (public, no secrets)
 PUBLIC_POCKETBASE_URL=https://pb.rdtect.com
 
-# API Gateway (public URL)
+# API Gateway (public URL) -- replaces current PUBLIC_PYTHON_API_URL
 PUBLIC_API_URL=https://api.rdtect.com
 
-# Only used by SvelteKit server routes (notes)
-DATABASE_URL=file:./data/notes.db
+# Only used by SvelteKit server routes (notes, filesystem-backed)
+MARKDOWN_DIR=./data/markdown
 ```
 
 ### API Gateway (Docker env or .env)
 
 ```env
-# Anthropic
+# Anthropic (existing var name from apps/python-backend/.env.example)
 ANTHROPIC_API_KEY=sk-ant-...
+
+# Cloudflare AI Gateway -- existing 3-tier fallback chain, keep these
+CF_AI_GATEWAY_URL=https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}
+CF_ACCOUNT_ID=...
+CF_WORKERS_AI_API_KEY=...
+
+# Claude model selection (existing var names)
+CLAUDE_CHAT_MODEL=claude-haiku-4-5-20251001
+CLAUDE_AGENT_MODEL=claude-sonnet-4-6
 
 # Ollama (internal)
 OLLAMA_URL=http://ollama:11434
 
-# ChromaDB (internal)
-CHROMADB_URL=http://chromadb:8000
-CHROMADB_AUTH_TOKEN=...
+# ChromaDB (existing var names from apps/python-backend/.env.example)
+CHROMA_URL=http://chromadb:8000
+CHROMA_BEARER_TOKEN=...
+CHROMA_COLLECTION=obsidian_vault
+RAG_TOP_K=5
+RAG_MIN_SCORE=1.2
 
-# PocketBase (internal)
+# PocketBase (internal -- for gateway to auth-validate and proxy)
 POCKETBASE_URL=http://pocketbase:8090
 POCKETBASE_ADMIN_EMAIL=admin@rdtect.dev
 POCKETBASE_ADMIN_PASSWORD=...
 
-# n8n (internal)
+# n8n (internal -- NEW, not in current .env.example)
 N8N_URL=http://n8n:5678
 N8N_API_KEY=...
 
-# VFS
+# VFS (NEW)
 VFS_DB_PATH=./data/vfs.db
 
-# Rate limiting
+# Docker socket for container monitoring (existing var name)
+DOCKER_SOCKET=/var/run/docker.sock
+
+# Agent config (existing var name)
+AGENT_MAX_ITERATIONS=10
+
+# CORS (existing var name)
+ALLOWED_ORIGINS=https://rdtect.com,http://localhost:5176
+
+# Rate limiting (NEW)
 CONTACT_RATE_LIMIT=5/hour
 CHAT_RATE_LIMIT_ANON=10/hour
 CHAT_RATE_LIMIT_AUTH=100/hour
@@ -1210,52 +1379,61 @@ Note: Ollama, ChromaDB, n8n, and Open WebUI are managed as separate Coolify serv
 
 ## Appendix C: File Tree Summary (What Changes)
 
+> **Labels corrected** to reflect actual codebase state (Feb 2026 audit).
+> KEEP = file exists and works, no changes needed. MODIFY = file exists, needs targeted changes.
+> ACTIVATE = file exists but is not mounted/wired. NEW = file does not exist yet. REWRITE = file exists but needs fundamental rework.
+
 ```
 apps/python-backend/src/
-  main.py                      MODIFY  (add new routers)
+  main.py                      MODIFY  (mount vfs + pocketbase routers, fix CORS methods, fix Docker import path)
   routers/
-    chat.py                    REWRITE (Anthropic API + SSE + sessions)
-    vfs.py                     KEEP    (add delta-sync endpoint)
-    pocketbase.py              KEEP
-    knowledge.py               NEW     (RAG search, indexing)
-    vps.py                     NEW     (VPS health, metrics)
-    agents.py                  NEW     (agent execution endpoint)
-    contact.py                 NEW     (extracted from pocketbase.py)
+    chat.py                    MODIFY  (already uses Anthropic via ai.py; add session persistence + PocketBase writes)
+    vfs.py                     ACTIVATE (14 endpoints exist, not mounted in main.py; add delta-sync endpoint)
+    pocketbase.py              ACTIVATE (8 endpoints exist, not mounted in main.py)
+    knowledge.py               MODIFY  (exists with /search + /context; add /index trigger + /status)
+    vps.py                     MODIFY  (exists with /health + /metrics; add /services breakdown)
+    agents.py                  MODIFY  (exists with /run SSE; align event format with unified spec)
+    contact.py                 NEW     (extracted from pocketbase.py proxy)
+    content.py                 NEW     (blog + project enrichment endpoints)
   services/
-    ai.py                      REWRITE (Anthropic SDK, conversation management)
-    rag.py                     NEW     (ChromaDB client, retrieval logic)
-    vps_monitor.py             NEW     (Docker/psutil metrics)
-    agent_executor.py          NEW     (agentic loop with tools)
-    indexer.py                 NEW     (document processing pipeline)
-    embeddings.py              NEW     (ONNX embedding generation)
+    ai.py                      KEEP    (already has Anthropic SDK + 3-tier fallback via CF Gateway)
+    rag.py                     KEEP    (already has ChromaDB client with retrieve() + build_context())
+    vps_monitor.py             KEEP    (already has psutil + Docker + Ollama metric collection)
+    agent_executor.py          MODIFY  (exists with Claude tool-use loop + 4 tools; add persistent memory + more tools)
+    indexer.py                 NEW     (document processing pipeline for Obsidian/blog/projects)
+    embeddings.py              NEW     (ONNX embedding generation -- or use ChromaDB default embeddings)
   models/
     chat.py                    NEW     (Pydantic models)
     knowledge.py               NEW
     agents.py                  NEW
     vps.py                     NEW
+  scripts/
+    index-vault-chromadb.py    NEW     (CLI script: git-pull Obsidian vault -> chunk -> embed -> ChromaDB)
 
 apps/desktop/src/lib/core/
   agents/
-    runtime.svelte.ts          MODIFY  (connect to /api/agents/execute)
+    runtime.svelte.ts          MODIFY  (connect runAutonomousLoop to /api/agents/run SSE)
     tools.ts                   SPLIT   (-> client-tools.ts + server-tools.ts)
   pocketbase/
     types.ts                   MODIFY  (add chat_sessions, chat_messages, agent_configs, knowledge_sources)
     client.ts                  MODIFY  (add typed accessors for new collections)
   vfs/
-    vfs.svelte.ts              MODIFY  (implement sync() with delta-sync)
-    proc.ts                    MODIFY  (add /proc/vps/* entries)
+    vfs.svelte.ts              MODIFY  (implement sync() stub with delta-sync)
+    proc.ts                    MODIFY  (add /proc/vps/* entries backed by API polling)
 
 apps/desktop/plugins/
-  ai-chat/src/AIChat.svelte    MODIFY  (new API, sessions, RAG toggle)
-  knowledge-base/src/          MODIFY  (connect to /api/knowledge/search)
-  system-monitor/src/          MODIFY  (add Server tab with VPS metrics)
-  agent-manager/src/           MODIFY  (connect to real agent execution)
-  blog/src/                    MODIFY  (use /api/content/blog for enriched data)
-  project-gallery/src/         MODIFY  (add GitHub stats)
-  contact/src/                 MODIFY  (use /api/contact)
+  ai-chat/src/AIChat.svelte    REWRITE (currently hits OpenAI via SvelteKit; needs Anthropic gateway + sessions + RAG toggle)
+  knowledge-base/src/          REWRITE (currently IndexedDB-only local notes; needs RAG search + graph visualization)
+  terminal/src/                REWRITE (hardcoded mock fs; needs to use VFS + real command execution)
+  system-monitor/src/          MODIFY  (add Server tab with VPS metrics alongside existing browser metrics)
+  agent-manager/src/           MODIFY  (connect to /api/agents/run for server-side execution)
+  file-browser/src/            KEEP    (already uses VFS + EventBus correctly)
+  blog/src/                    MODIFY  (use /api/content/blog for enriched data; currently falls back to samples)
+  project-gallery/src/         MODIFY  (add GitHub stats via /api/content/projects)
+  contact/src/                 MODIFY  (use /api/contact instead of direct PocketBase)
 
 apps/desktop/src/routes/api/
-  ai/stream/+server.ts         DELETE  (replaced by API gateway)
+  ai/stream/+server.ts         KEEP-THEN-DELETE (keep alive until ai-chat plugin is rewritten in Phase 4)
 
 data/pb_migrations/            NEW     (4 new collections)
 ```
