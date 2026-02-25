@@ -1,6 +1,7 @@
 import logging
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
+from src.services.indexer import indexer_service
 from src.services.rag import rag_service
 
 
@@ -65,3 +66,27 @@ async def get_context(request: ContextRequest) -> dict:
     except Exception as exc:
         _logger.error("Context build failed for query %r: %s", request.query, exc)
         return {"context": "", "available": False}
+
+
+class IndexRequest(BaseModel):
+    documents: list[dict]
+
+
+@router.post("/index")
+async def index_documents(request: IndexRequest) -> dict:
+    if not rag_service.is_available():
+        raise HTTPException(status_code=503, detail="Knowledge base not available")
+    try:
+        result = await indexer_service.index_documents(request.documents)
+        return result
+    except Exception as exc:
+        _logger.error("Document indexing failed: %s", exc)
+        raise HTTPException(status_code=500, detail="Indexing failed")
+
+
+@router.get("/status")
+async def knowledge_detailed_status() -> dict:
+    return {
+        "rag": await indexer_service.get_collection_stats(),
+        "available": rag_service.is_available(),
+    }
