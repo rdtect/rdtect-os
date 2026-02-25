@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import type { KBNote, BacklinkRef } from './types';
   import { getAllNotes, saveNote, deleteNote, extractBacklinks, extractTags } from './store';
+  import { PUBLIC_PYTHON_API_URL } from '$env/static/public';
 
   interface Props {
     windowId?: string;
@@ -15,7 +16,7 @@
   let editorTitle = $state('');
   let searchQuery = $state('');
   let selectedTag = $state<string | null>(null);
-  let activeTab = $state<'edit' | 'preview' | 'graph'>('edit');
+  let activeTab = $state<'edit' | 'preview' | 'graph' | 'vault'>('edit');
   let isLoading = $state(true);
   let showDeleteConfirm = $state(false);
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -69,6 +70,42 @@
     }
     return refs;
   });
+
+  // === Vault Search State ===
+  let vaultQuery = $state('');
+  let vaultResults = $state<any[]>([]);
+  let vaultLoading = $state(false);
+  let vaultAvailable = $state(true);
+  let vaultError = $state('');
+  let vaultExpandedIdx = $state<number | null>(null);
+
+  async function searchVault() {
+    if (!vaultQuery.trim()) return;
+    vaultLoading = true;
+    vaultError = '';
+    try {
+      const params = new URLSearchParams({ q: vaultQuery, top_k: '10' });
+      const res = await fetch(`${PUBLIC_PYTHON_API_URL}/api/knowledge/search?${params}`);
+      if (res.status === 503) { vaultAvailable = false; vaultResults = []; return; }
+      if (!res.ok) throw new Error('Search failed');
+      const data = await res.json();
+      vaultAvailable = data.rag_available;
+      vaultResults = data.results;
+    } catch {
+      vaultError = 'Search failed';
+      vaultResults = [];
+    } finally {
+      vaultLoading = false;
+    }
+  }
+
+  function handleVaultKeydown(e: KeyboardEvent) {
+    if (e.key === 'Enter') searchVault();
+  }
+
+  function getBasename(path: string): string {
+    return path.split('/').pop() ?? path;
+  }
 
   // Load notes on mount
   onMount(async () => {
@@ -390,6 +427,13 @@
           </svg>
           Graph
         </button>
+        <button class="tab" class:active={activeTab === 'vault'} onclick={() => activeTab = 'vault'}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          Vault
+        </button>
       </div>
 
       <!-- Editor Area -->
@@ -412,7 +456,7 @@
               <p class="preview-empty">Nothing to preview</p>
             {/if}
           </div>
-        {:else}
+        {:else if activeTab === 'graph'}
           <div class="graph-placeholder">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.3)" stroke-width="1">
               <circle cx="6" cy="6" r="3"/>
@@ -430,11 +474,81 @@
               {notes.length} notes &middot; {allTags().length} tags &middot; {backlinks().length} backlinks to this note
             </p>
           </div>
+        {:else if activeTab === 'vault'}
+          <div class="vault-tab">
+            <!-- Search Bar -->
+            <div class="vault-search-bar">
+              <input
+                type="text"
+                class="vault-search-input"
+                placeholder="Search your Obsidian vault..."
+                bind:value={vaultQuery}
+                onkeydown={handleVaultKeydown}
+              />
+              <button class="vault-search-btn" onclick={searchVault} disabled={vaultLoading || !vaultQuery.trim()}>
+                {vaultLoading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+
+            {#if !vaultAvailable}
+              <div class="vault-banner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Vault offline — ChromaDB unavailable
+              </div>
+            {/if}
+
+            {#if vaultError}
+              <div class="vault-error-msg">{vaultError}</div>
+            {/if}
+
+            {#if vaultResults.length > 0}
+              <div class="vault-results">
+                {#each vaultResults as result, idx}
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <div
+                    class="vault-result-item"
+                    class:expanded={vaultExpandedIdx === idx}
+                    onclick={() => vaultExpandedIdx = vaultExpandedIdx === idx ? null : idx}
+                  >
+                    <div class="vault-result-header">
+                      <span class="vault-result-source">{getBasename(result.source ?? result.path ?? '')}</span>
+                      {#if result.score != null}
+                        <span class="vault-result-score">{(result.score * 100).toFixed(0)}%</span>
+                      {/if}
+                    </div>
+                    <p class="vault-result-preview">
+                      {vaultExpandedIdx === idx
+                        ? (result.content ?? result.text ?? '')
+                        : (result.content ?? result.text ?? '').slice(0, 200) + ((result.content ?? result.text ?? '').length > 200 ? '...' : '')}
+                    </p>
+                  </div>
+                {/each}
+              </div>
+            {:else if !vaultLoading && vaultQuery.trim() === ''}
+              <div class="vault-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(99,102,241,0.3)" stroke-width="1.5">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <h3>Search your Obsidian vault</h3>
+                <p>Semantic search across all vault documents via ChromaDB</p>
+              </div>
+            {:else if !vaultLoading && vaultResults.length === 0 && vaultQuery.trim() !== ''}
+              <div class="vault-empty">
+                <p>No results found for "{vaultQuery}"</p>
+              </div>
+            {/if}
+          </div>
         {/if}
       </div>
 
       <!-- Backlinks Panel -->
-      {#if backlinks().length > 0 && activeTab !== 'graph'}
+      {#if backlinks().length > 0 && activeTab !== 'graph' && activeTab !== 'vault'}
         <div class="backlinks-panel">
           <h4 class="backlinks-title">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1108,6 +1222,183 @@
     background: #818cf8;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  }
+
+  /* Vault Tab */
+  .vault-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .vault-search-bar {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .vault-search-input {
+    flex: 1;
+    padding: 10px 14px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+
+  .vault-search-input::placeholder {
+    color: #64748b;
+  }
+
+  .vault-search-input:focus {
+    border-color: rgba(99, 102, 241, 0.5);
+  }
+
+  .vault-search-btn {
+    padding: 10px 18px;
+    background: #6366f1;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .vault-search-btn:hover:not(:disabled) {
+    background: #818cf8;
+  }
+
+  .vault-search-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .vault-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 8px;
+    color: #f59e0b;
+    font-size: 0.8rem;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .vault-error-msg {
+    padding: 10px 14px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+    color: #ef4444;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .vault-results {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .vault-results::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .vault-results::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 2px;
+  }
+
+  .vault-result-item {
+    padding: 12px 14px;
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .vault-result-item:hover {
+    border-color: rgba(99, 102, 241, 0.25);
+    background: rgba(30, 41, 59, 0.7);
+  }
+
+  .vault-result-item.expanded {
+    border-color: rgba(99, 102, 241, 0.35);
+    background: rgba(30, 41, 59, 0.8);
+  }
+
+  .vault-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .vault-result-source {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vault-result-score {
+    padding: 2px 8px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #6366f1;
+    flex-shrink: 0;
+  }
+
+  .vault-result-preview {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .vault-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #64748b;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .vault-empty h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #94a3b8;
+  }
+
+  .vault-empty p {
+    margin: 0;
+    font-size: 0.85rem;
   }
 
   /* Delete Confirmation */

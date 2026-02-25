@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { wm } from "$lib/shell";
+  import { PUBLIC_PYTHON_API_URL } from '$env/static/public';
 
   // Props from window manager
   interface Props {
@@ -30,7 +31,7 @@
   }
 
   // === Tabs ===
-  type TabId = "performance" | "memory" | "network" | "apps" | "plugins";
+  type TabId = "performance" | "memory" | "network" | "apps" | "plugins" | "server";
   let activeTab = $state<TabId>("performance");
 
   const tabs: { id: TabId; label: string; icon: string }[] = [
@@ -39,6 +40,7 @@
     { id: "network", label: "Network", icon: "network" },
     { id: "apps", label: "Apps", icon: "apps" },
     { id: "plugins", label: "Plugins", icon: "plugins" },
+    { id: "server", label: "Server", icon: "server" },
   ];
 
   // === Performance State ===
@@ -79,6 +81,37 @@
   let wasmModules = $state(2);
   let iframePlugins = $state(3);
   let nativePlugins = $state(7);
+
+  // === Server State ===
+  let serverMetrics = $state<any>(null);
+  let serverLoading = $state(false);
+  let serverError = $state(false);
+
+  async function fetchServerMetrics() {
+    serverLoading = true;
+    serverError = false;
+    try {
+      const res = await fetch(`${PUBLIC_PYTHON_API_URL}/api/vps/metrics`);
+      if (!res.ok) throw new Error('API error');
+      serverMetrics = await res.json();
+    } catch {
+      serverError = true;
+    } finally {
+      serverLoading = false;
+    }
+  }
+
+  function formatServerBytes(bytes: number): string {
+    if (bytes > 1e9) return (bytes / 1e9).toFixed(1) + ' GB';
+    return (bytes / 1e6).toFixed(0) + ' MB';
+  }
+
+  function formatUptime(seconds: number): string {
+    const d = Math.floor(seconds / 86400);
+    const h = Math.floor((seconds % 86400) / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    return `${d}d ${h}h ${m}m`;
+  }
 
   // Tracking variables
   let frameCount = 0;
@@ -320,6 +353,14 @@
       );
     }, 300);
     intervals.push(interval);
+    return () => clearInterval(interval);
+  });
+
+  // === Server tab auto-refresh ===
+  $effect(() => {
+    if (activeTab !== 'server') return;
+    fetchServerMetrics();
+    const interval = setInterval(fetchServerMetrics, 30000);
     return () => clearInterval(interval);
   });
 
@@ -716,6 +757,143 @@
             <span class="legend-item wasm">WASM</span>
           </div>
         </div>
+      </div>
+    {/if}
+
+    <!-- Server Tab -->
+    {#if activeTab === "server"}
+      <div class="panel">
+        {#if serverError}
+          <div class="server-error">
+            <span class="server-error-icon">&#x26A0;</span>
+            <h3 class="server-error-title">VPS API Offline</h3>
+            <p class="server-error-text">Check api.rdtect.com</p>
+            <button class="server-retry-btn" onclick={fetchServerMetrics}>
+              Retry
+            </button>
+          </div>
+        {:else if serverLoading && !serverMetrics}
+          <div class="server-loading">
+            <span class="live-dot"></span>
+            <span>Loading server metrics...</span>
+          </div>
+        {:else if serverMetrics}
+          <!-- VPS Status -->
+          <div class="server-status-row">
+            <div class="server-status-item">
+              <span class="server-status-label">Uptime</span>
+              <span class="server-status-value mono">{formatUptime(serverMetrics.uptime_seconds)}</span>
+            </div>
+            <div class="server-status-item">
+              <span class="server-status-label">Status</span>
+              <span class="server-status-badge running">
+                <span class="status-dot-inline"></span>
+                running
+              </span>
+            </div>
+          </div>
+
+          <!-- CPU Gauge -->
+          <h3 class="panel-title" style="margin-top: 1rem;">CPU</h3>
+          <div class="memory-display">
+            <div class="memory-gauge">
+              <svg class="memory-chart" viewBox="0 0 100 100">
+                <circle
+                  class="memory-bg"
+                  cx="50" cy="50" r="40"
+                  fill="none" stroke="#334155" stroke-width="8"
+                />
+                {@const cpuAngle = (serverMetrics.cpu_percent / 100) * 360}
+                {@const cpuRadians = (cpuAngle - 90) * (Math.PI / 180)}
+                {@const cpuX = 50 + 40 * Math.cos(cpuRadians)}
+                {@const cpuY = 50 + 40 * Math.sin(cpuRadians)}
+                {@const cpuLargeArc = cpuAngle > 180 ? 1 : 0}
+                <path
+                  d="M 50 10 A 40 40 0 {cpuLargeArc} 1 {cpuX} {cpuY}"
+                  fill="none"
+                  stroke={serverMetrics.cpu_percent < 50 ? '#22c55e' : serverMetrics.cpu_percent < 80 ? '#eab308' : '#ef4444'}
+                  stroke-width="8"
+                  stroke-linecap="round"
+                />
+                <text x="50" y="50" class="memory-text" text-anchor="middle" dominant-baseline="middle">
+                  {serverMetrics.cpu_percent.toFixed(0)}%
+                </text>
+              </svg>
+            </div>
+            <div class="memory-details">
+              <div class="memory-row">
+                <span class="memory-label">Usage</span>
+                <span class="memory-value" style="color: {serverMetrics.cpu_percent < 50 ? '#22c55e' : serverMetrics.cpu_percent < 80 ? '#eab308' : '#ef4444'}">
+                  {serverMetrics.cpu_percent.toFixed(1)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Memory -->
+          <h3 class="panel-title" style="margin-top: 1rem;">Memory</h3>
+          {@const memUsed = serverMetrics.memory.used}
+          {@const memTotal = serverMetrics.memory.total}
+          {@const memPct = memTotal > 0 ? (memUsed / memTotal) * 100 : 0}
+          <div class="server-bar-section">
+            <div class="server-bar-track">
+              <div class="server-bar-fill" style:width="{memPct}%" style:background={memPct < 50 ? '#22c55e' : memPct < 80 ? '#eab308' : '#ef4444'}></div>
+            </div>
+            <span class="server-bar-label">{formatServerBytes(memUsed)} used of {formatServerBytes(memTotal)} ({memPct.toFixed(0)}%)</span>
+          </div>
+
+          <!-- Disk -->
+          <h3 class="panel-title" style="margin-top: 1rem;">Disk</h3>
+          {@const diskUsed = serverMetrics.disk.used}
+          {@const diskTotal = serverMetrics.disk.total}
+          {@const diskPct = diskTotal > 0 ? (diskUsed / diskTotal) * 100 : 0}
+          <div class="server-bar-section">
+            <div class="server-bar-track">
+              <div class="server-bar-fill" style:width="{diskPct}%" style:background={diskPct < 50 ? '#22c55e' : diskPct < 80 ? '#eab308' : '#ef4444'}></div>
+            </div>
+            <span class="server-bar-label">{formatServerBytes(diskUsed)} used of {formatServerBytes(diskTotal)} ({diskPct.toFixed(0)}%)</span>
+          </div>
+
+          <!-- Docker Containers -->
+          {#if serverMetrics.docker?.containers}
+            <h3 class="panel-title" style="margin-top: 1rem;">Containers ({serverMetrics.docker.containers.length})</h3>
+            <div class="server-container-list">
+              {#each serverMetrics.docker.containers as container}
+                <div class="server-container-item">
+                  <span class="server-container-name">{container.name}</span>
+                  <span class="server-container-image">{container.image}</span>
+                  <span class="server-container-badge" class:running={container.status === 'running'} class:stopped={container.status !== 'running'}>
+                    {container.status}
+                  </span>
+                </div>
+              {/each}
+            </div>
+          {/if}
+
+          <!-- Ollama -->
+          {#if serverMetrics.ollama}
+            <div class="server-ollama-section">
+              <div class="server-ollama-header">
+                <h3 class="panel-title" style="margin: 0;">Ollama</h3>
+                <span class="server-container-badge" class:running={serverMetrics.ollama.available} class:stopped={!serverMetrics.ollama.available}>
+                  {serverMetrics.ollama.available ? 'available' : 'offline'}
+                </span>
+              </div>
+              {#if serverMetrics.ollama.models?.length > 0}
+                <div class="server-model-chips">
+                  {#each serverMetrics.ollama.models as model}
+                    <span class="server-model-chip">{model}</span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+          {/if}
+
+          <!-- Refresh Button -->
+          <button class="server-refresh-btn" onclick={fetchServerMetrics} disabled={serverLoading}>
+            {serverLoading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        {/if}
       </div>
     {/if}
   </div>
@@ -1548,6 +1726,233 @@
 
   .legend-item.wasm::before {
     background: #f59e0b;
+  }
+
+  /* Server Tab */
+  .server-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .server-error-icon {
+    font-size: 2rem;
+    opacity: 0.6;
+  }
+
+  .server-error-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f59e0b;
+  }
+
+  .server-error-text {
+    margin: 0;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .server-retry-btn,
+  .server-refresh-btn {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    color: #a5b4fc;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .server-retry-btn:hover,
+  .server-refresh-btn:hover {
+    background: rgba(99, 102, 241, 0.3);
+  }
+
+  .server-refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .server-refresh-btn {
+    display: block;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .server-loading {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+  }
+
+  .server-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 8px;
+  }
+
+  .server-status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .server-status-label {
+    font-size: 0.6rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .server-status-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  .server-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .server-status-badge.running {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  .status-dot-inline {
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #22c55e;
+  }
+
+  .server-bar-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .server-bar-track {
+    height: 8px;
+    background: #1e293b;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .server-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .server-bar-label {
+    font-size: 0.7rem;
+    color: #94a3b8;
+  }
+
+  .server-container-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .server-container-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 6px;
+    font-size: 0.7rem;
+  }
+
+  .server-container-name {
+    font-weight: 600;
+    color: #f1f5f9;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .server-container-image {
+    flex: 1;
+    color: #64748b;
+    font-size: 0.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .server-container-badge {
+    padding: 0.15rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .server-container-badge.running {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+  }
+
+  .server-container-badge.stopped {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+
+  .server-ollama-section {
+    margin-top: 1rem;
+  }
+
+  .server-ollama-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .server-model-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .server-model-chip {
+    padding: 0.2rem 0.6rem;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 10px;
+    font-size: 0.65rem;
+    color: #c4b5fd;
+    font-weight: 500;
   }
 
   /* Footer */
