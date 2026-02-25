@@ -42,6 +42,10 @@
   let actionInput = $state("");
   let actionType = $state<string>("open_app");
 
+  // Server task state
+  let serverTaskInput = $state("");
+  let serverTaskRunning = $state(false);
+
   // Event listeners cleanup
   let unsubscribers: (() => void)[] = [];
 
@@ -177,6 +181,17 @@
       await agentRuntime.start(agentId, "Assist the user with their tasks");
     } else {
       await agentRuntime.stop(agentId);
+    }
+  }
+
+  async function runServerTask() {
+    if (!selectedAgentId || !serverTaskInput.trim()) return;
+    serverTaskRunning = true;
+    try {
+      await agentRuntime.runServerAgent(selectedAgentId, serverTaskInput.trim());
+      serverTaskInput = "";
+    } finally {
+      serverTaskRunning = false;
     }
   }
 
@@ -520,6 +535,32 @@
               disabled={!actionInput.trim()}
             >
               Execute
+            </button>
+          </div>
+        </div>
+
+        <!-- Server Task -->
+        <div class="detail-section action-section">
+          <h4 class="section-title">Run Server Task</h4>
+          <div class="action-input-row">
+            <input
+              type="text"
+              class="action-input"
+              placeholder="Describe a task for the agent..."
+              bind:value={serverTaskInput}
+              onkeydown={(e) => e.key === "Enter" && !serverTaskRunning && runServerTask()}
+              disabled={serverTaskRunning}
+            />
+            <button
+              class="execute-btn"
+              onclick={runServerTask}
+              disabled={!serverTaskInput.trim() || serverTaskRunning}
+            >
+              {#if serverTaskRunning}
+                <span class="spinner-small"></span> Running...
+              {:else}
+                Run on Server
+              {/if}
             </button>
           </div>
         </div>
@@ -1349,5 +1390,19 @@
   .delete-agent-btn:hover {
     background: rgba(239, 68, 68, 0.3);
     border-color: rgba(239, 68, 68, 0.5);
+  }
+
+  .spinner-small {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>

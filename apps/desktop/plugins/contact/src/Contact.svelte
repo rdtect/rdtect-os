@@ -5,6 +5,8 @@
    * Professional contact form with glassmorphism design.
    * Supports PocketBase submission with graceful fallback.
    */
+  import { PUBLIC_PYTHON_API_URL } from '$env/static/public';
+  import { pb } from '$lib/core/pocketbase';
   import ContactForm from './ContactForm.svelte';
   import SuccessMessage from './SuccessMessage.svelte';
 
@@ -19,9 +21,6 @@
   let formState = $state<FormState>('form');
   let errorMessage = $state<string>('');
 
-  // PocketBase configuration
-  const POCKETBASE_URL = import.meta.env.PUBLIC_POCKETBASE_URL || 'http://localhost:8090';
-
   async function handleSubmit(formData: {
     name: string;
     email: string;
@@ -32,27 +31,27 @@
     errorMessage = '';
 
     try {
-      const response = await fetch(`${POCKETBASE_URL}/api/collections/contact_messages/records`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          submitted_at: new Date().toISOString(),
-        }),
+      // Try Python API first (for rate limiting)
+      try {
+        const res = await fetch(`${PUBLIC_PYTHON_API_URL}/api/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        if (res.ok) {
+          formState = 'success';
+          return;
+        }
+      } catch { /* fall through to PocketBase */ }
+
+      // Fallback to PocketBase directly
+      await pb.collection('contact_messages').create({
+        ...formData,
+        submitted_at: new Date().toISOString(),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit message');
-      }
-
       formState = 'success';
-    } catch (error) {
-      console.error('Contact form submission failed:', error);
+    } catch {
       errorMessage = 'Unable to send message. Please try contacting via social media or email directly.';
       formState = 'error';
     }

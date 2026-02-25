@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { pb } from '$lib/core/pocketbase';
   import ProjectCard from './ProjectCard.svelte';
   import ProjectModal from './ProjectModal.svelte';
-  import { projects, getAllTechnologies, getAllCategories, categoryInfo, type Project } from './data';
+  import { projects as defaultProjects, getAllTechnologies, getAllCategories, categoryInfo, type Project } from './data';
   import { fetchGitHubRepos, languageColors, type GitHubRepo } from './github';
 
   // Props from window manager
@@ -13,6 +14,8 @@
 
   // Top-level tab state - GitHub is default for a portfolio
   let activeMainTab = $state<'projects' | 'github'>('github');
+  let usingLiveData = $state(false);
+  let projects = $state<Project[]>([...defaultProjects]);
 
   // State
   let searchQuery = $state('');
@@ -135,12 +138,36 @@
     return `${Math.floor(days / 365)} years ago`;
   }
 
-  // Animation on mount
+  // Animation on mount + PocketBase fetch
   let isVisible = $state(false);
-  onMount(() => {
+  onMount(async () => {
     setTimeout(() => {
       isVisible = true;
     }, 50);
+
+    // Try to load projects from PocketBase
+    try {
+      const result = await pb.collection('projects').getList(1, 50, {
+        filter: 'status = "published"',
+        sort: '-created'
+      });
+      if (result.items.length > 0) {
+        projects = result.items.map((p: Record<string, unknown>) => ({
+          id: p.id as string,
+          title: p.title as string,
+          description: p.description as string,
+          techStack: (p.technologies as string[]) || [],
+          github: (p.github_url as string) || '',
+          demoUrl: (p.live_url as string) || (p.demo_url as string) || '',
+          thumbnail: (p.thumbnail as string) || '',
+          category: (p.category as Project['category']) || 'web',
+          featured: (p.featured as boolean) || false,
+          year: (p.year as number) || new Date().getFullYear(),
+          status: (p.project_status as Project['status']) || 'completed',
+        }));
+        usingLiveData = true;
+      }
+    } catch { /* keep hardcoded fallback */ }
   });
 
   // Load GitHub repos when the tab is switched
@@ -156,7 +183,12 @@
   <header class="header">
     <div class="header-content">
       <div class="title-section">
-        <h1 class="title">Project Gallery</h1>
+        <div class="title-row">
+          <h1 class="title">Project Gallery</h1>
+          {#if usingLiveData}
+            <span class="live-badge">Live</span>
+          {/if}
+        </div>
         <p class="subtitle">Explore portfolio projects and open live demos within rdtect OS</p>
       </div>
       <div class="stats">
@@ -506,6 +538,24 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .live-badge {
+    padding: 0.2rem 0.5rem;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #22c55e;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .title {

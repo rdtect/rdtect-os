@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-from src.routers import chat, knowledge, vps, agents
+from src.routers import agents, chat, contact, knowledge, vps
 
 load_dotenv()
 
@@ -46,6 +46,7 @@ app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(knowledge.router, prefix="/api/knowledge", tags=["knowledge"])
 app.include_router(vps.router, prefix="/api/vps", tags=["vps"])
 app.include_router(agents.router, prefix="/api/agents", tags=["agents"])
+app.include_router(contact.router, prefix="/api/contact", tags=["contact"])
 
 
 @app.get("/health")
@@ -58,5 +59,5 @@ async def root() -> dict:
     return {
         "service": "rdtect OS API",
         "docs": "/docs",
-        "endpoints": ["/api/chat", "/api/knowledge", "/api/vps", "/api/agents"],
+        "endpoints": ["/api/chat", "/api/knowledge", "/api/vps", "/api/agents", "/api/contact"],
     }

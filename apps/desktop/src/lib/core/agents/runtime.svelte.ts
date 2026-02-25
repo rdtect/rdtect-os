@@ -226,6 +226,65 @@ class AgentRuntimeImpl implements AgentRuntime {
     return await tool.execute(action.params, agent);
   }
 
+  // === Server Execution ===
+
+  async runServerAgent(agentId: string, task: string): Promise<void> {
+    const agent = this.getAgent(agentId);
+    if (!agent) return;
+
+    this.updateAgentStatus(agentId, 'thinking');
+    this.runningAgents.add(agentId);
+
+    try {
+      const { PUBLIC_PYTHON_API_URL } = await import('$env/static/public');
+      const response = await fetch(`${PUBLIC_PYTHON_API_URL}/api/agents/run`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task, system: agent.systemPrompt || undefined })
+      });
+
+      if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const event = JSON.parse(line.slice(6));
+            if (event.type === 'text') {
+              this.addMemory(agentId, { type: 'observation', content: event.content });
+              this.emit('agent:message', agentId, { agentId, content: event.content });
+            } else if (event.type === 'tool_call') {
+              this.updateAgentStatus(agentId, 'acting');
+              this.addMemory(agentId, { type: 'action', content: `Tool: ${event.tool_name}` });
+            } else if (event.type === 'tool_result') {
+              this.addMemory(agentId, { type: 'result', content: event.content.slice(0, 200) });
+            } else if (event.type === 'done') {
+              break;
+            } else if (event.type === 'error') {
+              throw new Error(event.content);
+            }
+          } catch { /* skip malformed SSE lines */ }
+        }
+      }
+    } catch (e) {
+      this.addMemory(agentId, { type: 'observation', content: `Error: ${e instanceof Error ? e.message : 'Unknown'}` });
+      this.emit('agent:error', agentId, { agentId, error: String(e) });
+    } finally {
+      this.runningAgents.delete(agentId);
+      this.updateAgentStatus(agentId, 'idle');
+    }
+  }
+
   // === Autonomous Mode ===
 
   async start(agentId: string, goal?: string): Promise<void> {

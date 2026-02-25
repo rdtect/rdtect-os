@@ -3,6 +3,7 @@
   import type { BlogPost } from './data';
   import {
     samplePosts,
+    calculateReadTime,
     getAllTags,
     filterPostsByTag,
     searchPosts,
@@ -27,6 +28,7 @@
   let searchQuery = $state('');
   let selectedTag = $state<string | null>(null);
   let selectedPost = $state<BlogPost | null>(null);
+  let usingLiveData = $state(false);
 
   // Derived
   const allTags = $derived(getAllTags(posts));
@@ -65,41 +67,45 @@
   async function fetchPosts() {
     loading = true;
     error = null;
+    usingLiveData = false;
 
     try {
-      // Try PocketBase first (if configured)
-      const pbUrl = import.meta.env.VITE_POCKETBASE_URL;
-      if (pbUrl) {
-        const response = await fetch(`${pbUrl}/api/collections/blog_posts/records?sort=-published_at`);
-        if (response.ok) {
-          const data = await response.json();
-          posts = data.items.map((item: Record<string, unknown>) => ({
-            id: item.id,
-            title: item.title,
-            slug: item.slug,
-            excerpt: item.excerpt,
-            content: item.content,
-            coverImage: item.cover_image,
-            author: {
-              name: item.author_name || 'rdtect',
-              avatar: item.author_avatar
-            },
-            publishedAt: item.published_at,
-            updatedAt: item.updated_at,
-            readTime: item.read_time || 5,
-            tags: item.tags || [],
-            featured: item.featured
-          }));
-          loading = false;
-          return;
-        }
+      const { pb } = await import('$lib/core/pocketbase');
+      const result = await pb.collection('blog_posts').getList(1, 50, {
+        sort: '-published_at',
+        filter: 'status = "published"'
+      });
+      if (result.items.length > 0) {
+        posts = result.items.map((item: Record<string, unknown>) => ({
+          id: item.id as string,
+          title: item.title as string,
+          slug: item.slug as string,
+          excerpt: item.excerpt as string,
+          content: item.content as string,
+          coverImage: (item.cover_image as string) || '',
+          author: {
+            name: (item.author_name as string) || 'rdtect',
+            avatar: item.author_avatar as string | undefined
+          },
+          publishedAt: item.published_at as string,
+          updatedAt: item.updated_at as string | undefined,
+          readTime: (item.read_time as number) || calculateReadTime((item.content as string) || ''),
+          tags: (item.tags as string[]) || [],
+          featured: item.featured as boolean | undefined
+        }));
+        usingLiveData = true;
+        loading = false;
+        return;
       }
-    } catch (e) {
-      if (import.meta.env.DEV) console.log('PocketBase not available, using sample data');
+    } catch {
+      // PocketBase not available, fall through to sample data
     }
 
-    // Fallback to sample data
-    posts = samplePosts;
+    // Fallback to sample data with calculated reading times
+    posts = samplePosts.map(p => ({
+      ...p,
+      readTime: p.readTime || calculateReadTime(p.content)
+    }));
     loading = false;
   }
 
@@ -157,6 +163,9 @@
             <h1>Blog</h1>
             <p class="tagline">Technical articles and thoughts</p>
           </div>
+          {#if !usingLiveData && !loading}
+            <span class="demo-badge">Demo</span>
+          {/if}
         </div>
 
         <div class="search-container">
@@ -371,6 +380,18 @@
     margin: 0;
     font-size: 0.8125rem;
     color: #64748b;
+  }
+
+  .demo-badge {
+    padding: 0.25rem 0.625rem;
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #eab308;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   /* Search */
