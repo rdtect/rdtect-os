@@ -10,13 +10,9 @@
     "dev:full": "docker compose --profile full up",
     "dev:all": "docker compose --profile all up",
     "dev:python": "docker compose up python-backend",
-    "dev:ai-chat": "bun run --filter @desktop-os/ai-chat-remote dev",
-    "dev:prompt-manager": "bun run --filter @desktop-os/prompt-manager-remote dev",
     "dev:excalidraw": "bun run --filter @desktop-os/excalidraw-remote preview",
     "build": "vite build",
     "build:docker": "docker compose -f docker-compose.prod.yml build",
-    "build:ai-chat": "bun run --filter @desktop-os/ai-chat-remote build",
-    "build:prompt-manager": "bun run --filter @desktop-os/prompt-manager-remote build",
     "build:excalidraw": "bun run --filter @desktop-os/excalidraw-remote build",
     "build:all": "bun run build && bun run build:excalidraw",
     "preview": "vite preview",
@@ -49,9 +45,6 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "mysql2": "^3.16.1",
-    "pocketbase": "^0.26.6",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "pocketbase": "^0.26.6"
   }
 }

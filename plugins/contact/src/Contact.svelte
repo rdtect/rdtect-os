@@ -67,8 +67,7 @@
   const socialLinks = [
     { name: 'GitHub', url: 'https://github.com/rdtect', icon: 'github' },
     { name: 'LinkedIn', url: 'https://linkedin.com/in/rdtect', icon: 'linkedin' },
-    { name: 'Twitter', url: 'https://twitter.com/rdtect', icon: 'twitter' },
-    { name: 'Email', url: 'mailto:contact@rdtect.dev', icon: 'mail' },
+    { name: 'Email', url: 'mailto:rdtect@outlook.com', icon: 'mail' },
   ];
 </script>
 
@@ -83,7 +82,7 @@
     </div>
     <div class="header-text">
       <h1>Get in Touch</h1>
-      <p>Have a question or want to work together?</p>
+      <p>rdtect@outlook.com · Dehradun, India</p>
     </div>
   </header>
 

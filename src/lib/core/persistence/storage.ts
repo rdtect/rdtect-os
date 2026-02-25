@@ -361,6 +361,23 @@ class PersistenceStoreImpl implements PersistenceStore {
 }
 
 // ============================================================================
+// Noop Adapter (SSR / no-storage environments)
+// ============================================================================
+
+class NoopStorageAdapter implements StorageAdapter {
+  name = 'noop';
+  isAsync = true;
+  async get<T>(_key: string): Promise<T | null> { return null; }
+  async set<T>(_key: string, _value: T): Promise<void> {}
+  async delete(_key: string): Promise<void> {}
+  async has(_key: string): Promise<boolean> { return false; }
+  async keys(): Promise<string[]> { return []; }
+  async clear(): Promise<void> {}
+  async getSize(): Promise<number> { return 0; }
+  async getQuota(): Promise<number> { return 0; }
+}
+
+// ============================================================================
 // Factory & Singleton
 // ============================================================================
 
@@ -371,7 +388,7 @@ function selectAdapter(): StorageAdapter {
   if (typeof indexedDB !== 'undefined') {
     return new IndexedDBAdapter();
   }
-  throw new Error('[Storage] No storage adapter available');
+  return new NoopStorageAdapter();
 }
 
 export const storage = new PersistenceStoreImpl(selectAdapter());

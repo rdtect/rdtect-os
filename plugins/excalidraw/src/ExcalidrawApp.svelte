@@ -32,28 +32,28 @@
       return;
     }
 
-    console.log("[Excalidraw] Container ready, dimensions:", containerRef.offsetWidth, "x", containerRef.offsetHeight);
+    if (import.meta.env.DEV) console.log("[Excalidraw] Container ready, dimensions:", containerRef.offsetWidth, "x", containerRef.offsetHeight);
 
     // Vite federation exports get/init as ES module exports
     const REMOTE_ENTRY_URL = "/federation/excalidraw/assets/remoteEntry.js";
     const EXPOSED_MODULE = "./Excalidraw";
 
     try {
-      console.log("[Excalidraw] Loading remote entry...");
+      if (import.meta.env.DEV) console.log("[Excalidraw] Loading remote entry...");
 
       // Import the remote entry as an ES module
       const remoteEntry = await import(/* @vite-ignore */ REMOTE_ENTRY_URL);
-      console.log("[Excalidraw] Remote entry loaded:", Object.keys(remoteEntry));
+      if (import.meta.env.DEV) console.log("[Excalidraw] Remote entry loaded:", Object.keys(remoteEntry));
 
       // Initialize shared scope
       const shareScope = (globalThis as any).__federation_shared__ || {};
       await remoteEntry.init(shareScope);
-      console.log("[Excalidraw] Share scope initialized");
+      if (import.meta.env.DEV) console.log("[Excalidraw] Share scope initialized");
 
       // Get the exposed module
       const factory = await remoteEntry.get(EXPOSED_MODULE);
       const module = await factory();
-      console.log("[Excalidraw] Got module exports:", Object.keys(module));
+      if (import.meta.env.DEV) console.log("[Excalidraw] Got module exports:", Object.keys(module));
 
       // Use the mount function from the remote - it uses its own bundled React 18
       const mountFn = module.mount;
@@ -67,11 +67,11 @@
 
       // Mount using the remote's bundled React
       if (containerRef) {
-        console.log("[Excalidraw] Mounting with remote's React...");
+        if (import.meta.env.DEV) console.log("[Excalidraw] Mounting with remote's React...");
         reactRoot = mountFn(containerRef, {
           onSave: handleSave
         });
-        console.log("[Excalidraw] Component mounted successfully");
+        if (import.meta.env.DEV) console.log("[Excalidraw] Component mounted successfully");
       }
     } catch (e) {
       console.error("[Excalidraw] Failed to load remote:", e);
@@ -95,7 +95,7 @@
     // Save to localStorage
     const key = `excalidraw-${windowId}`;
     localStorage.setItem(key, JSON.stringify(data));
-    console.log("[Excalidraw] Saved drawing");
+    if (import.meta.env.DEV) console.log("[Excalidraw] Saved drawing");
   }
 </script>
 

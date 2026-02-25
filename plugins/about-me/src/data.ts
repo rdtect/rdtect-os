@@ -97,129 +97,207 @@ export interface ProfileData {
 }
 
 // ============================================
-// SAMPLE DATA - Customize this for your portfolio
+// PORTFOLIO DATA — Rick Dé (rdtect)
 // ============================================
 
 export const profileData: ProfileData = {
   // Basic Info
-  name: 'Rick de Tect',
-  title: 'Full Stack Developer & Systems Architect',
-  tagline: 'Architecture without code is fantasy; code without architecture is chaos',
+  name: 'Rick Dé',
+  title: 'Product Designer & Metaverse Architect',
+  tagline: 'Architect turned creator — designing at the intersection of physical and digital realms',
   avatar: '',
-  location: 'United States',
-  email: 'rick@rdtect.com',
+  location: 'Dehradun, India',
+  email: 'rdtect@outlook.com',
+  phone: '+91 98309 14213',
   website: 'https://rdtect.com',
 
   // Bio
-  shortBio: 'Full stack developer building AI-powered applications and composable web platforms with modern TypeScript ecosystems.',
-  bio: `I build web platforms and AI-powered applications with a focus on clean architecture,
-composability, and developer experience. My approach combines Domain-Driven Design with
-Unix Philosophy to create systems that are modular, testable, and deletable.
+  shortBio: 'Architect turned Product Designer with 10+ years of experience. Pioneered the world\'s first NFT-crowdfunded Bollywood movie. Metaverse Architect at QuantLabs.',
+  bio: `Architect turned Product Designer with 10+ years of experience in architecture and 5+ years in tech. Expertise in user research, UX/UI design, 3D art and animation, metaverse product design, and web development.
 
-I work across the full stack with TypeScript, Svelte, React, Python, and Rust.
-Currently building rdtect OS -- a web-based desktop environment that demonstrates
-plugin architecture, virtual filesystems, and real-time AI chat via WebSocket streaming.
+Designed Versez — a customizable metaverse platform — for B2B clients, and pioneered the world's first NFT crowd-funded Bollywood movie (Ilm, now streaming on Disney+ Hotstar). Adept at working cross-functionally with engineers, product managers, and stakeholders to bring innovative products to market.
 
-My development practice follows TDD, immutability-first patterns, and the MRAX framework
-(Model, Rules, Actions, Logs) for organizing complexity. I believe the best abstractions
-are the ones you can delete without breaking unrelated code.`,
+Passionate about creating products that make a positive impact. Leverages technology to design new and innovative digital experiences — from physical architecture to immersive metaverse worlds to polished web interfaces.
 
-  // Resume URL (direct download link)
+Currently building rdtect OS — a web-based desktop environment demonstrating plugin architecture, virtual filesystems, and real-time AI integration.`,
+
+  // Resume URL
   resumeUrl: '/resume.pdf',
 
   // Skills
   skills: [
-    // Frontend
-    { name: 'TypeScript', level: 95, category: 'frontend', color: '#3178c6' },
-    { name: 'Svelte / SvelteKit', level: 90, category: 'frontend', color: '#ff3e00' },
-    { name: 'React / Next.js', level: 85, category: 'frontend', color: '#61dafb' },
-    { name: 'Tailwind CSS', level: 90, category: 'frontend', color: '#06b6d4' },
-    { name: 'HTML5 / CSS3', level: 95, category: 'frontend', color: '#e34c26' },
+    // Frontend / Design
+    { name: 'UX/UI Design', level: 95, category: 'frontend', color: '#f24e1e' },
+    { name: 'Product Design & Launch', level: 92, category: 'frontend', color: '#6366f1' },
+    { name: 'Wireframing & Prototyping', level: 92, category: 'frontend', color: '#a855f7' },
+    { name: 'Svelte / SvelteKit', level: 88, category: 'frontend', color: '#ff3e00' },
+    { name: 'HTML / CSS / JavaScript', level: 85, category: 'frontend', color: '#e34c26' },
+    { name: 'Tailwind CSS', level: 82, category: 'frontend', color: '#06b6d4' },
 
-    // Backend
-    { name: 'Node.js / Bun', level: 90, category: 'backend', color: '#339933' },
-    { name: 'Python / FastAPI', level: 85, category: 'backend', color: '#3776ab' },
-    { name: 'Rust', level: 65, category: 'backend', color: '#dea584' },
-    { name: 'PostgreSQL', level: 85, category: 'backend', color: '#336791' },
-    { name: 'REST / WebSocket APIs', level: 95, category: 'backend', color: '#6366f1' },
-    { name: 'OpenAI / LLM Integration', level: 80, category: 'backend', color: '#10a37f' },
+    // Backend / Web3
+    { name: 'Web3 & Smart Contracts', level: 80, category: 'backend', color: '#8b5cf6' },
+    { name: 'Metaverse Architecture', level: 88, category: 'backend', color: '#7c3aed' },
+    { name: 'NFT Creation & Platforms', level: 82, category: 'backend', color: '#a855f7' },
 
-    // DevOps
-    { name: 'Docker', level: 85, category: 'devops', color: '#2496ed' },
-    { name: 'Linux / WSL2', level: 90, category: 'devops', color: '#fcc624' },
-    { name: 'CI/CD Pipelines', level: 80, category: 'devops', color: '#4caf50' },
-    { name: 'Nginx / VPS', level: 75, category: 'devops', color: '#009639' },
+    // Tools & Creative
+    { name: 'Figma', level: 95, category: 'tools', color: '#f24e1e' },
+    { name: 'Blender & Spline (3D)', level: 88, category: 'tools', color: '#ea7600' },
+    { name: 'Adobe Creative Suite', level: 85, category: 'tools', color: '#ff0000' },
+    { name: 'Affinity Suite', level: 80, category: 'tools', color: '#1e6fcc' },
+    { name: 'AI / Prompt Engineering', level: 82, category: 'tools', color: '#10a37f' },
 
-    // Tools
-    { name: 'Git / GitHub', level: 95, category: 'tools', color: '#f05032' },
-    { name: 'Claude Code / AI Agents', level: 90, category: 'tools', color: '#d4a574' },
-    { name: 'VS Code / Cursor', level: 90, category: 'tools', color: '#007acc' },
-    { name: 'Figma', level: 70, category: 'tools', color: '#f24e1e' },
+    // Soft Skills
+    { name: 'Architectural Design & Planning', level: 95, category: 'soft', color: '#10b981' },
+    { name: 'Design Thinking & Strategy', level: 92, category: 'soft', color: '#0ea5e9' },
+    { name: 'Visual Communication & Storytelling', level: 90, category: 'soft', color: '#22c55e' },
+    { name: 'Cross-functional Collaboration', level: 90, category: 'soft', color: '#f59e0b' },
   ],
 
   // Experience
   experience: [
     {
-      id: 'exp-1',
-      title: 'Full Stack Developer & Architect',
-      company: 'Independent',
+      id: 'exp-quant',
+      title: 'Product Designer & Metaverse Architect',
+      company: 'QuantLabs',
       location: 'Remote',
-      startDate: '2023-01',
+      startDate: '2022-04',
       endDate: 'Present',
-      description: 'Building web platforms, AI-integrated applications, and developer tools as an independent engineer.',
+      description: 'Led product design for a web3 and metaverse services company, delivering B2B products and platforms across immersive digital experiences.',
       highlights: [
-        'Designed and built rdtect OS -- a web-based desktop environment with plugin architecture supporting 5 plugin types',
-        'Implemented real-time AI chat with WebSocket streaming and OpenAI API integration',
-        'Created a modular monorepo architecture with SvelteKit 5, FastAPI, and shared TypeScript types',
-        'Built virtual filesystem layer (Unix-style /proc, /dev, .config) for web environment state management'
+        'Designed Versez — a customizable metaverse platform for virtual worlds, offered as a PAAS product to B2B clients',
+        'Designed and rendered 3D models of virtual spaces and objects for immersive metaverse environments',
+        'Designed UI/UX for diverse client web apps, resulting in a 10% increase in user engagement',
+        'Designed a virtual meta theater for GSP offering realistic and engaging live performances',
+        'Crafted a metaverse product for the first Durga Puja cultural showcase on the metaverse'
       ],
-      technologies: ['SvelteKit 5', 'TypeScript', 'Python', 'FastAPI', 'Bun', 'Docker', 'Tailwind CSS']
+      technologies: ['Blender', 'Figma', 'Svelte', 'Web3', 'NFT', '3D Design', 'UX/UI']
     },
     {
-      id: 'exp-2',
-      title: 'Senior Full Stack Developer',
-      company: 'Enterprise Software',
-      location: 'Remote',
-      startDate: '2020-06',
-      endDate: '2022-12',
-      description: 'Led development of cloud-native applications and internal tooling for enterprise teams.',
+      id: 'exp-arcx',
+      title: 'Principal Architect and Designer',
+      company: 'Studio ArcX',
+      location: 'Dehradun, India',
+      startDate: '2014-08',
+      endDate: '2021-08',
+      description: 'Designed and created spatial environments for architecture, interior, and landscape projects, with a focus on 3D visualisation and brand identity.',
       highlights: [
-        'Architected microservices backend serving high-traffic production workloads',
-        'Reduced page load times by 60% through code splitting, caching strategies, and performance profiling',
-        'Implemented CI/CD pipelines cutting deployment time from hours to minutes',
-        'Mentored junior developers on clean architecture and testing practices'
+        'Designed spatial environments for multiple Architecture, Interior, and Landscape projects',
+        'Specialized in 3D Visualisation, Visual Design, Identity & Experience building',
+        'Created the website for the firm and established its web presence',
+        'Developed social media presence and brand identity systems'
       ],
-      technologies: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'AWS', 'Docker']
+      technologies: ['AutoCAD', 'Revit', '3D Visualisation', 'Graphic Design', 'Web Design']
     },
     {
-      id: 'exp-3',
-      title: 'Full Stack Developer',
-      company: 'Web Agency',
-      location: 'Hybrid',
-      startDate: '2018-03',
-      endDate: '2020-05',
-      description: 'Built responsive web applications and APIs for diverse client projects.',
+      id: 'exp-foad',
+      title: 'Assistant Professor — Architecture & UI/UX Design',
+      company: 'FOAD, DIT University',
+      location: 'Dehradun, India',
+      startDate: '2018-08',
+      endDate: '2021-08',
+      description: 'Taught architecture and UI/UX design while leading design initiatives for university publications and digital presence.',
       highlights: [
-        'Delivered 15+ production web applications across healthcare, fintech, and e-commerce',
-        'Integrated third-party payment systems and real-time notification services',
-        'Introduced automated testing workflows increasing code coverage to 85%+',
-        'Led migration from legacy jQuery codebases to modern React component architecture'
+        'Taught architecture and UI/UX design to undergraduate students',
+        'Designed the annual magazine for the Faculty of Architecture and Design',
+        'Led the website design team for the faculty'
       ],
-      technologies: ['React', 'Vue.js', 'Python', 'FastAPI', 'MongoDB', 'Redis']
+      technologies: ['Architecture', 'UX/UI Design', 'Adobe Suite', 'Web Design']
+    },
+    {
+      id: 'exp-fpa',
+      title: 'Assistant Professor — Architecture & Design',
+      company: 'FPA, Manav Rachna University',
+      location: 'Faridabad, India',
+      startDate: '2016-08',
+      endDate: '2018-08',
+      description: 'Taught architecture and design, contributing to innovation initiatives and event/space design projects.',
+      highlights: [
+        'Taught architecture and UI/UX design courses',
+        'Designed the faculty prospectus and promotional materials',
+        'Part of the innovation department — designed events and spaces',
+        '3D design and visualization projects'
+      ],
+      technologies: ['Architecture', 'Graphic Design', '3D Design', 'Event Design']
+    },
+    {
+      id: 'exp-rmc',
+      title: 'Architect & Designer',
+      company: 'RMC Pvt. Ltd',
+      location: 'India',
+      startDate: '2013-08',
+      endDate: '2016-08',
+      description: 'Designed built environments for residential and industrial projects, with responsibilities spanning architecture, graphics, and data visualization.',
+      highlights: [
+        'Designed bungalows, apartments, factories, and other built environments',
+        'Created graphic design, diagramming, and concept diagrams',
+        'Produced presentation and branding design materials',
+        'Developed data visualization assets for project communication'
+      ],
+      technologies: ['AutoCAD', 'Revit', 'Graphic Design', 'Data Visualization']
+    },
+    {
+      id: 'exp-rba',
+      title: 'Intern Architect',
+      company: 'Ravindra Bhan & Associates',
+      location: 'India',
+      startDate: '2011-08',
+      endDate: '2013-08',
+      description: 'Worked with the pioneer of landscape architecture in India, contributing to architecture, landscape, and the firm\'s digital presence.',
+      highlights: [
+        'Designed architecture and landscape projects under the guidance of a pioneer in landscape architecture',
+        'Created the first website of the firm and established its web presence',
+        'Contributed to spatial design and landscape architecture projects'
+      ],
+      technologies: ['Landscape Architecture', 'AutoCAD', 'Web Design']
     }
   ],
 
   // Education
   education: [
     {
-      id: 'edu-1',
-      degree: 'Bachelor of Science',
-      field: 'Computer Science',
-      institution: 'University',
-      location: 'United States',
-      startDate: '2014',
-      endDate: '2018',
-      honors: ['Dean\'s List']
+      id: 'edu-barch',
+      degree: 'Bachelor of Architecture',
+      field: 'Architecture & Spatial Design',
+      institution: 'School of Architecture and Landscape Design, SMVDU',
+      location: 'Katra, Jammu & Kashmir, India',
+      startDate: '2008',
+      endDate: '2013',
+    },
+    {
+      id: 'edu-mitid',
+      degree: 'PGPEx — In Progress',
+      field: 'Design Leadership & Management',
+      institution: 'MITID (MIT Institute of Design)',
+      location: 'Pune, India',
+      startDate: '2023',
+      endDate: 'In Progress',
+    },
+    {
+      id: 'edu-uiux',
+      degree: 'Certified UI/UX Designer',
+      field: 'UX/UI Design',
+      institution: 'Karavan Academy',
+      location: 'Online',
+      startDate: '2020',
+      endDate: '2021',
+    },
+    {
+      id: 'edu-nft',
+      degree: 'NFT Course',
+      field: 'Blockchain Art & NFT Creation',
+      institution: 'Growth School (with artist kkraghava)',
+      location: 'Online',
+      startDate: '2021',
+      endDate: '2021',
+    },
+    {
+      id: 'edu-google-ux',
+      degree: 'Google UX Certificate — In Progress',
+      field: 'User Experience Design',
+      institution: 'Google / Coursera',
+      location: 'Online',
+      startDate: '2023',
+      endDate: 'In Progress',
     }
   ],
 
@@ -236,60 +314,74 @@ are the ones you can delete without breaking unrelated code.`,
       url: 'https://linkedin.com/in/rdtect',
       username: 'rdtect',
       icon: 'linkedin'
-    },
-    {
-      platform: 'Twitter',
-      url: 'https://twitter.com/rdtect',
-      username: '@rdtect',
-      icon: 'twitter'
     }
   ],
 
   // Featured Projects
   projects: [
     {
-      id: 'proj-1',
+      id: 'proj-rdtect-os',
       name: 'rdtect OS',
-      description: 'Web-based desktop environment with plugin architecture, virtual filesystems, and AI integration',
+      description: 'Web-based desktop environment with plugin architecture, virtual filesystems, and AI integration. The project you\'re viewing right now.',
       github: 'https://github.com/rdtect/desktop-os',
-      technologies: ['SvelteKit 5', 'TypeScript', 'Tailwind CSS', 'Bun'],
+      technologies: ['SvelteKit 5', 'Svelte 5', 'TypeScript', 'Tailwind CSS', 'Bun'],
       featured: true
     },
     {
-      id: 'proj-2',
-      name: 'AI Chat Backend',
-      description: 'Real-time AI chat service with WebSocket streaming and OpenAI API integration',
-      github: 'https://github.com/rdtect/desktop-os',
-      technologies: ['Python', 'FastAPI', 'WebSocket', 'OpenAI'],
+      id: 'proj-ilm',
+      name: 'Ilm — the web3 Movie',
+      description: 'Designed letscollect.io, a NFT crowdfunding platform for movies, creating the world\'s first NFT crowd-funded Bollywood movie. Now streaming on Disney+ Hotstar.',
+      technologies: ['Product Design', 'Web3', 'NFT', 'Crowdfunding Platform', 'UI/UX'],
       featured: true
     },
     {
-      id: 'proj-3',
-      name: 'Plugin System',
-      description: 'Extensible plugin architecture supporting native, iframe, federation, web component, and WASM types',
-      github: 'https://github.com/rdtect/desktop-os',
-      technologies: ['TypeScript', 'Svelte 5', 'Module Federation', 'Vite'],
+      id: 'proj-versez',
+      name: 'Versez — Metaverse Platform',
+      description: 'Designed a customizable metaverse platform for virtual worlds, offered as a PAAS product to B2B clients at QuantLabs.',
+      technologies: ['Metaverse Design', 'Blender', '3D Environments', 'Product Design', 'Web3'],
       featured: true
+    },
+    {
+      id: 'proj-fikka',
+      name: 'Fikka.io',
+      description: 'Product design and management of an NFT marketplace and Web3 social media platform.',
+      technologies: ['Product Design', 'NFT Marketplace', 'Web3', 'Social Platform', 'UI/UX'],
+      featured: true
+    },
+    {
+      id: 'proj-maple',
+      name: 'Maple Org Tech',
+      description: 'Solved supply chain challenges by designing an app for an organic fertilizer manufacturing industry, improving manufacturer and consumer interaction systems.',
+      technologies: ['Product Design', 'UX Research', 'Supply Chain', 'Mobile App', 'Figma'],
+      featured: true
+    },
+    {
+      id: 'proj-roledin',
+      name: 'RoledIn',
+      description: 'Designed an innovative LMS, ERP, and CRM platform for schools and educational institutes.',
+      technologies: ['Product Design', 'Svelte', 'LMS', 'ERP', 'UI/UX Design'],
+      featured: false
     }
   ],
 
   // Availability
   availability: 'available',
-  availabilityMessage: 'Open to new opportunities and collaborations',
+  availabilityMessage: 'Open to design & development collaborations',
 
   // Languages
   languages: [
-    { name: 'English', level: 'Native' }
+    { name: 'English', level: 'Professional' },
+    { name: 'Hindi', level: 'Native' }
   ],
 
   // Interests
   interests: [
-    'AI / LLM Agents',
-    'System Architecture',
-    'Open Source',
-    'Developer Tools',
-    'Web Platforms',
-    'Rust'
+    '3D Design & Visualization',
+    'Metaverse & Web3',
+    'Open Source Technology',
+    'Architectural Design',
+    'Digital Product Design',
+    'AI-Augmented Design'
   ]
 };
 

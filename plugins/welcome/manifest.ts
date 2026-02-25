@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest & { autoOpen: boolean; storageKey: string } = {
   id: 'welcome',
   name: 'Welcome',
   version: '1.0.0',

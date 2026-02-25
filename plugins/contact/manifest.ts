@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'contact',
   name: 'Contact',
   version: '1.0.0',

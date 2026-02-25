@@ -1,8 +1,10 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'about-me',
   name: 'About Me',
   version: '1.0.0',
-  type: 'native' as const,
+  type: 'native',
   icon: '👤',
   description: 'Personal portfolio and about me showcase',
   access: 'free',

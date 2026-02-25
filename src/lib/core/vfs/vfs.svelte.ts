@@ -659,7 +659,7 @@ class VFS implements VirtualFileSystem {
 
   async sync(): Promise<void> {
     // TODO: Sync with backend API
-    console.log('[VFS] Sync not yet implemented');
+    if (import.meta.env.DEV) console.log('[VFS] Sync not yet implemented');
   }
 }
 

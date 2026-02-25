@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'flappy-bird',
   name: 'Flappy Bird',
   version: '1.0.0',

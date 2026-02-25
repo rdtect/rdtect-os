@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'knowledge-base',
   name: 'Knowledge Base',
   version: '1.0.0',

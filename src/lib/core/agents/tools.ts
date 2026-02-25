@@ -9,6 +9,7 @@ import type { AgentTool, Agent } from './types';
 import { vfs } from '../vfs';
 import { wm } from '$lib/shell';
 import { eventBus } from '../event-bus';
+import type { EventMap as BusEventMap } from '../event-bus';
 
 // === File System Tools ===
 
@@ -300,7 +301,9 @@ export const emitEventTool: AgentTool = {
   },
   execute: async (params) => {
     const { event, data } = params as { event: string; data?: Record<string, unknown> };
-    eventBus.emit(event as any, data);
+    // Cast through unknown — event is a runtime string from LLM, not statically knowable
+    const typedEvent = event as unknown as keyof BusEventMap;
+    eventBus.emit(typedEvent, data as unknown as BusEventMap[typeof typedEvent]);
     return { success: true, event, data };
   }
 };

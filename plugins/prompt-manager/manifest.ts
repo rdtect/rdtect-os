@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'prompt-manager',
   name: 'Prompt Manager',
   version: '2.0.0',

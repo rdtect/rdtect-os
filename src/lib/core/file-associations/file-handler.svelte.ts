@@ -55,7 +55,7 @@ export function initFileHandler(): () => void {
       eventBus.emit('app:load-file', { windowId, path });
     }, 100);
 
-    console.log(`[FileHandler] Opened ${path} with ${appId} (window: ${windowId})`);
+    if (import.meta.env.DEV) console.log(`[FileHandler] Opened ${path} with ${appId} (window: ${windowId})`);
   });
 
   return unsubscribe;
@@ -75,7 +75,7 @@ export function startFileHandler(): void {
 
   cleanup = initFileHandler();
   initialized = true;
-  console.log('[FileHandler] Started');
+  if (import.meta.env.DEV) console.log('[FileHandler] Started');
 }
 
 /**
@@ -87,5 +87,5 @@ export function stopFileHandler(): void {
   cleanup();
   cleanup = null;
   initialized = false;
-  console.log('[FileHandler] Stopped');
+  if (import.meta.env.DEV) console.log('[FileHandler] Stopped');
 }

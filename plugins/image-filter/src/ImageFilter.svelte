@@ -369,7 +369,6 @@
   function initFilters() {
     filters = jsFilters;
     filtersReady = true;
-    console.log("Image Filter initialized, version:", filters?.getVersion());
   }
 
   function loadImage(file: File) {
@@ -562,7 +561,6 @@
   });
 
   onDestroy(() => {
-    console.log(`ImageFilter destroyed (window: ${windowId})`);
   });
 </script>
 

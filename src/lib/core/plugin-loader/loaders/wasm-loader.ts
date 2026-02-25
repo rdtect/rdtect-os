@@ -109,23 +109,23 @@ export class WasmLoader implements PluginTypeLoader {
             abort: () => console.error('WASM abort called'),
             log: (ptr: number, len: number) => {
               // Helper for WASM to log strings
-              console.log('WASM log:', ptr, len);
+              if (import.meta.env.DEV) console.log('WASM log:', ptr, len);
             },
             // Memory management helpers
             memory_alloc: (size: number) => {
               // Placeholder - real implementation depends on WASM module
-              console.log('WASM memory_alloc:', size);
+              if (import.meta.env.DEV) console.log('WASM memory_alloc:', size);
               return 0;
             },
             memory_free: (ptr: number) => {
-              console.log('WASM memory_free:', ptr);
+              if (import.meta.env.DEV) console.log('WASM memory_free:', ptr);
             },
           },
           // JavaScript imports for the WASM module
           js: {
             // Console logging
             console_log: (ptr: number, len: number) => {
-              console.log('WASM:', ptr, len);
+              if (import.meta.env.DEV) console.log('WASM:', ptr, len);
             },
             // Performance timing
             performance_now: () => performance.now(),

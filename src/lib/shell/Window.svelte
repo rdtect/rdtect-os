@@ -40,7 +40,7 @@
   const app = $derived(wm.getApp(win.appId));
 
   // Determine render mode based on plugin type
-  const renderMode = $derived(() => {
+  const renderMode = $derived.by(() => {
     if (!app) return null;
 
     // Check LoadedPlugin render kind first
@@ -240,7 +240,7 @@
   }
 
   // Compute animation class based on state
-  const animationClass = $derived(() => {
+  const animationClass = $derived.by(() => {
     switch (windowState) {
       case 'opening': return 'animate-window-open';
       case 'closing': return 'animate-window-close';
@@ -252,7 +252,7 @@
   });
 
   // Shadow intensity based on focus state
-  const shadowClass = $derived(() => {
+  const shadowClass = $derived.by(() => {
     if (win.isFocused) {
       return 'shadow-window-focused';
     }
@@ -268,8 +268,8 @@
     {win.isFocused ? 'window-focused' : 'window-unfocused'}
     {win.isMaximized || mobile.isMobile ? 'rounded-none' : 'rounded-xl'}
     {win.isResizing ? 'select-none [&_iframe]:pointer-events-none' : ''}
-    {animationClass()}
-    {shadowClass()}"
+    {animationClass}
+    {shadowClass}"
   style:left={mobile.isMobile ? '0px' : `${win.x}px`}
   style:top={mobile.isMobile ? '0px' : `${win.y}px`}
   style:width={mobile.isMobile ? '100vw' : `${win.width}px`}
@@ -361,8 +361,8 @@
 
   <!-- Content: Renders based on plugin type -->
   <div class="flex-1 overflow-hidden relative bg-desktop-bg">
-    {#if renderMode()}
-      {@const mode = renderMode()}
+    {#if renderMode}
+      {@const mode = renderMode}
       {#if mode?.kind === 'iframe'}
         <iframe
           class="w-full h-full border-none bg-[#0f172a]"

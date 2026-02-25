@@ -1,4 +1,6 @@
-const manifest = {
+import type { PluginManifest } from '$lib/core/types';
+
+const manifest: PluginManifest = {
   id: 'pocketbase-admin',
   name: 'Database Admin',
   version: '1.0.0',

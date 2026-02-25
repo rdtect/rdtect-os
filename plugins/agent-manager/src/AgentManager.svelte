@@ -236,12 +236,10 @@
       unsubscribers.push(unsub);
     });
 
-    console.log(`Agent Manager started (window: ${windowId})`);
   });
 
   onDestroy(() => {
     unsubscribers.forEach(unsub => unsub());
-    console.log(`Agent Manager destroyed (window: ${windowId})`);
   });
 </script>
 

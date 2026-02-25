@@ -198,7 +198,6 @@
     if (animationId !== null) {
       cancelAnimationFrame(animationId);
     }
-    console.log(`FlappyBird destroyed (window: ${windowId})`);
   });
 </script>
 

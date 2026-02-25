@@ -17,7 +17,7 @@
   let { remoteUrl, error, appName = 'Remote App', appIcon = '🔌', onRetry }: Props = $props();
 
   // Extract the base URL for display
-  const displayUrl = $derived(() => {
+  const displayUrl = $derived.by(() => {
     try {
       const url = new URL(remoteUrl);
       return `${url.protocol}//${url.host}`;
@@ -27,7 +27,7 @@
   });
 
   // Format error message to be more user-friendly
-  const friendlyError = $derived(() => {
+  const friendlyError = $derived.by(() => {
     if (error.includes('Timeout')) {
       return 'Connection timed out';
     }
@@ -51,12 +51,12 @@
 
     <!-- Message -->
     <h3 class="offline-title">{appName}</h3>
-    <p class="offline-message">{friendlyError()}</p>
+    <p class="offline-message">{friendlyError}</p>
 
     <!-- Server Info -->
     <div class="server-info">
       <span class="server-label">Remote server:</span>
-      <code class="server-url">{displayUrl()}</code>
+      <code class="server-url">{displayUrl}</code>
     </div>
 
     <!-- Instructions -->

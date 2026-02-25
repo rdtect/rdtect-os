@@ -95,7 +95,7 @@
         }
       }
     } catch (e) {
-      console.log('PocketBase not available, using sample data');
+      if (import.meta.env.DEV) console.log('PocketBase not available, using sample data');
     }
 
     // Fallback to sample data

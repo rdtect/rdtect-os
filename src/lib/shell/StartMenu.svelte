@@ -20,17 +20,17 @@
   let showAllApps = $state(false);
 
   // Pinned apps (first 8-12 apps for quick access)
-  const pinnedApps = $derived(() => {
+  const pinnedApps = $derived.by(() => {
     return wm.apps.slice(0, 12);
   });
 
   // All apps sorted alphabetically
-  const allApps = $derived(() => {
+  const allApps = $derived.by(() => {
     return [...wm.apps].sort((a, b) => a.title.localeCompare(b.title));
   });
 
   // Filtered apps based on search
-  const filteredApps = $derived(() => {
+  const filteredApps = $derived.by(() => {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase();
     return wm.apps.filter(app =>
@@ -49,7 +49,7 @@
   let userName = $derived(isAuthenticated ? (authModel?.name || authModel?.email || 'User') : 'Guest');
 
   // Recent apps (last opened - mock for now)
-  const recentApps = $derived(() => {
+  const recentApps = $derived.by(() => {
     // Get apps that have open windows, or fallback to first 4
     const runningAppIds = new Set(wm.windows.map(w => w.appId));
     const recent = wm.apps.filter(app => runningAppIds.has(app.id));
@@ -146,9 +146,9 @@
           <!-- Search Results -->
           <div class="search-results">
             <h3 class="section-title text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-              Search Results ({filteredApps().length})
+              Search Results ({filteredApps.length})
             </h3>
-            {#if filteredApps().length === 0}
+            {#if filteredApps.length === 0}
               <div class="text-center py-8 text-slate-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -157,7 +157,7 @@
               </div>
             {:else}
               <div class="space-y-1">
-                {#each filteredApps() as app (app.id)}
+                {#each filteredApps as app (app.id)}
                   {@const badge = pluginBadges[app.pluginType]}
                   <button
                     class="app-list-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors"
@@ -191,7 +191,7 @@
               </button>
             </div>
             <div class="space-y-0.5 max-h-[400px] overflow-y-auto">
-              {#each allApps() as app (app.id)}
+              {#each allApps as app (app.id)}
                 {@const badge = pluginBadges[app.pluginType]}
                 <button
                   class="app-list-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors"
@@ -224,7 +224,7 @@
               </button>
             </div>
             <div class="pinned-grid grid grid-cols-4 sm:grid-cols-6 gap-2">
-              {#each pinnedApps() as app, index (app.id)}
+              {#each pinnedApps as app, index (app.id)}
                 {@const badge = pluginBadges[app.pluginType]}
                 <button
                   class="pinned-app group flex flex-col items-center p-3 rounded-lg transition-all"
@@ -250,7 +250,7 @@
               Recommended
             </h3>
             <div class="space-y-1">
-              {#each recentApps() as app (app.id)}
+              {#each recentApps as app (app.id)}
                 {@const badge = pluginBadges[app.pluginType]}
                 <button
                   class="app-list-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors"

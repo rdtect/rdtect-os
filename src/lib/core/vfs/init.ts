@@ -115,7 +115,7 @@ export function initVirtualFilesystems(
   });
 
   initialized = true;
-  console.log('[VFS] Virtual filesystems initialized');
+  if (import.meta.env.DEV) console.log('[VFS] Virtual filesystems initialized');
 }
 
 /**

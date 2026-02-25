@@ -96,7 +96,6 @@
 
     // Check honeypot - if filled, it's likely a bot
     if (honeypot) {
-      console.log('Bot detected via honeypot');
       return;
     }
 

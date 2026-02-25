@@ -97,7 +97,7 @@
   );
 
   // Get all unique apps (pinned + running)
-  const taskbarApps = $derived(() => {
+  const taskbarApps = $derived.by(() => {
     const pinnedApps = wm.apps.filter(app => isPinned(app.id));
     const runningAppIds = new Set(wm.windows.map(w => w.appId));
     const runningUnpinnedApps = wm.apps.filter(
@@ -334,7 +334,7 @@
 
       <!-- Centered App Icons -->
       <div class="flex items-center gap-1.5 px-1">
-        {#each taskbarApps() as app (app.id)}
+        {#each taskbarApps as app (app.id)}
           {@const isRunning = hasOpenWindow(app.id)}
           {@const isHovered = hoveredApp === app.id}
           {@const appWindows = getAppWindows(app.id)}
