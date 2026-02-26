@@ -103,6 +103,53 @@ export const projects: Project[] = [
     dateAdded: '2021-06-01'
   },
 
+  // ── Omnicom / Professional Portfolio ─────────────────────────────
+  {
+    id: 'omnicom-ai-filmmaking',
+    title: 'AI Filmmaking — Omnicom Global Solutions',
+    description: 'First movers on AI-based filmmaking and advertising',
+    longDescription: 'Pioneered AI-based filmmaking and advertising workflows at Omnicom Global Solutions. Led creative technology teams exploring generative AI for video production, storyboarding, and campaign ideation — one of the earliest global agency efforts in AI-powered creative production.',
+    thumbnail: '',
+    icon: '🎬',
+    gradient: 'linear-gradient(135deg, #f59e0b 0%, #ea580c 40%, #9a3412 100%)',
+    screenshots: [],
+    techStack: ['AI/GenAI', 'Filmmaking', 'Creative Technology', 'Solution Architecture'],
+    category: 'professional',
+    source: 'portfolio',
+    featured: true,
+    dateAdded: '2024-06-01'
+  },
+  {
+    id: 'bbdo-global-dx',
+    title: 'BBDO Global Digital Experience',
+    description: 'Led digital experience and creative tech across 3 regions + New York',
+    longDescription: 'Led UI/UX and digital experience across creative technology teams at BBDO for three regions and New York. Solution architect for legacy websites with emergent technology layers. Managed multi-region delivery for BBDO Canada and ANZ with a focus on modern web experiences and design systems.',
+    thumbnail: '',
+    icon: '🌍',
+    gradient: 'linear-gradient(135deg, #6366f1 0%, #4338ca 40%, #312e81 100%)',
+    screenshots: [],
+    techStack: ['Solution Architecture', 'React', 'SvelteKit', 'Design Systems', 'Figma'],
+    category: 'professional',
+    source: 'portfolio',
+    featured: true,
+    dateAdded: '2023-09-01'
+  },
+  {
+    id: 'cjr-ai-website',
+    title: 'Columbia Journalism Review — AI Website',
+    description: 'Built AI-powered website for Columbia Journalism Review',
+    longDescription: 'Built AI-powered websites for Columbia Journalism Review at Omnicom Global Solutions. Leveraged generative AI and modern web architecture to create an innovative digital experience for one of the most respected journalism publications.',
+    thumbnail: '',
+    icon: '📰',
+    gradient: 'linear-gradient(135deg, #22c55e 0%, #16a34a 40%, #166534 100%)',
+    screenshots: [],
+    techStack: ['AI/GenAI', 'Web Development', 'Python', 'Solution Architecture'],
+    category: 'ai',
+    source: 'portfolio',
+    featured: true,
+    dateAdded: '2024-03-15'
+  },
+
   // ── rdtect OS Platform ──────────────────────────────────────────
   {
     id: 'desktop-os',

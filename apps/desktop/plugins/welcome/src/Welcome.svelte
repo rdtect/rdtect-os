@@ -51,7 +51,7 @@
     { appId: 'about-me', icon: '👤', name: 'About Me', description: 'Learn about the developer' },
     { appId: 'project-gallery', icon: '🚀', name: 'Projects', description: 'View portfolio projects' },
     { appId: 'blog', icon: '📝', name: 'Blog', description: 'Read articles and thoughts' },
-    { appId: 'contact', icon: '💬', name: 'Contact', description: 'Get in touch' }
+    { appId: 'about-me', icon: '💬', name: 'Contact', description: 'Get in touch' }
   ];
 
   // Launch an app and close the wizard
