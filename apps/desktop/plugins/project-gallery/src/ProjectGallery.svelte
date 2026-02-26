@@ -4,6 +4,7 @@
   import ProjectCard from './ProjectCard.svelte';
   import ProjectModal from './ProjectModal.svelte';
   import { projects as defaultProjects, getAllTechnologies, getAllCategories, categoryInfo, type Project } from './data';
+  import { localProjects } from './local-projects';
   import { fetchGitHubRepos, languageColors, type GitHubRepo } from './github';
 
   // Props from window manager
@@ -12,10 +13,13 @@
   }
   let { windowId }: Props = $props();
 
-  // Top-level tab state - GitHub is default for a portfolio
-  let activeMainTab = $state<'projects' | 'github'>('github');
+  // Merge all project sources
+  const allProjects = [...defaultProjects, ...localProjects];
+
+  // Top-level tab state — portfolio is the showcase default
+  let activeMainTab = $state<'portfolio' | 'concepts' | 'professional' | 'github'>('portfolio');
   let usingLiveData = $state(false);
-  let projects = $state<Project[]>([...defaultProjects]);
+  let projects = $state<Project[]>([...allProjects]);
 
   // State
   let searchQuery = $state('');
@@ -35,20 +39,37 @@
   const technologies = getAllTechnologies();
   const categories = getAllCategories();
 
-  // Filtered projects
+  // Tab-filtered projects
+  const portfolioProjects = $derived(
+    projects.filter(p => p.source === 'portfolio' && !['platform'].includes(p.category))
+  );
+
+  const conceptsProjects = $derived(
+    projects.filter(p => p.category === 'platform' || p.category === 'experiment')
+  );
+
+  const professionalProjects = $derived(
+    projects.filter(p => p.category === 'professional' || (p.source === 'local' && p.category === 'ai'))
+  );
+
+  // Active tab's project list
+  const activeTabProjects = $derived(() => {
+    if (activeMainTab === 'portfolio') return portfolioProjects;
+    if (activeMainTab === 'concepts') return conceptsProjects;
+    if (activeMainTab === 'professional') return professionalProjects;
+    return [];
+  });
+
+  // Filtered projects (search + category + tech within active tab)
   const filteredProjects = $derived(() => {
-    return projects.filter(project => {
-      // Search filter
+    return activeTabProjects().filter(project => {
       const searchLower = searchQuery.toLowerCase();
       const matchesSearch = !searchQuery ||
         project.title.toLowerCase().includes(searchLower) ||
         project.description.toLowerCase().includes(searchLower) ||
         project.techStack.some(tech => tech.toLowerCase().includes(searchLower));
 
-      // Category filter
       const matchesCategory = selectedCategory === 'all' || project.category === selectedCategory;
-
-      // Tech filter
       const matchesTech = selectedTech === 'all' || project.techStack.includes(selectedTech);
 
       return matchesSearch && matchesCategory && matchesTech;
@@ -72,18 +93,25 @@
     });
   });
 
-  // Stats
+  // Tab definitions with counts
+  const tabs = $derived([
+    { id: 'portfolio' as const, label: 'Portfolio', icon: '🎨', count: portfolioProjects.length },
+    { id: 'concepts' as const, label: 'Concepts', icon: '🧪', count: conceptsProjects.length },
+    { id: 'professional' as const, label: 'Professional', icon: '💼', count: professionalProjects.length },
+    { id: 'github' as const, label: 'GitHub', icon: 'github', count: githubRepos.length },
+  ]);
+
+  // Stats for active tab
   const stats = $derived(() => ({
-    total: projects.length,
+    total: activeTabProjects().length,
     filtered: filteredProjects().length,
-    featured: projects.filter(p => p.featured).length
+    featured: activeTabProjects().filter(p => p.featured).length
   }));
 
   // Open project in the OS as iframe app
   function openProjectDemo(project: Project) {
     if (!project.demoUrl) return;
 
-    // Dispatch custom event to open as iframe window
     const event = new CustomEvent('desktop:open-iframe', {
       bubbles: true,
       detail: {
@@ -156,14 +184,18 @@
           id: p.id as string,
           title: p.title as string,
           description: p.description as string,
-          techStack: (p.technologies as string[]) || [],
-          github: (p.github_url as string) || '',
-          demoUrl: (p.live_url as string) || (p.demo_url as string) || '',
+          longDescription: (p.long_description as string) || (p.description as string),
           thumbnail: (p.thumbnail as string) || '',
-          category: (p.category as Project['category']) || 'web',
+          icon: (p.icon as string) || '📦',
+          gradient: (p.gradient as string) || 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+          screenshots: (p.screenshots as string[]) || [],
+          techStack: (p.technologies as string[]) || [],
+          githubUrl: (p.github_url as string) || '',
+          demoUrl: (p.live_url as string) || (p.demo_url as string) || '',
+          category: (p.category as Project['category']) || 'fullstack',
+          source: (p.source as Project['source']) || 'portfolio',
           featured: (p.featured as boolean) || false,
-          year: (p.year as number) || new Date().getFullYear(),
-          status: (p.project_status as Project['status']) || 'completed',
+          dateAdded: (p.date_added as string) || new Date().toISOString(),
         }));
         usingLiveData = true;
       }
@@ -175,6 +207,13 @@
     if (activeMainTab === 'github' && githubRepos.length === 0 && !githubLoading) {
       loadGitHubRepos();
     }
+  });
+
+  // Reset filters when switching tabs
+  $effect(() => {
+    // Track tab changes
+    activeMainTab;
+    clearFilters();
   });
 </script>
 
@@ -193,46 +232,44 @@
       </div>
       <div class="stats">
         <span class="stat">
-          <span class="stat-value">{stats().total}</span>
+          <span class="stat-value">{projects.length}</span>
           <span class="stat-label">Projects</span>
         </span>
         <span class="stat">
-          <span class="stat-value">{stats().featured}</span>
+          <span class="stat-value">{projects.filter(p => p.featured).length}</span>
           <span class="stat-label">Featured</span>
         </span>
       </div>
     </div>
 
-    <!-- Main Tab Switcher -->
-    <div class="main-tabs">
-      <button
-        class="main-tab"
-        class:active={activeMainTab === 'github'}
-        onclick={() => activeMainTab = 'github'}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        GitHub
-      </button>
-      <button
-        class="main-tab"
-        class:active={activeMainTab === 'projects'}
-        onclick={() => activeMainTab = 'projects'}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7"/>
-          <rect x="14" y="3" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/>
-        </svg>
-        Projects
-      </button>
-    </div>
+    <!-- Tab Navigation -->
+    <nav class="main-tabs" role="tablist">
+      {#each tabs as tab}
+        <button
+          class="main-tab"
+          class:active={activeMainTab === tab.id}
+          onclick={() => activeMainTab = tab.id}
+          role="tab"
+          aria-selected={activeMainTab === tab.id}
+        >
+          {#if tab.icon === 'github'}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          {:else}
+            <span class="tab-icon">{tab.icon}</span>
+          {/if}
+          <span class="tab-label">{tab.label}</span>
+          {#if tab.count > 0}
+            <span class="tab-count">{tab.count}</span>
+          {/if}
+        </button>
+      {/each}
+    </nav>
   </header>
 
-  {#if activeMainTab === 'projects'}
-    <!-- Projects Tab Content -->
+  {#if activeMainTab !== 'github'}
+    <!-- Project Tabs Content (Portfolio / Concepts / Professional) -->
     <!-- Filters -->
     <div class="filters">
       <!-- Search -->
@@ -564,6 +601,7 @@
     font-weight: 600;
     color: #f1f5f9;
     letter-spacing: -0.02em;
+    font-family: var(--desktop-font-sans, system-ui, sans-serif);
   }
 
   .subtitle {
@@ -600,24 +638,25 @@
   /* Main Tabs */
   .main-tabs {
     display: flex;
-    gap: 4px;
+    gap: 2px;
     margin-top: 16px;
   }
 
   .main-tab {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
+    gap: 6px;
+    padding: 10px 16px;
     background: transparent;
-    border: 1px solid transparent;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
+    border: none;
+    border-bottom: 2px solid transparent;
     color: #64748b;
     font-size: 0.85rem;
     font-weight: 500;
+    font-family: var(--desktop-font-sans, system-ui, sans-serif);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal, 0.2s) ease;
+    white-space: nowrap;
   }
 
   .main-tab:hover {
@@ -627,8 +666,36 @@
 
   .main-tab.active {
     color: #a5b4fc;
-    background: rgba(99, 102, 241, 0.1);
-    border-color: rgba(99, 102, 241, 0.2);
+    border-bottom-color: #6366f1;
+  }
+
+  .tab-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+
+  .tab-label {
+    line-height: 1;
+  }
+
+  .tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: var(--radius-md, 8px);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    line-height: 1;
+  }
+
+  .main-tab.active .tab-count {
+    background: rgba(99, 102, 241, 0.25);
+    color: #c7d2fe;
   }
 
   /* Filters */
@@ -974,6 +1041,10 @@
 
     .stats {
       justify-content: center;
+    }
+
+    .main-tabs {
+      overflow-x: auto;
     }
   }
 

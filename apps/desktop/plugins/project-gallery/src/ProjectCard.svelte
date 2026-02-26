@@ -16,6 +16,13 @@
     e.stopPropagation();
     onOpenDemo(project);
   }
+
+  const sourceLabel = $derived(() => {
+    if (project.source === 'local' && project.category === 'professional') return 'ZYETA';
+    if (project.source === 'local' && project.category === 'experiment') return 'MRAX';
+    if (project.source === 'local') return 'LOCAL';
+    return null;
+  });
 </script>
 
 <button
@@ -29,6 +36,14 @@
   <!-- Featured Badge -->
   {#if project.featured}
     <div class="featured-badge">Featured</div>
+  {/if}
+
+  <!-- Source Badge -->
+  {#if sourceLabel()}
+    <div class="source-badge" class:experiment={project.category === 'experiment'}>
+      {#if project.category === 'experiment'}🧪{/if}
+      {sourceLabel()}
+    </div>
   {/if}
 
   <!-- Thumbnail -->
@@ -131,6 +146,30 @@
     letter-spacing: 0.05em;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  }
+
+  /* Source Badge */
+  .source-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 3px 8px;
+    background: rgba(30, 41, 59, 0.85);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: var(--radius-md, 8px);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+  }
+
+  .source-badge.experiment {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #c4b5fd;
   }
 
   /* Thumbnail */
