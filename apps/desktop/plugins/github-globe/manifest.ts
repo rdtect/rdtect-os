@@ -2,12 +2,14 @@ import type { PluginManifest } from '$lib/core/types';
 
 const manifest: PluginManifest = {
   id: 'github-globe',
-  name: 'Globe',
+  name: 'GitHub Activity',
   version: '1.0.0',
   type: 'native',
   icon: '🌍',
   description: 'Interactive 3D globe visualization',
-  category: 'portfolio',
+  category: 'showcase',
+  priority: 50,
+  showOnDesktop: true,
   access: 'free',
   entry: './src/GithubGlobe.svelte',
   defaultWidth: 600,

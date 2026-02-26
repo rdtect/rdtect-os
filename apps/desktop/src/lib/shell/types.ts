@@ -6,7 +6,7 @@
  */
 
 import type { Component } from 'svelte';
-import type { LoadedPlugin, PluginType } from '$lib/core/types';
+import type { AppCategory, LoadedPlugin, PluginType } from '$lib/core/types';
 
 /**
  * App definition = A registered plugin that can be opened as a window
@@ -19,7 +19,13 @@ export interface AppDefinition {
   plugin: LoadedPlugin;
 
   // Category for Start Menu grouping
-  category?: 'portfolio' | 'ai' | 'tools' | 'utilities' | 'creative' | 'system';
+  category?: AppCategory;
+
+  // Intent-driven grouping fields
+  priority?: number;
+  showOnDesktop?: boolean;
+  pinnedToTaskbar?: boolean;
+  tags?: string[];
 
   // Window defaults
   defaultWidth?: number;

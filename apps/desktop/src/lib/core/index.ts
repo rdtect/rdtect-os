@@ -40,5 +40,8 @@ export * from './widget-registry.svelte';
 // === API Status ===
 export { apiStatus } from './api-status.svelte';
 
+// === Categories ===
+export * from './categories';
+
 // === Core Types ===
 export * from './types';

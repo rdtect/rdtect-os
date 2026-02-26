@@ -7,6 +7,11 @@
 import type { Component } from 'svelte';
 
 /**
+ * Application categories for intent-driven grouping
+ */
+export type AppCategory = 'showcase' | 'studio' | 'desktop' | 'admin';
+
+/**
  * Plugin types supported by the Desktop OS
  */
 export type PluginType =
@@ -52,7 +57,14 @@ export interface PluginManifest {
   widgetHeight?: number;  // Default widget height
 
   // Application category for grouping in Start Menu
-  category?: 'portfolio' | 'ai' | 'tools' | 'utilities' | 'creative' | 'system';
+  category?: AppCategory;
+
+  // Intent-driven grouping fields
+  priority?: number;         // Sort order within category (lower = first, default 50)
+  showOnDesktop?: boolean;   // Show as desktop icon
+  pinnedToTaskbar?: boolean; // Pin to taskbar by default
+  autoOpen?: 'always' | 'first-visit' | false;  // Auto-open behavior
+  tags?: string[];           // Search discovery tags
 
   // Permissions (future)
   permissions?: string[];

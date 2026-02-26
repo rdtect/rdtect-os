@@ -7,7 +7,8 @@ const manifest: PluginManifest = {
   type: 'federation',
   icon: '🎨',
   description: 'Virtual whiteboard for sketching hand-drawn like diagrams',
-  category: 'creative',
+  category: 'studio',
+  priority: 50,
   access: 'free',
   entry: './src/ExcalidrawApp.svelte',
   remote: {
