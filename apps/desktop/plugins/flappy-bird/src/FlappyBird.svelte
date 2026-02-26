@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
 
-  // Props from window manager
   interface Props {
     windowId?: string;
   }
   let { windowId }: Props = $props();
+
+  const STORAGE_KEY = 'desktop-os-flappy-highscore';
 
   // Game state
   let canvas: HTMLCanvasElement;
@@ -24,13 +25,33 @@
   const jumpStrength = -8;
 
   // Pipe state
-  let pipes: Array<{ x: number; gapY: number }> = [];
+  let pipes: Array<{ x: number; gapY: number; gapSize: number }> = [];
   const pipeWidth = 50;
-  const pipeGap = 120;
+  const basePipeGap = 125;
+  const minPipeGap = 85;
   const pipeSpeed = 2;
 
   // Animation frame ID for cleanup
   let animationId: number | null = null;
+
+  // Difficulty: gap narrows as score increases
+  function currentPipeGap(): number {
+    const reduction = Math.min(score * 1.5, basePipeGap - minPipeGap);
+    return basePipeGap - reduction;
+  }
+
+  function loadHighScore() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) highScore = parseInt(saved, 10) || 0;
+    } catch { /* ignore */ }
+  }
+
+  function saveHighScore() {
+    try {
+      localStorage.setItem(STORAGE_KEY, String(highScore));
+    } catch { /* ignore */ }
+  }
 
   function startGame() {
     birdY = 150;
@@ -44,8 +65,9 @@
   }
 
   function addPipe() {
+    const gap = currentPipeGap();
     const gapY = Math.random() * 150 + 75;
-    pipes.push({ x: canvas?.width || 400, gapY });
+    pipes.push({ x: canvas?.width || 400, gapY, gapSize: gap });
   }
 
   function jump() {
@@ -93,17 +115,15 @@
       if (
         birdX + birdSize > pipe.x &&
         birdX < pipe.x + pipeWidth &&
-        (birdY < pipe.gapY || birdY + birdSize > pipe.gapY + pipeGap)
+        (birdY < pipe.gapY || birdY + birdSize > pipe.gapY + pipe.gapSize)
       ) {
         endGame();
         return;
       }
     }
 
-    // Draw
     draw();
 
-    // Continue loop
     if (gameRunning) {
       animationId = requestAnimationFrame(gameLoop);
     }
@@ -114,6 +134,7 @@
     gameOver = true;
     if (score > highScore) {
       highScore = score;
+      saveHighScore();
     }
     draw();
   }
@@ -124,17 +145,32 @@
     const width = canvas.width;
     const height = canvas.height;
 
-    // Clear canvas with dark background
+    // Clear canvas
     ctx.fillStyle = '#0f172a';
     ctx.fillRect(0, 0, width, height);
 
-    // Draw pipes
-    ctx.fillStyle = '#22c55e';
+    // Draw pipes with indigo accent + gradient
     for (const pipe of pipes) {
       // Top pipe
+      const topGrad = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
+      topGrad.addColorStop(0, '#4f46e5');
+      topGrad.addColorStop(1, '#6366f1');
+      ctx.fillStyle = topGrad;
       ctx.fillRect(pipe.x, 0, pipeWidth, pipe.gapY);
+      // Pipe cap
+      ctx.fillStyle = '#818cf8';
+      ctx.fillRect(pipe.x - 3, pipe.gapY - 8, pipeWidth + 6, 8);
+
       // Bottom pipe
-      ctx.fillRect(pipe.x, pipe.gapY + pipeGap, pipeWidth, height - pipe.gapY - pipeGap);
+      const botGrad = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
+      botGrad.addColorStop(0, '#4f46e5');
+      botGrad.addColorStop(1, '#6366f1');
+      ctx.fillStyle = botGrad;
+      const botY = pipe.gapY + pipe.gapSize;
+      ctx.fillRect(pipe.x, botY, pipeWidth, height - botY);
+      // Pipe cap
+      ctx.fillStyle = '#818cf8';
+      ctx.fillRect(pipe.x - 3, botY, pipeWidth + 6, 8);
     }
 
     // Draw bird
@@ -142,34 +178,85 @@
     ctx.beginPath();
     ctx.arc(birdX + birdSize / 2, birdY + birdSize / 2, birdSize / 2, 0, Math.PI * 2);
     ctx.fill();
+    // Bird eye
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(birdX + birdSize / 2 + 4, birdY + birdSize / 2 - 3, 3, 0, Math.PI * 2);
+    ctx.fill();
 
-    // Draw score
-    ctx.fillStyle = '#f1f5f9';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(String(score), width / 2, 40);
-
-    // Draw game over or start message
-    if (!gameRunning) {
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
-      ctx.fillRect(0, 0, width, height);
+    // Glass panel score display
+    if (gameRunning) {
+      const panelW = 80;
+      const panelH = 32;
+      const panelX = (width - panelW) / 2;
+      const panelY = 10;
+      ctx.fillStyle = 'rgba(30, 41, 59, 0.7)';
+      ctx.beginPath();
+      ctx.roundRect(panelX, panelY, panelW, panelH, 8);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
 
       ctx.fillStyle = '#f1f5f9';
-      ctx.font = 'bold 20px sans-serif';
+      ctx.font = 'bold 18px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(String(score), width / 2, panelY + panelH / 2);
+    }
+
+    // Start screen / Game over overlay
+    if (!gameRunning) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.textBaseline = 'middle';
       ctx.textAlign = 'center';
 
       if (gameOver) {
-        ctx.fillText('Game Over!', width / 2, height / 2 - 30);
-        ctx.font = '16px sans-serif';
-        ctx.fillText(`Score: ${score}`, width / 2, height / 2);
-        ctx.fillText(`High Score: ${highScore}`, width / 2, height / 2 + 25);
+        // Game Over panel
+        const pW = 220;
+        const pH = 140;
+        const pX = (width - pW) / 2;
+        const pY = (height - pH) / 2;
+        ctx.fillStyle = 'rgba(30, 41, 59, 0.9)';
+        ctx.beginPath();
+        ctx.roundRect(pX, pY, pW, pH, 12);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 20px system-ui, sans-serif';
+        ctx.fillText('Game Over', width / 2, pY + 28);
+
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = '15px system-ui, sans-serif';
+        ctx.fillText(`Score: ${score}`, width / 2, pY + 56);
+
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '13px system-ui, sans-serif';
+        ctx.fillText(`Best: ${highScore}`, width / 2, pY + 78);
+
         ctx.fillStyle = '#6366f1';
-        ctx.fillText('Click or press Space to restart', width / 2, height / 2 + 60);
+        ctx.font = '12px system-ui, sans-serif';
+        ctx.fillText('Click or Space to restart', width / 2, pY + 110);
       } else {
-        ctx.fillText('Flappy Bird', width / 2, height / 2 - 20);
-        ctx.font = '14px sans-serif';
+        // Start screen
+        ctx.fillStyle = '#f1f5f9';
+        ctx.font = 'bold 22px system-ui, sans-serif';
+        ctx.fillText('Flappy Bird', width / 2, height / 2 - 24);
+
         ctx.fillStyle = '#6366f1';
-        ctx.fillText('Click or press Space to start', width / 2, height / 2 + 20);
+        ctx.font = '13px system-ui, sans-serif';
+        ctx.fillText('Click or Space to start', width / 2, height / 2 + 12);
+
+        if (highScore > 0) {
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '12px system-ui, sans-serif';
+          ctx.fillText(`Best: ${highScore}`, width / 2, height / 2 + 36);
+        }
       }
     }
   }
@@ -186,6 +273,7 @@
   }
 
   onMount(() => {
+    loadHighScore();
     ctx = canvas.getContext('2d');
     if (ctx) {
       draw();
