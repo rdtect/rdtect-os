@@ -103,23 +103,23 @@ export interface ProfileData {
 export const profileData: ProfileData = {
   // Basic Info
   name: 'Rick Dé',
-  title: 'Product Designer & Metaverse Architect',
-  tagline: 'Architect turned creator — designing at the intersection of physical and digital realms',
+  title: 'Associate Director, Digital Experience Design',
+  tagline: 'Designing at the edge of what\'s next — from built environments to AI-powered digital experience',
   avatar: '',
-  location: 'Dehradun, India',
+  location: 'Bengaluru, India',
   email: 'rdtect@outlook.com',
   phone: '+91 98309 14213',
   website: 'https://rdtect.com',
 
   // Bio
-  shortBio: 'Architect turned Product Designer with 10+ years of experience. Pioneered the world\'s first NFT-crowdfunded Bollywood movie. Metaverse Architect at QuantLabs.',
-  bio: `Architect turned Product Designer with 10+ years of experience in architecture and 5+ years in tech. Expertise in user research, UX/UI design, 3D art and animation, metaverse product design, and web development.
+  shortBio: 'Associate Director of Digital Experience Design at Zyeta with 13+ years blending architecture, creative technology, and strategy. Leading a vertical for digital experience and the future of work.',
+  bio: `Associate Director of Digital Experience Design with 13+ years of expertise blending architecture, creative technology, and strategy. From designing physical spaces to building metaverses to leading AI-powered digital transformation at global scale.
 
-Designed Versez — a customizable metaverse platform — for B2B clients, and pioneered the world's first NFT crowd-funded Bollywood movie (Ilm, now streaming on Disney+ Hotstar). Adept at working cross-functionally with engineers, product managers, and stakeholders to bring innovative products to market.
+Career highlights: pioneered the world's first NFT crowd-funded Bollywood movie (Ilm, Disney+ Hotstar). Designed Versez, a customizable metaverse platform. Led digital experience for BBDO across three regions and New York at Omnicom. First mover on AI-based filmmaking and advertising at Omnicom Global Solutions. Built AI websites for Columbia Journalism Review.
 
-Passionate about creating products that make a positive impact. Leverages technology to design new and innovative digital experiences — from physical architecture to immersive metaverse worlds to polished web interfaces.
+Currently at Zyeta — a globally ranked workplace design firm — leading the Digital Experience vertical. Strategizing the future of work through adaptive workplace solutions, design thinking, AI tools, and emerging technology.
 
-Currently building rdtect OS — a web-based desktop environment demonstrating plugin architecture, virtual filesystems, and real-time AI integration.`,
+Building rdtect OS as a showcase of what's possible when architecture meets code.`,
 
   // Resume URL
   resumeUrl: '/resume.pdf',
@@ -146,22 +146,67 @@ Currently building rdtect OS — a web-based desktop environment demonstrating p
     { name: 'Affinity Suite', level: 80, category: 'tools', color: '#1e6fcc' },
     { name: 'AI / Prompt Engineering', level: 82, category: 'tools', color: '#10a37f' },
 
+    // Backend / Tech
+    { name: 'AI Solutions & Strategy', level: 90, category: 'backend', color: '#10a37f' },
+    { name: 'Solution Architecture', level: 85, category: 'backend', color: '#3b82f6' },
+    { name: 'Python', level: 78, category: 'backend', color: '#3776ab' },
+    { name: 'Three.js / Threlte', level: 75, category: 'frontend', color: '#049ef4' },
+
     // Soft Skills
     { name: 'Architectural Design & Planning', level: 95, category: 'soft', color: '#10b981' },
     { name: 'Design Thinking & Strategy', level: 92, category: 'soft', color: '#0ea5e9' },
+    { name: 'Team Leadership (Global)', level: 88, category: 'soft', color: '#f59e0b' },
     { name: 'Visual Communication & Storytelling', level: 90, category: 'soft', color: '#22c55e' },
+    { name: 'Future of Work Strategy', level: 85, category: 'soft', color: '#06b6d4' },
     { name: 'Cross-functional Collaboration', level: 90, category: 'soft', color: '#f59e0b' },
   ],
 
   // Experience
   experience: [
     {
+      id: 'exp-zyeta',
+      title: 'Associate Director, Digital Experience Design',
+      company: 'Zyeta',
+      companyUrl: 'https://zyeta.com',
+      location: 'Bengaluru, India',
+      startDate: '2025',
+      endDate: 'Present',
+      description: 'Leading the Digital Experience vertical at a globally ranked workplace design firm. Strategizing the future of work through design thinking, AI solutions, and emerging technology.',
+      highlights: [
+        'Leading the Digital Experience vertical — strategy, technology, and design',
+        'Strategizing the future of work through adaptive workplace solutions',
+        'AI-powered solutions for smart office platforms and behavioral analysis',
+        'Experimenting with AI tools, creative coding, and speculative design',
+        'Clients include LinkedIn, MUFG, Digi-Key, and multinational firms'
+      ],
+      technologies: ['AI Solutions', 'Design Thinking', 'SvelteKit', 'Python', 'IoT', 'VR/AR', 'Figma']
+    },
+    {
+      id: 'exp-omnicom',
+      title: 'Solution Architect / Digital Experience Lead',
+      company: 'Analect (Omnicom Group)',
+      companyUrl: 'https://omnicomgroup.com',
+      location: 'Atlanta, GA / New York / Global',
+      startDate: '2023',
+      endDate: '2025',
+      description: 'Led UI/UX and digital experience across creative technology teams at BBDO for three regions and New York. Solution architect for legacy websites with emergent technology layers. First mover on AI-based filmmaking and advertising at Omnicom Global Solutions.',
+      highlights: [
+        'Led digital experience and creative technology teams for BBDO across 3 regions + New York',
+        'Solution architect for legacy websites and tech solutions with emergent technology layers',
+        'Led teams for BBDO Canada and ANZ — global multi-region delivery',
+        'Moved to Omnicom Global Solutions — first movers for AI-based filmmaking and advertising',
+        'Built AI websites for Columbia Journalism Review',
+        'Pioneered AI-powered advertising workflows'
+      ],
+      technologies: ['AI/GenAI', 'Solution Architecture', 'React', 'SvelteKit', 'Python', 'Figma']
+    },
+    {
       id: 'exp-quant',
       title: 'Product Designer & Metaverse Architect',
       company: 'QuantLabs',
       location: 'Remote',
-      startDate: '2022-04',
-      endDate: 'Present',
+      startDate: '2022',
+      endDate: '2023',
       description: 'Led product design for a web3 and metaverse services company, delivering B2B products and platforms across immersive digital experiences.',
       highlights: [
         'Designed Versez — a customizable metaverse platform for virtual worlds, offered as a PAAS product to B2B clients',
@@ -356,6 +401,21 @@ Currently building rdtect OS — a web-based desktop environment demonstrating p
       featured: true
     },
     {
+      id: 'proj-omnicom-ai',
+      name: 'AI Filmmaking & Advertising — Omnicom',
+      description: 'First movers on AI-based filmmaking and advertising at Omnicom Global Solutions. Built AI websites for Columbia Journalism Review.',
+      technologies: ['AI/GenAI', 'Filmmaking', 'Solution Architecture', 'Web Development'],
+      featured: true
+    },
+    {
+      id: 'proj-zyeta-dx',
+      name: 'Digital Experience Platform — Zyeta',
+      description: 'Leading the digital experience vertical at a top-10 globally ranked workplace design firm. AI-powered smart office solutions.',
+      url: 'https://zyeta.com',
+      technologies: ['AI Solutions', 'IoT', 'Design Thinking', 'SvelteKit', 'Python'],
+      featured: true
+    },
+    {
       id: 'proj-roledin',
       name: 'RoledIn',
       description: 'Designed an innovative LMS, ERP, and CRM platform for schools and educational institutes.',
@@ -365,8 +425,8 @@ Currently building rdtect OS — a web-based desktop environment demonstrating p
   ],
 
   // Availability
-  availability: 'available',
-  availabilityMessage: 'Open to design & development collaborations',
+  availability: 'busy',
+  availabilityMessage: 'Leading Digital Experience at Zyeta — open to collaborations in AI and emergent tech',
 
   // Languages
   languages: [
@@ -376,12 +436,13 @@ Currently building rdtect OS — a web-based desktop environment demonstrating p
 
   // Interests
   interests: [
+    'AI Solutions & Strategy',
+    'Future of Work',
+    'Emergent Technology',
     '3D Design & Visualization',
-    'Metaverse & Web3',
-    'Open Source Technology',
+    'Creative Coding',
     'Architectural Design',
-    'Digital Product Design',
-    'AI-Augmented Design'
+    'Digital Product Design'
   ]
 };
 
