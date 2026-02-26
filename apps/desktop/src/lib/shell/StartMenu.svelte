@@ -4,6 +4,7 @@
   import { mobile } from '$lib/core/mobile.svelte';
   import { pluginBadges } from './constants';
   import { getAuthState } from '$lib/core/pocketbase';
+  import { categoryConfig } from '$lib/core/categories';
 
   // Props
   let {
@@ -18,36 +19,31 @@
   let searchQuery = $state('');
   let searchInput = $state<HTMLInputElement | null>(null);
 
-  // Category configuration
-  const categoryConfig: Record<string, { icon: string; label: string; order: number }> = {
-    portfolio: { icon: '🧑‍💼', label: 'Portfolio', order: 0 },
-    ai:        { icon: '🤖', label: 'AI', order: 1 },
-    tools:     { icon: '🛠', label: 'Tools', order: 2 },
-    utilities: { icon: '⚙️', label: 'Utilities', order: 3 },
-    creative:  { icon: '🎨', label: 'Creative', order: 4 },
-    system:    { icon: '⚙️', label: 'System', order: 5 },
-  };
-
-  // Group apps by category
+  // Group apps by category, sorted by priority, hiding auth-gated categories for guests
   const groupedApps = $derived.by(() => {
     const groups = new Map<string, AppDefinition[]>();
     for (const app of wm.apps) {
-      const cat = app.category ?? 'utilities';
+      const cat = app.category ?? 'desktop';
+      // Hide auth-required categories for unauthenticated users
+      const catConfig = categoryConfig[cat as keyof typeof categoryConfig];
+      if (catConfig?.requiresAuth && !isAuthenticated) continue;
       if (!groups.has(cat)) groups.set(cat, []);
       groups.get(cat)!.push(app);
     }
-    // Sort groups by configured order
+    // Sort apps within each group by priority, then sort groups by configured order
     return [...groups.entries()]
-      .sort(([a], [b]) => (categoryConfig[a]?.order ?? 99) - (categoryConfig[b]?.order ?? 99));
+      .map(([cat, apps]) => [cat, [...apps].sort((a, b) => (a.priority ?? 50) - (b.priority ?? 50))] as [string, AppDefinition[]])
+      .sort(([a], [b]) => (categoryConfig[a as keyof typeof categoryConfig]?.order ?? 99) - (categoryConfig[b as keyof typeof categoryConfig]?.order ?? 99));
   });
 
-  // Filtered apps based on search
+  // Filtered apps based on search (includes tags)
   const filteredApps = $derived.by(() => {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase();
     return wm.apps.filter(app =>
       app.title.toLowerCase().includes(query) ||
-      app.id.toLowerCase().includes(query)
+      app.id.toLowerCase().includes(query) ||
+      app.tags?.some(tag => tag.toLowerCase().includes(query))
     );
   });
 
@@ -184,7 +180,7 @@
         {:else}
           <!-- Grouped Apps by Category -->
           {#each groupedApps as [category, apps] (category)}
-            {@const config = categoryConfig[category]}
+            {@const config = categoryConfig[category as keyof typeof categoryConfig]}
             <div class="category-section mb-4">
               <div class="category-header flex items-center gap-2 mb-2 px-1">
                 <span class="category-icon" style="font-size: var(--text-sm);">{config?.icon ?? '📦'}</span>
@@ -192,7 +188,7 @@
                   {config?.label ?? category}
                 </h3>
                 <div class="category-line flex-1 h-px"></div>
-                <span class="app-count" style="font-size: var(--text-xs);">{apps.length}</span>
+                <span class="category-description" style="font-size: var(--text-xs);">{config?.description ?? ''}</span>
               </div>
               <div class="category-grid grid grid-cols-4 sm:grid-cols-6 gap-1.5">
                 {#each apps as app, index (app.id)}
@@ -204,6 +200,9 @@
                   >
                     <div class="relative mb-1.5">
                       <span class="text-2xl group-hover:scale-110 inline-block" style="transition: transform var(--transition-fast) var(--transition-easing);">{app.icon}</span>
+                      {#if app.plugin?.manifest?.access === 'protected' && !isAuthenticated}
+                        <span class="absolute -bottom-0.5 -right-1 text-[8px] opacity-60">🔒</span>
+                      {/if}
                     </div>
                     <span class="text-slate-300 text-center leading-tight truncate w-full group-hover:text-white" style="font-size: 10px; font-family: var(--desktop-font-sans); transition: color var(--transition-fast) var(--transition-easing);">
                       {app.title}
@@ -335,9 +334,10 @@
     );
   }
 
-  .app-count {
+  .category-description {
     color: #64748b;
-    font-weight: 500;
+    font-weight: 400;
+    font-style: italic;
   }
 
   /* Pinned App Tile */

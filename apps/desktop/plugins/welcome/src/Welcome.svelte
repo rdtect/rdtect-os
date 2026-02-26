@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import WelcomeStep from './WelcomeStep.svelte';
   import { createParticles, updateParticles, createTypewriter, type Particle } from './animations';
+  import { wm } from '$lib/shell';
 
   // Props from window manager
   interface Props {
@@ -45,13 +46,26 @@
 
   const totalSteps = steps.length;
 
-  // Featured apps to highlight
+  // Featured apps to highlight (appId maps to registered plugin IDs)
   const featuredApps = [
-    { icon: '👤', name: 'About Me', description: 'Learn about the developer' },
-    { icon: '🚀', name: 'Projects', description: 'View portfolio projects' },
-    { icon: '📝', name: 'Blog', description: 'Read articles and thoughts' },
-    { icon: '💬', name: 'Contact', description: 'Get in touch' }
+    { appId: 'about-me', icon: '👤', name: 'About Me', description: 'Learn about the developer' },
+    { appId: 'project-gallery', icon: '🚀', name: 'Projects', description: 'View portfolio projects' },
+    { appId: 'blog', icon: '📝', name: 'Blog', description: 'Read articles and thoughts' },
+    { appId: 'contact', icon: '💬', name: 'Contact', description: 'Get in touch' }
   ];
+
+  // Launch an app and close the wizard
+  function launchApp(appId: string) {
+    wm.openWindow(appId);
+    handleClose();
+  }
+
+  // Launch featured apps for exploration
+  function exploreWork() {
+    wm.openWindow('project-gallery');
+    wm.openWindow('about-me');
+    handleClose();
+  }
 
   // Typewriter text for step 1
   const welcomeText = "Welcome, explorer. You've discovered something special.";
@@ -273,13 +287,13 @@
         <div class="step-3-content">
           <div class="apps-grid">
             {#each featuredApps as app, i}
-              <div class="app-card" style="animation-delay: {i * 100}ms">
+              <button class="app-card" style="animation-delay: {i * 100}ms" onclick={() => launchApp(app.appId)}>
                 <div class="app-icon">{app.icon}</div>
                 <div class="app-info">
                   <span class="app-name">{app.name}</span>
                   <span class="app-description">{app.description}</span>
                 </div>
-              </div>
+              </button>
             {/each}
           </div>
         </div>
@@ -303,6 +317,12 @@
           <p class="ready-text">
             You're all set! Click anywhere on the desktop to start exploring, or use the taskbar to launch apps.
           </p>
+          <button class="explore-button" onclick={exploreWork}>
+            Explore My Work
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </button>
           <label class="dont-show-checkbox">
             <input type="checkbox" bind:checked={dontShowAgain} />
             <span class="checkbox-custom" />
@@ -766,6 +786,32 @@
     max-width: 350px;
     line-height: 1.6;
     margin: 0;
+  }
+
+  .explore-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
+  }
+
+  .explore-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+  }
+
+  .explore-button:active {
+    transform: translateY(0);
   }
 
   .dont-show-checkbox {

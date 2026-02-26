@@ -39,10 +39,12 @@
   // Track pinned apps (initially all registered apps are pinned)
   let pinnedAppIds = $state<Set<string>>(new Set());
 
-  // Initialize pinned apps when apps change
+  // Initialize pinned apps from manifest intent
   $effect(() => {
     if (wm.apps.length > 0 && pinnedAppIds.size === 0) {
-      pinnedAppIds = new Set(wm.apps.map(app => app.id));
+      pinnedAppIds = new Set(
+        wm.apps.filter(app => app.pinnedToTaskbar).map(app => app.id)
+      );
     }
   });
 
@@ -283,8 +285,8 @@
 
       <!-- Dock icons -->
       <div class="flex items-center justify-around">
-        <!-- Pinned quick-launch icons (first 5 apps) -->
-        {#each wm.apps.slice(0, 5) as app (app.id)}
+        <!-- Pinned quick-launch icons -->
+        {#each wm.apps.filter(app => app.pinnedToTaskbar) as app (app.id)}
           <button
             class="mobile-dock-icon flex flex-col items-center justify-center w-14 h-14 rounded-2xl active:scale-90 transition-transform duration-100"
             onclick={() => { if (onLaunchApp) onLaunchApp(app.id); else wm.openWindow(app.id); }}

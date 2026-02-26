@@ -313,9 +313,11 @@
     return iconPositions[appId] ?? getDefaultPosition(index);
   }
 
-  // Get pinned/favorite apps (first 12 for desktop shortcuts), excluding hidden ones
+  // Get apps that opt-in to desktop display, sorted by priority
   const desktopApps = $derived(
-    wm.apps.slice(0, 12).filter(app => !hiddenIconIds.has(app.id))
+    wm.apps
+      .filter(app => app.showOnDesktop && !hiddenIconIds.has(app.id))
+      .sort((a, b) => (a.priority ?? 50) - (b.priority ?? 50))
   );
 </script>
 
