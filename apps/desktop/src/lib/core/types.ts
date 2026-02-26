@@ -9,7 +9,7 @@ import type { Component } from 'svelte';
 /**
  * Application categories for intent-driven grouping
  */
-export type AppCategory = 'showcase' | 'studio' | 'desktop' | 'admin';
+export type AppCategory = 'showcase' | 'studio' | 'creative' | 'games' | 'desktop' | 'admin';
 
 /**
  * Plugin types supported by the Desktop OS
