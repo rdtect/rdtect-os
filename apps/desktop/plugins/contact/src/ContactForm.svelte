@@ -273,7 +273,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
+    font-size: var(--text-sm);
     font-weight: 500;
     color: #94a3b8;
   }
@@ -292,17 +292,17 @@
     width: 100%;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(71, 85, 105, 0.5);
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     padding: 12px 16px;
     color: #f1f5f9;
-    font-size: 14px;
+    font-size: var(--text-base);
     font-family: inherit;
     outline: none;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .form-input::placeholder {
-    color: #475569;
+    color: #64748b;
   }
 
   .form-input:focus {
@@ -337,7 +337,7 @@
   }
 
   .error-text {
-    font-size: 12px;
+    font-size: var(--text-xs);
     color: #f87171;
     animation: slideIn 0.2s ease;
   }
@@ -359,11 +359,11 @@
     align-items: center;
     gap: 10px;
     padding: 12px 16px;
-    background: rgba(248, 113, 113, 0.15);
-    border: 1px solid rgba(248, 113, 113, 0.3);
-    border-radius: 10px;
-    color: #fca5a5;
-    font-size: 13px;
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    border-radius: var(--radius-lg);
+    color: var(--color-error-text);
+    font-size: var(--text-sm);
     animation: fadeIn 0.3s ease;
   }
 
@@ -386,13 +386,14 @@
     padding: 14px 24px;
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: white;
-    font-size: 15px;
+    font-size: var(--text-base);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
     margin-top: 8px;
+    min-height: 48px;
   }
 
   .submit-btn:hover:not(:disabled) {
@@ -424,6 +425,29 @@
   @keyframes spin {
     to {
       transform: rotate(360deg);
+    }
+  }
+
+  .form-input:focus-visible {
+    outline: none;
+    border-color: rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  .submit-btn:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .error-text {
+      animation: none;
+    }
+    .error-banner {
+      animation: none;
+    }
+    .spinner {
+      animation-duration: 2s;
     }
   }
 </style>

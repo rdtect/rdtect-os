@@ -383,10 +383,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
+    background: var(--glass-bg-default);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     overflow: hidden;
   }
 
@@ -399,15 +399,16 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-subtle);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #94a3b8;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     z-index: 10;
+    min-height: 44px;
   }
 
   .skip-button:hover {
@@ -478,11 +479,12 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .nav-button.prev {
@@ -608,10 +610,10 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.25rem;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
-    transition: all 0.2s;
+    background: var(--glass-bg-subtle);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal) var(--transition-easing);
     animation: slideIn 0.5s ease-out backwards;
   }
 
@@ -639,8 +641,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
+    background: rgba(var(--desktop-accent-rgb), 0.2);
+    border-radius: var(--radius-lg);
   }
 
   .feature-text h4 {
@@ -672,11 +674,11 @@
     align-items: center;
     gap: 0.75rem;
     padding: 1rem;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
+    background: var(--glass-bg-subtle);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
   }
 
@@ -701,8 +703,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(99, 102, 241, 0.15);
-    border-radius: 10px;
+    background: rgba(var(--desktop-accent-rgb), 0.15);
+    border-radius: var(--radius-lg);
   }
 
   .app-info {
@@ -772,10 +774,10 @@
     gap: 0.75rem;
     cursor: pointer;
     padding: 0.75rem 1rem;
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 8px;
-    transition: all 0.2s;
+    background: var(--glass-bg-subtle);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .dont-show-checkbox:hover {
@@ -814,7 +816,35 @@
   }
 
   .checkbox-label {
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: #94a3b8;
+  }
+
+  .skip-button:focus-visible,
+  .nav-button:focus-visible,
+  .progress-dot:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .particle {
+      display: none;
+    }
+    .logo-ring {
+      animation: none;
+    }
+    .logo {
+      animation: none;
+    }
+    .feature-card {
+      animation: none;
+    }
+    .app-card {
+      animation: none;
+    }
+    .ready-icon {
+      animation: none;
+    }
   }
 </style>

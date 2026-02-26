@@ -56,12 +56,12 @@
   .post-card {
     display: flex;
     flex-direction: column;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
+    background: var(--glass-bg-default);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
     text-align: left;
     width: 100%;
     font-family: inherit;
@@ -70,8 +70,8 @@
 
   .post-card:hover {
     border-color: #6366f1;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .post-card:focus {
@@ -97,7 +97,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-slow) var(--transition-easing);
   }
 
   .post-card:hover .cover-image img {
@@ -110,8 +110,8 @@
     right: 12px;
     padding: 4px 10px;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-radius: 20px;
-    font-size: 11px;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -134,12 +134,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 12px;
+    font-size: var(--text-xs);
     color: #64748b;
   }
 
   .separator {
-    color: #475569;
+    color: #64748b;
   }
 
   .title {
@@ -160,7 +160,7 @@
 
   .excerpt {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     line-height: 1.6;
     color: #94a3b8;
     display: -webkit-box;
@@ -178,12 +178,12 @@
 
   .tag {
     padding: 4px 10px;
-    background: rgba(99, 102, 241, 0.1);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 6px;
-    font-size: 11px;
+    background: rgba(var(--desktop-accent-rgb), 0.1);
+    border: 1px solid rgba(var(--desktop-accent-rgb), 0.2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
     color: #a5b4fc;
-    transition: all 0.15s ease;
+    transition: all var(--transition-fast) var(--transition-easing);
   }
 
   .tag.more {
@@ -193,7 +193,19 @@
   }
 
   .post-card:hover .tag {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(var(--desktop-accent-rgb), 0.15);
+    border-color: rgba(var(--desktop-accent-rgb), 0.3);
+  }
+
+  .post-card:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .post-card,
+    .cover-image img {
+      transition: none;
+    }
   }
 </style>

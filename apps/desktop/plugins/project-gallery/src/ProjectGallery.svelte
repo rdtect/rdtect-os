@@ -662,13 +662,13 @@
   .search-input {
     width: 100%;
     padding: 10px 36px 10px 40px;
-    background: rgba(30, 41, 59, 0.8);
+    background: var(--glass-bg-strong);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: #f1f5f9;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     outline: none;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     box-sizing: border-box;
   }
 
@@ -719,14 +719,14 @@
 
   .filter-select {
     padding: 10px 32px 10px 12px;
-    background: rgba(30, 41, 59, 0.8);
+    background: var(--glass-bg-strong);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: #f1f5f9;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     outline: none;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
@@ -983,21 +983,19 @@
     flex-direction: column;
     gap: 10px;
     padding: 20px;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 14px;
+    background: var(--glass-bg-default);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     text-decoration: none;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-normal) var(--transition-easing);
     animation: fadeInUp 0.35s cubic-bezier(0.4, 0, 0.2, 1) backwards;
     animation-delay: calc(var(--index) * 0.04s);
   }
 
   .repo-card:hover {
-    transform: translateY(-3px);
+    transform: var(--card-hover-transform);
     border-color: rgba(99, 102, 241, 0.4);
-    box-shadow:
-      0 8px 30px rgba(0, 0, 0, 0.3),
-      0 0 15px rgba(99, 102, 241, 0.1);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .repo-card.skeleton {
@@ -1161,20 +1159,20 @@
   }
 
   .empty-icon {
-    font-size: 3rem;
-    opacity: 0.5;
+    font-size: 48px;
+    opacity: 0.35;
   }
 
   .empty-title {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     font-weight: 600;
     color: #94a3b8;
   }
 
   .empty-text {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     color: #64748b;
   }
 
@@ -1199,7 +1197,7 @@
   /* Scrollbar */
   .projects-container::-webkit-scrollbar,
   .github-container::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .projects-container::-webkit-scrollbar-track,
@@ -1209,12 +1207,32 @@
 
   .projects-container::-webkit-scrollbar-thumb,
   .github-container::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .projects-container::-webkit-scrollbar-thumb:hover,
   .github-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.5);
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  .search-input:focus-visible,
+  .repo-card:focus-visible,
+  .main-tab:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gallery {
+      transition: none;
+    }
+    .project-item,
+    .repo-card {
+      animation: none;
+    }
+    .spinning {
+      animation-duration: 2s;
+    }
   }
 </style>

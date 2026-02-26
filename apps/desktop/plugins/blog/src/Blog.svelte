@@ -334,7 +334,7 @@
     height: 100%;
     background: #0f172a;
     color: #f1f5f9;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--desktop-font-sans);
   }
 
   /* Header */
@@ -415,11 +415,11 @@
     padding: 0.625rem 2.5rem 0.625rem 2.5rem;
     background: #0f172a;
     border: 1px solid #334155;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #f1f5f9;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     outline: none;
-    transition: all 0.15s ease;
+    transition: all var(--transition-fast) var(--transition-easing);
   }
 
   .search-input:focus {
@@ -445,8 +445,8 @@
     border: none;
     color: #64748b;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.15s ease;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast) var(--transition-easing);
   }
 
   .clear-search:hover {
@@ -465,11 +465,12 @@
     padding: 0.375rem 0.875rem;
     background: transparent;
     border: 1px solid #334155;
-    border-radius: 20px;
+    border-radius: var(--radius-full);
     color: #94a3b8;
-    font-size: 0.8125rem;
+    font-size: var(--text-sm);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all var(--transition-fast) var(--transition-easing);
+    min-height: 36px;
   }
 
   .tag-btn:hover {
@@ -505,11 +506,11 @@
     padding: 0.25rem 0.625rem;
     background: rgba(99, 102, 241, 0.15);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: #a5b4fc;
-    font-size: 0.75rem;
+    font-size: var(--text-xs);
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: all var(--transition-fast) var(--transition-easing);
   }
 
   .filter-chip:hover {
@@ -548,10 +549,10 @@
     min-height: 320px;
     background: #1e293b;
     border: 1px solid #334155;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
     text-align: left;
     font-family: inherit;
     color: inherit;
@@ -559,8 +560,8 @@
 
   .featured-hero:hover {
     border-color: #6366f1;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .featured-image {
@@ -597,8 +598,8 @@
     display: inline-block;
     padding: 0.375rem 0.875rem;
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    border-radius: 20px;
-    font-size: 0.6875rem;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -690,11 +691,12 @@
     padding: 0.5rem 1rem;
     background: #6366f1;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: white;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) var(--transition-easing);
+    min-height: 44px;
   }
 
   .error-state button:hover {
@@ -728,20 +730,20 @@
   }
 
   .empty-filter-icon {
-    font-size: 2.5rem;
-    opacity: 0.5;
+    font-size: 48px;
+    opacity: 0.35;
   }
 
   .empty-filter-title {
     margin: 0;
-    font-size: 1rem;
+    font-size: var(--text-md);
     font-weight: 600;
     color: #94a3b8;
   }
 
   .empty-filter-hint {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     color: #64748b;
   }
 
@@ -750,11 +752,12 @@
     padding: 0.5rem 1rem;
     background: #6366f1;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: white;
-    font-size: 0.875rem;
+    font-size: var(--text-sm);
     cursor: pointer;
-    transition: background 0.15s ease;
+    transition: background var(--transition-fast) var(--transition-easing);
+    min-height: 44px;
   }
 
   .empty-filter-clear:hover {
@@ -763,19 +766,35 @@
 
   /* Scrollbar */
   .blog-content::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .blog-content::-webkit-scrollbar-track {
-    background: #0f172a;
+    background: transparent;
   }
 
   .blog-content::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .blog-content::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  .search-input:focus-visible,
+  .tag-btn:focus-visible,
+  .featured-hero:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .featured-image img {
+      transition: none;
+    }
+    .featured-hero {
+      transition: none;
+    }
   }
 </style>

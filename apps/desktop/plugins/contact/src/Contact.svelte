@@ -144,7 +144,7 @@
     flex-direction: column;
     height: 100%;
     background: #0f172a;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--desktop-font-sans);
     overflow: hidden;
   }
 
@@ -165,7 +165,7 @@
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     color: #a5b4fc;
   }
 
@@ -194,15 +194,13 @@
   }
 
   .glass-card {
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
+    background: var(--glass-bg-default);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     padding: 24px;
-    box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    box-shadow: var(--glass-shadow);
   }
 
   /* Footer */
@@ -213,7 +211,7 @@
   }
 
   .footer-text {
-    font-size: 12px;
+    font-size: var(--text-xs);
     color: #64748b;
     text-align: center;
     margin: 0 0 12px 0;
@@ -226,17 +224,17 @@
   }
 
   .social-link {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(51, 65, 85, 0.5);
-    border: 1px solid rgba(71, 85, 105, 0.5);
-    border-radius: 10px;
+    background: var(--glass-bg-subtle);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
     color: #94a3b8;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .social-link:hover {
@@ -264,7 +262,7 @@
 
   /* Scrollbar */
   .contact-main::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width);
   }
 
   .contact-main::-webkit-scrollbar-track {
@@ -272,11 +270,22 @@
   }
 
   .contact-main::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .contact-main::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.5);
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  .social-link:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in {
+      animation: none;
+    }
   }
 </style>

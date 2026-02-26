@@ -86,23 +86,25 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 8px;
     height: 200px;
-    color: #64748b;
+    color: #94a3b8;
+    padding: 40px 24px;
   }
 
   .empty-icon {
-    opacity: 0.5;
+    opacity: 0.35;
   }
 
   .empty-message {
     margin: 0;
-    font-size: 0.9375rem;
+    font-size: var(--text-md);
+    font-weight: 600;
   }
 
   /* Scrollbar styling */
   .post-list::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .post-list::-webkit-scrollbar-track {
@@ -110,11 +112,17 @@
   }
 
   .post-list::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .post-list::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loading-spinner {
+      animation-duration: 2s;
+    }
   }
 </style>

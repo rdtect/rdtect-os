@@ -170,9 +170,9 @@
     width: 100%;
     max-width: 700px;
     max-height: 90vh;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.99) 100%);
+    background: var(--glass-bg-strong);
     border: 1px solid rgba(99, 102, 241, 0.25);
-    border-radius: 20px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -212,17 +212,17 @@
     position: absolute;
     top: 16px;
     right: 16px;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: #f1f5f9;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     z-index: 10;
     backdrop-filter: blur(8px);
   }
@@ -339,10 +339,10 @@
 
   .tech-badge {
     padding: 6px 12px;
-    background: rgba(99, 102, 241, 0.12);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 8px;
-    font-size: 0.8rem;
+    background: rgba(var(--desktop-accent-rgb), 0.12);
+    border: 1px solid rgba(var(--desktop-accent-rgb), 0.2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 500;
     color: #a5b4fc;
   }
@@ -362,11 +362,12 @@
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
-    border-radius: 10px;
-    font-size: 0.85rem;
+    border-radius: var(--radius-lg);
+    font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .action-btn.primary {
@@ -396,7 +397,7 @@
 
   /* Scrollbar */
   .content::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width);
   }
 
   .content::-webkit-scrollbar-track {
@@ -404,11 +405,28 @@
   }
 
   .content::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .content::-webkit-scrollbar-thumb:hover {
-    background: rgba(99, 102, 241, 0.5);
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  .close-btn:focus-visible,
+  .action-btn:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .modal-backdrop,
+    .modal {
+      animation: none;
+    }
+    .modal-backdrop.closing,
+    .modal.closing {
+      animation: none;
+    }
   }
 </style>

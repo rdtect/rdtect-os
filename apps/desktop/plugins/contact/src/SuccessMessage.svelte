@@ -78,14 +78,12 @@
     text-align: center;
     position: relative;
     overflow: hidden;
-    background: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
-    box-shadow:
-      0 4px 24px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg-default);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--glass-shadow);
   }
 
   /* Checkmark Animation */
@@ -131,15 +129,15 @@
   }
 
   .success-title {
-    font-size: 24px;
+    font-size: var(--text-2xl);
     font-weight: 700;
-    color: #4ade80;
+    color: var(--color-success);
     margin: 0 0 12px 0;
     animation: fadeInUp 0.5s ease 0.4s both;
   }
 
   .success-text {
-    font-size: 14px;
+    font-size: var(--text-base);
     color: #94a3b8;
     margin: 0;
     max-width: 300px;
@@ -168,14 +166,15 @@
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: rgba(71, 85, 105, 0.5);
+    background: var(--glass-bg-subtle);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: #a5b4fc;
-    font-size: 14px;
+    font-size: var(--text-base);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .reset-btn:hover {
@@ -255,6 +254,28 @@
       opacity: 0;
       top: 100%;
       transform: translateX(20px) rotate(360deg);
+    }
+  }
+
+  .reset-btn:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .checkmark-circle,
+    .checkmark-check {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    .success-title,
+    .success-text,
+    .success-actions {
+      animation: none;
+    }
+    .confetti-piece {
+      animation: none;
+      display: none;
     }
   }
 </style>

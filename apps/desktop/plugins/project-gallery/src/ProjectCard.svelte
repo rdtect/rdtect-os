@@ -97,22 +97,20 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 16px;
+    background: var(--glass-bg-default);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-xl);
     overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-slow) var(--transition-easing);
     text-align: left;
     width: 100%;
   }
 
   .card:hover {
-    transform: translateY(-4px);
+    transform: var(--card-hover-transform);
     border-color: rgba(99, 102, 241, 0.4);
-    box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.4),
-      0 0 20px rgba(99, 102, 241, 0.15);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .card.featured {
@@ -196,12 +194,13 @@
     padding: 8px 16px;
     background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: white;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
   }
 
@@ -261,10 +260,10 @@
 
   .tech-badge {
     padding: 3px 8px;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 6px;
-    font-size: 0.65rem;
+    background: rgba(var(--desktop-accent-rgb), 0.15);
+    border: 1px solid rgba(var(--desktop-accent-rgb), 0.2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
     font-weight: 500;
     color: #a5b4fc;
     text-transform: uppercase;
@@ -299,5 +298,18 @@
 
   .card:hover .link-indicator {
     opacity: 1;
+  }
+
+  .card:focus-visible {
+    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card,
+    .thumbnail-icon,
+    .overlay {
+      transition: none;
+    }
   }
 </style>
