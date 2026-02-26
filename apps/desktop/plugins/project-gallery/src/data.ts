@@ -16,7 +16,8 @@ export interface Project {
   gradient: string;
   screenshots: string[];
   techStack: string[];
-  category: 'platform' | 'ai' | 'tool' | 'fullstack' | 'oss' | 'web3' | 'design';
+  category: 'platform' | 'ai' | 'tool' | 'fullstack' | 'oss' | 'web3' | 'design' | 'professional' | 'experiment';
+  source?: 'portfolio' | 'local';
   demoUrl?: string;
   githubUrl?: string;
   liveUrl?: string;
@@ -37,6 +38,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Product Design', 'Web3', 'NFT Platform', 'UI/UX', 'Crowdfunding'],
     category: 'web3',
+    source: 'portfolio',
     featured: true,
     dateAdded: '2022-01-01'
   },
@@ -51,6 +53,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Metaverse Design', 'Blender', '3D Environments', 'Product Design', 'Web3', 'PAAS'],
     category: 'web3',
+    source: 'portfolio',
     featured: true,
     dateAdded: '2022-06-01'
   },
@@ -65,6 +68,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Product Design', 'NFT Marketplace', 'Web3', 'Social Platform', 'UI/UX', 'Figma'],
     category: 'web3',
+    source: 'portfolio',
     featured: true,
     dateAdded: '2022-03-01'
   },
@@ -79,6 +83,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Product Design', 'UX Research', 'Supply Chain', 'Mobile App', 'Figma', 'UI/UX'],
     category: 'design',
+    source: 'portfolio',
     featured: true,
     dateAdded: '2022-05-01'
   },
@@ -93,6 +98,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Product Design', 'Svelte', 'LMS', 'ERP', 'CRM', 'UI/UX Design', 'Figma'],
     category: 'fullstack',
+    source: 'portfolio',
     featured: false,
     dateAdded: '2021-06-01'
   },
@@ -109,6 +115,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['SvelteKit 5', 'TypeScript', 'Tailwind CSS', 'Bun', 'WebSocket', 'FastAPI'],
     category: 'platform',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: true,
     dateAdded: '2024-03-01'
@@ -124,6 +131,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Python', 'FastAPI', 'WebSocket', 'OpenAI', 'Svelte 5'],
     category: 'ai',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: true,
     dateAdded: '2024-02-15'
@@ -139,6 +147,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['TypeScript', 'Svelte 5', 'Module Federation', 'WASM'],
     category: 'platform',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: true,
     dateAdded: '2024-02-01'
@@ -154,6 +163,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Svelte 5', 'TypeScript', 'LocalStorage'],
     category: 'tool',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: false,
     dateAdded: '2024-02-20'
@@ -169,6 +179,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['TypeScript', 'Svelte 5', 'IndexedDB'],
     category: 'platform',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: true,
     dateAdded: '2024-01-15'
@@ -184,6 +195,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['Svelte 5', 'TypeScript', 'CSS Grid'],
     category: 'platform',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: false,
     dateAdded: '2024-01-10'
@@ -199,6 +211,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['React', 'Module Federation', 'Vite', 'TypeScript'],
     category: 'oss',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: false,
     dateAdded: '2024-03-10'
@@ -214,6 +227,7 @@ export const projects: Project[] = [
     screenshots: [],
     techStack: ['TypeScript', 'Custom Events', 'Svelte Stores'],
     category: 'platform',
+    source: 'portfolio',
     githubUrl: 'https://github.com/rdtect/desktop-os',
     featured: false,
     dateAdded: '2024-01-20'
@@ -235,7 +249,7 @@ export function getAllTechnologies(): string[] {
  * Get all unique categories from projects
  */
 export function getAllCategories(): Project['category'][] {
-  return ['web3', 'design', 'platform', 'ai', 'tool', 'fullstack', 'oss'];
+  return ['web3', 'design', 'platform', 'ai', 'tool', 'fullstack', 'oss', 'professional', 'experiment'];
 }
 
 /**
@@ -248,5 +262,7 @@ export const categoryInfo: Record<Project['category'], { name: string; icon: str
   ai: { name: 'AI / ML', icon: '🤖' },
   tool: { name: 'Tools', icon: '🔧' },
   fullstack: { name: 'Full Stack', icon: '📱' },
-  oss: { name: 'Open Source', icon: '📦' }
+  oss: { name: 'Open Source', icon: '📦' },
+  professional: { name: 'Professional', icon: '💼' },
+  experiment: { name: 'Experiment', icon: '🧪' }
 };
