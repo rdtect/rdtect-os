@@ -27,9 +27,16 @@
 
   let { windowId = "ai-chat-default" }: Props = $props();
 
-  const MODELS = [
+  const PYTHON_MODELS = [
     { id: "claude-haiku-4-5-20251001", name: "Claude Haiku", description: "Fast & efficient" },
     { id: "claude-sonnet-4-6", name: "Claude Sonnet", description: "Balanced" },
+  ];
+
+  const CF_MODELS = [
+    { id: "llama-3.1-8b", name: "Llama 3.1 8B", description: "Fast, free tier" },
+    { id: "llama-3.3-70b", name: "Llama 3.3 70B", description: "Powerful" },
+    { id: "deepseek-r1", name: "DeepSeek R1", description: "Reasoning" },
+    { id: "qwen-2.5-coder", name: "Qwen 2.5 Coder", description: "Code-focused" },
   ];
 
   const STORAGE_KEY = "ai-chat-conversations";
@@ -45,6 +52,7 @@
   let inputValue = $state("");
   let isLoading = $state(false);
   let error = $state<string | null>(null);
+  let selectedProvider = $state<'python' | 'cloudflare'>('python');
   let selectedModel = $state("claude-haiku-4-5-20251001");
   let useStreaming = $state(true);
   let useRag = $state(true);
@@ -57,6 +65,7 @@
     conversations.find(c => c.id === activeConversationId) ?? null
   );
   const messages = $derived(activeConversation?.messages ?? []);
+  const currentModels = $derived(selectedProvider === 'cloudflare' ? CF_MODELS : PYTHON_MODELS);
 
   // Persistence
   function loadConversations() {
@@ -105,6 +114,12 @@
       selectedModel = conv.model || "claude-haiku-4-5-20251001";
     }
     error = null;
+  }
+
+  function handleProviderChange() {
+    selectedModel = selectedProvider === 'cloudflare'
+      ? CF_MODELS[0].id
+      : PYTHON_MODELS[0].id;
   }
 
   function deleteConversation(id: string) {
@@ -233,15 +248,27 @@
     const msgsWithPlaceholder = [...currentMsgs, { role: "assistant" as const, content: "" }];
     updateActiveMessages(msgsWithPlaceholder);
 
-    try {
-      const response = await fetch(`${PUBLIC_PYTHON_API_URL}/api/chat/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    const isCF = selectedProvider === 'cloudflare';
+    const url = isCF
+      ? `/api/ai/cf-stream`
+      : `${PUBLIC_PYTHON_API_URL}/api/chat/stream`;
+    const bodyPayload = isCF
+      ? {
+          messages: currentMsgs.map(m => ({ role: m.role, content: m.content })),
+          model: selectedModel,
+          system: systemPrompt || null,
+        }
+      : {
           messages: currentMsgs.map(m => ({ role: m.role, content: m.content })),
           use_rag: useRag,
           system: systemPrompt || null,
-        }),
+        };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!response.ok) {
@@ -286,15 +313,27 @@
   }
 
   async function sendWithRemoteFunction(text: string, currentMsgs: ChatMessage[]) {
-    try {
-      const response = await fetch(`${PUBLIC_PYTHON_API_URL}/api/chat/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    const isCF = selectedProvider === 'cloudflare';
+    const url = isCF
+      ? `/api/ai/cf-stream`
+      : `${PUBLIC_PYTHON_API_URL}/api/chat/stream`;
+    const bodyPayload = isCF
+      ? {
+          messages: currentMsgs.map(m => ({ role: m.role, content: m.content })),
+          model: selectedModel,
+          system: systemPrompt || null,
+        }
+      : {
           messages: currentMsgs.map(m => ({ role: m.role, content: m.content })),
           use_rag: useRag,
           system: systemPrompt || null,
-        }),
+        };
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!response.ok) {
@@ -417,8 +456,17 @@
         <h2 class="chat-title">AI Assistant</h2>
       </div>
       <div class="header-right">
+        <select
+          bind:value={selectedProvider}
+          onchange={handleProviderChange}
+          class="model-select provider-select"
+          disabled={isLoading}
+        >
+          <option value="python">Python Backend</option>
+          <option value="cloudflare">Cloudflare AI</option>
+        </select>
         <select bind:value={selectedModel} class="model-select" disabled={isLoading}>
-          {#each MODELS as model}
+          {#each currentModels as model}
             <option value={model.id}>{model.name}</option>
           {/each}
         </select>
@@ -470,7 +518,7 @@
         <div class="empty-state">
           <span class="empty-icon">💬</span>
           <p class="empty-title">Start a conversation</p>
-          <p class="empty-hint">Powered by Claude + RAG</p>
+          <p class="empty-hint">{selectedProvider === 'cloudflare' ? 'Powered by Cloudflare Workers AI' : 'Powered by Claude + RAG'}</p>
         </div>
       {:else}
         {#each messages as message, i (i)}
@@ -715,6 +763,11 @@
     color: #e2e8f0;
     cursor: pointer;
     min-height: 32px;
+  }
+
+  .provider-select {
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.4);
   }
 
   .toggle-label {
