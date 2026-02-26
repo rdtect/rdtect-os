@@ -743,18 +743,18 @@
           <span>Loading...</span>
         </div>
       {:else if error}
-        <div class="error">
-          <span class="error-icon">!</span>
-          <span>{error}</span>
+        <div class="error-banner">
+          {error}
         </div>
       {:else if filteredFiles().length === 0}
-        <div class="empty">
+        <div class="empty-state">
           {#if searchQuery}
-            <span class="empty-icon">?</span>
-            <span>No files match "{searchQuery}"</span>
+            <div class="empty-state-icon">&#128269;</div>
+            <div class="empty-state-title">No files match "{searchQuery}"</div>
           {:else}
-            <span class="empty-icon">*</span>
-            <span>This folder is empty</span>
+            <div class="empty-state-icon">&#128193;</div>
+            <div class="empty-state-title">This folder is empty</div>
+            <div class="empty-state-body">Create a new file or folder to get started</div>
           {/if}
         </div>
       {:else}
@@ -905,8 +905,8 @@
     height: 100%;
     background: #0f172a;
     color: #e2e8f0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 13px;
+    font-family: var(--desktop-font-sans);
+    font-size: var(--text-sm);
   }
 
   /* Sidebar */
@@ -925,7 +925,7 @@
 
   .sidebar-header {
     padding: 8px 16px;
-    font-size: 11px;
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -938,12 +938,13 @@
     gap: 10px;
     width: 100%;
     padding: 8px 16px;
+    min-height: 44px;
     background: transparent;
     border: none;
     color: #e2e8f0;
     cursor: pointer;
     text-align: left;
-    transition: background 0.15s;
+    transition: background var(--transition-fast) var(--transition-easing);
   }
 
   .sidebar-item:hover {
@@ -961,17 +962,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .sidebar-icon::before {
     font-size: 16px;
   }
 
-  .sidebar-icon[data-icon="home"]::before { content: "~"; font-family: monospace; }
-  .sidebar-icon[data-icon="desktop"]::before { content: "D"; font-family: monospace; }
-  .sidebar-icon[data-icon="folder"]::before { content: "F"; font-family: monospace; }
-  .sidebar-icon[data-icon="download"]::before { content: "v"; font-family: monospace; }
-  .sidebar-icon[data-icon="image"]::before { content: "I"; font-family: monospace; }
+  .sidebar-icon[data-icon="home"]::before { content: "\1F3E0"; }
+  .sidebar-icon[data-icon="desktop"]::before { content: "\1F5A5"; }
+  .sidebar-icon[data-icon="folder"]::before { content: "\1F4C1"; }
+  .sidebar-icon[data-icon="download"]::before { content: "\2B07\FE0F"; }
+  .sidebar-icon[data-icon="image"]::before { content: "\1F5BC"; }
 
   /* Main content */
   .main {
@@ -1000,15 +998,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     padding: 0;
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: #94a3b8;
     cursor: pointer;
-    transition: all 0.15s;
+    transition: all var(--transition-fast) var(--transition-easing);
   }
 
   .toolbar-btn:hover:not(:disabled) {
@@ -1048,10 +1046,10 @@
     padding: 4px 8px;
     background: transparent;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     color: #6366f1;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background var(--transition-fast) var(--transition-easing);
   }
 
   .breadcrumb:hover:not(.active) {
@@ -1090,11 +1088,11 @@
     padding: 6px 12px 6px 32px;
     background: #0f172a;
     border: 1px solid #334155;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     color: #e2e8f0;
-    font-size: 13px;
+    font-size: var(--text-sm);
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color var(--transition-fast) var(--transition-easing);
   }
 
   .search-input:focus {
@@ -1111,7 +1109,7 @@
     gap: 2px;
     background: #0f172a;
     padding: 2px;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
   }
 
   .toolbar-actions {
@@ -1184,9 +1182,9 @@
     align-items: center;
     gap: 8px;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background var(--transition-fast) var(--transition-easing);
     user-select: none;
   }
 
@@ -1233,25 +1231,25 @@
     display: block;
   }
 
-  /* File type icons using emoji/text */
-  .file-icon[data-type="folder"]::before { content: "F"; color: #fbbf24; font-weight: bold; font-family: monospace; }
-  .file-icon[data-type="file"]::before { content: "f"; color: #94a3b8; font-family: monospace; }
-  .file-icon[data-type="text"]::before { content: "T"; color: #60a5fa; font-family: monospace; }
-  .file-icon[data-type="markdown"]::before { content: "M"; color: #c084fc; font-family: monospace; }
-  .file-icon[data-type="pdf"]::before { content: "P"; color: #ef4444; font-family: monospace; }
-  .file-icon[data-type="image"]::before { content: "I"; color: #34d399; font-family: monospace; }
-  .file-icon[data-type="video"]::before { content: "V"; color: #f472b6; font-family: monospace; }
-  .file-icon[data-type="audio"]::before { content: "A"; color: #facc15; font-family: monospace; }
-  .file-icon[data-type="archive"]::before { content: "Z"; color: #a78bfa; font-family: monospace; }
-  .file-icon[data-type="javascript"]::before { content: "J"; color: #fbbf24; font-family: monospace; }
-  .file-icon[data-type="typescript"]::before { content: "T"; color: #3b82f6; font-family: monospace; }
-  .file-icon[data-type="python"]::before { content: "P"; color: #22c55e; font-family: monospace; }
-  .file-icon[data-type="html"]::before { content: "H"; color: #f97316; font-family: monospace; }
-  .file-icon[data-type="css"]::before { content: "C"; color: #06b6d4; font-family: monospace; }
-  .file-icon[data-type="json"]::before { content: "{"; color: #a3e635; font-family: monospace; }
-  .file-icon[data-type="svelte"]::before { content: "S"; color: #ff3e00; font-family: monospace; }
-  .file-icon[data-type="drawing"]::before { content: "D"; color: #6366f1; font-family: monospace; }
-  .file-icon[data-type="word"]::before { content: "W"; color: #2563eb; font-family: monospace; }
+  /* File type icons using emoji */
+  .file-icon[data-type="folder"]::before { content: "\1F4C1"; }
+  .file-icon[data-type="file"]::before { content: "\1F4C4"; }
+  .file-icon[data-type="text"]::before { content: "\1F4DD"; }
+  .file-icon[data-type="markdown"]::before { content: "\1F4D1"; }
+  .file-icon[data-type="pdf"]::before { content: "\1F4D5"; }
+  .file-icon[data-type="image"]::before { content: "\1F5BC"; }
+  .file-icon[data-type="video"]::before { content: "\1F3AC"; }
+  .file-icon[data-type="audio"]::before { content: "\1F3B5"; }
+  .file-icon[data-type="archive"]::before { content: "\1F4E6"; }
+  .file-icon[data-type="javascript"]::before { content: "\1F7E8"; }
+  .file-icon[data-type="typescript"]::before { content: "\1F535"; }
+  .file-icon[data-type="python"]::before { content: "\1F40D"; }
+  .file-icon[data-type="html"]::before { content: "\1F310"; }
+  .file-icon[data-type="css"]::before { content: "\1F3A8"; }
+  .file-icon[data-type="json"]::before { content: "\1F4CB"; }
+  .file-icon[data-type="svelte"]::before { content: "\1F525"; }
+  .file-icon[data-type="drawing"]::before { content: "\270F\FE0F"; }
+  .file-icon[data-type="word"]::before { content: "\1F4D8"; }
 
   /* File name */
   .file-name {
@@ -1299,9 +1297,9 @@
     padding: 4px 8px;
     background: #0f172a;
     border: 1px solid #6366f1;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     color: #e2e8f0;
-    font-size: 12px;
+    font-size: var(--text-xs);
     outline: none;
   }
 
@@ -1310,7 +1308,7 @@
   }
 
   /* Loading, error, empty states */
-  .loading, .error, .empty {
+  .loading {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1320,33 +1318,39 @@
     gap: 12px;
   }
 
-  .spinner {
+  .loading .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid #334155;
-    border-top-color: #6366f1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    border-width: 3px;
   }
 
-  @keyframes spin {
-    to { transform: rotate(360deg); }
+  .error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    gap: 12px;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #64748b;
+    gap: 12px;
   }
 
   .error-icon, .empty-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #334155;
-    border-radius: 50%;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 48px;
+    opacity: 0.35;
+    line-height: 1;
   }
 
   .error-icon {
-    color: #ef4444;
+    color: var(--color-error-text);
   }
 
   /* Status bar */
@@ -1369,20 +1373,22 @@
   .clipboard-indicator {
     padding: 2px 8px;
     background: #6366f1;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     color: white;
-    font-size: 10px;
+    font-size: var(--text-xs);
   }
 
   /* Context menu */
   .context-menu {
     position: fixed;
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 8px;
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
     padding: 6px 0;
     min-width: 180px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    box-shadow: var(--glass-shadow-lg);
     z-index: 10000;
   }
 
@@ -1392,13 +1398,14 @@
     gap: 10px;
     width: 100%;
     padding: 8px 12px;
+    min-height: 44px;
     background: transparent;
     border: none;
     color: #e2e8f0;
     cursor: pointer;
     text-align: left;
-    font-size: 13px;
-    transition: background 0.15s;
+    font-size: var(--text-sm);
+    transition: background var(--transition-fast) var(--transition-easing);
   }
 
   .context-item:hover {
@@ -1414,14 +1421,13 @@
     width: 16px;
     text-align: center;
     color: #64748b;
-    font-family: monospace;
-    font-size: 11px;
+    font-size: var(--text-xs);
   }
 
   .context-shortcut {
     margin-left: auto;
-    font-size: 11px;
-    color: #475569;
+    font-size: var(--text-xs);
+    color: #64748b;
   }
 
   .context-divider {
@@ -1433,7 +1439,7 @@
   /* Scrollbar */
   .file-container::-webkit-scrollbar,
   .sidebar::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .file-container::-webkit-scrollbar-track,
@@ -1443,12 +1449,12 @@
 
   .file-container::-webkit-scrollbar-thumb,
   .sidebar::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .file-container::-webkit-scrollbar-thumb:hover,
   .sidebar::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--scrollbar-thumb-hover);
   }
 </style>

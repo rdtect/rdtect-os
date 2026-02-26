@@ -582,8 +582,8 @@
     flex-direction: column;
     height: 100%;
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    font-family: system-ui, -apple-system, sans-serif;
-    font-size: 13px;
+    font-family: var(--desktop-font-sans);
+    font-size: var(--text-sm);
     color: #e2e8f0;
     overflow: hidden;
   }
@@ -596,7 +596,7 @@
     padding: 12px 16px;
     background: rgba(99, 102, 241, 0.1);
     border-bottom: 1px solid rgba(99, 102, 241, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--glass-blur));
   }
 
   .header-left {
@@ -609,14 +609,14 @@
     background: rgba(51, 65, 85, 0.5);
     border: none;
     color: #94a3b8;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .back-btn:hover {
@@ -651,7 +651,7 @@
     gap: 4px;
     padding: 4px 10px;
     background: rgba(51, 65, 85, 0.5);
-    border-radius: 12px;
+    border-radius: var(--radius-full);
   }
 
   .agent-count .count {
@@ -670,11 +670,12 @@
     border: none;
     color: white;
     padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .new-btn:hover {
@@ -715,7 +716,7 @@
   }
 
   .content::-webkit-scrollbar {
-    width: 6px;
+    width: var(--scrollbar-width);
   }
 
   .content::-webkit-scrollbar-track {
@@ -723,8 +724,12 @@
   }
 
   .content::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 3px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+  }
+
+  .content::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 
   /* Agents Grid */
@@ -735,17 +740,17 @@
   }
 
   .agent-card {
-    background: rgba(30, 41, 59, 0.6);
+    background: var(--glass-bg-default);
     border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     padding: 16px;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .agent-card:hover {
     border-color: rgba(99, 102, 241, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .agent-card.error {
@@ -767,7 +772,7 @@
     align-items: center;
     justify-content: center;
     background: rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
 
   .agent-info {
@@ -796,7 +801,7 @@
     gap: 5px;
     padding: 4px 10px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 12px;
+    border-radius: var(--radius-full);
     font-size: 11px;
     font-weight: 500;
     color: var(--status-color);
@@ -825,11 +830,11 @@
   }
 
   .cap-badge {
-    font-size: 10px;
+    font-size: var(--text-xs);
     padding: 2px 8px;
     background: rgba(99, 102, 241, 0.15);
     border: 1px solid rgba(99, 102, 241, 0.25);
-    border-radius: 10px;
+    border-radius: var(--radius-full);
     color: #a5b4fc;
   }
 
@@ -858,16 +863,21 @@
   }
 
   .action-btn {
-    width: 28px;
-    height: 28px;
+    width: 44px;
+    height: 44px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    transition: all 0.2s;
+    font-size: var(--text-sm);
+    transition: all var(--transition-normal) var(--transition-easing);
+  }
+
+  .action-btn:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
   }
 
   .action-btn.auto {
@@ -956,12 +966,12 @@
     width: 100%;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(51, 65, 85, 0.5);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     padding: 10px 14px;
     color: #f1f5f9;
-    font-size: 14px;
+    font-size: var(--text-base);
     font-family: inherit;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-normal) var(--transition-easing);
   }
 
   .form-input:focus,
@@ -991,11 +1001,11 @@
     width: 44px;
     height: 44px;
     border: 2px solid rgba(51, 65, 85, 0.5);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     background: rgba(15, 23, 42, 0.6);
     font-size: 24px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .avatar-btn:hover {
@@ -1022,9 +1032,9 @@
     padding: 12px;
     background: rgba(15, 23, 42, 0.4);
     border: 1px solid rgba(51, 65, 85, 0.4);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .capability-checkbox:hover {
@@ -1090,11 +1100,12 @@
     border: none;
     color: #94a3b8;
     padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .cancel-btn:hover {
@@ -1107,11 +1118,12 @@
     border: none;
     color: white;
     padding: 10px 24px;
-    border-radius: 8px;
-    font-size: 13px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .create-btn:hover:not(:disabled) {
@@ -1131,9 +1143,9 @@
   }
 
   .detail-section {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
+    background: var(--glass-bg-default);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
     padding: 16px;
     margin-bottom: 16px;
   }
@@ -1160,7 +1172,7 @@
     gap: 10px;
     padding: 10px 16px;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
   }
 
   .status-indicator {
@@ -1207,13 +1219,14 @@
     gap: 8px;
     padding: 8px 16px;
     border: none;
-    border-radius: 8px;
-    font-size: 12px;
+    border-radius: var(--radius-md);
+    font-size: var(--text-xs);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     background: rgba(34, 197, 94, 0.2);
     color: #22c55e;
+    min-height: 44px;
   }
 
   .autonomous-btn:hover {
@@ -1244,7 +1257,7 @@
     padding: 6px 12px;
     background: rgba(99, 102, 241, 0.15);
     border: 1px solid rgba(99, 102, 241, 0.25);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
     font-size: 12px;
     color: #a5b4fc;
   }

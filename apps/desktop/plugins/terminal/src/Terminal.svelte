@@ -321,10 +321,10 @@
     flex-direction: column;
     height: 100%;
     background-color: #0f172a;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', 'Consolas', monospace;
-    font-size: 14px;
+    font-family: var(--desktop-font-mono);
+    font-size: var(--text-base);
     line-height: 1.4;
-    color: #33ff33;
+    color: #4ade80;
     padding: 8px;
     overflow: hidden;
     cursor: text;
@@ -338,20 +338,20 @@
   }
 
   .output::-webkit-scrollbar {
-    width: 8px;
+    width: var(--scrollbar-width);
   }
 
   .output::-webkit-scrollbar-track {
-    background: #1e293b;
+    background: transparent;
   }
 
   .output::-webkit-scrollbar-thumb {
-    background: #334155;
-    border-radius: 4px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
   }
 
   .output::-webkit-scrollbar-thumb:hover {
-    background: #475569;
+    background: var(--scrollbar-thumb-hover);
   }
 
   .line {
@@ -369,11 +369,11 @@
   }
 
   .line.error {
-    color: #ef4444;
+    color: var(--color-error-text);
   }
 
   .line.system {
-    color: #8b949e;
+    color: #94a3b8;
   }
 
   .input-line {
@@ -381,10 +381,11 @@
     align-items: center;
     padding-top: 4px;
     border-top: 1px solid #334155;
+    min-height: 44px;
   }
 
   .prompt {
-    color: #33ff33;
+    color: #4ade80;
     white-space: nowrap;
     margin-right: 8px;
   }
@@ -397,7 +398,7 @@
     color: #f8fafc;
     font-family: inherit;
     font-size: inherit;
-    caret-color: #33ff33;
+    caret-color: #4ade80;
   }
 
   .input::selection {
@@ -412,6 +413,12 @@
   @keyframes cursor-blink {
     50% {
       caret-color: transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .input:focus {
+      animation: none;
     }
   }
 </style>

@@ -1202,14 +1202,14 @@
   .empty-hint {
     margin: 0;
     font-size: 0.8rem;
-    color: #475569;
+    color: #64748b;
   }
 
   .empty-hint code {
     background: rgba(99, 102, 241, 0.15);
     padding: 2px 6px;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
+    border-radius: var(--radius-sm);
+    font-family: var(--desktop-font-mono);
     font-size: 0.85em;
     color: #a5b4fc;
   }
@@ -1222,12 +1222,13 @@
     padding: 10px 20px;
     background: #6366f1;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     color: white;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
+    min-height: 44px;
   }
 
   .empty-action:hover {
@@ -1257,11 +1258,11 @@
     padding: 10px 14px;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid #334155;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #f1f5f9;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     outline: none;
-    transition: border-color 0.2s;
+    transition: border-color var(--transition-normal) var(--transition-easing);
     box-sizing: border-box;
   }
 
@@ -1277,14 +1278,15 @@
     padding: 10px 18px;
     background: #6366f1;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: white;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     white-space: nowrap;
     flex-shrink: 0;
+    min-height: 44px;
   }
 
   .vault-search-btn:hover:not(:disabled) {
@@ -1303,7 +1305,7 @@
     padding: 10px 14px;
     background: rgba(245, 158, 11, 0.1);
     border: 1px solid rgba(245, 158, 11, 0.25);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #f59e0b;
     font-size: 0.8rem;
     font-weight: 500;
@@ -1312,9 +1314,9 @@
 
   .vault-error-msg {
     padding: 10px 14px;
-    background: rgba(239, 68, 68, 0.1);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-    border-radius: 8px;
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    border-radius: var(--radius-md);
     color: #ef4444;
     font-size: 0.8rem;
     flex-shrink: 0;
@@ -1329,21 +1331,29 @@
   }
 
   .vault-results::-webkit-scrollbar {
-    width: 4px;
+    width: var(--scrollbar-width);
+  }
+
+  .vault-results::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   .vault-results::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 2px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+  }
+
+  .vault-results::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 
   .vault-result-item {
     padding: 12px 14px;
     background: rgba(30, 41, 59, 0.5);
     border: 1px solid rgba(99, 102, 241, 0.1);
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .vault-result-item:hover {
@@ -1375,7 +1385,7 @@
   .vault-result-score {
     padding: 2px 8px;
     background: rgba(99, 102, 241, 0.15);
-    border-radius: 10px;
+    border-radius: var(--radius-full);
     font-size: 0.65rem;
     font-weight: 600;
     color: #6366f1;
@@ -1428,7 +1438,7 @@
   .confirm-dialog {
     background: #1e293b;
     border: 1px solid #334155;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     padding: 24px;
     max-width: 360px;
     width: 90%;
@@ -1456,12 +1466,13 @@
 
   .confirm-btn {
     padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
     border: none;
+    min-height: 44px;
   }
 
   .confirm-btn.cancel {

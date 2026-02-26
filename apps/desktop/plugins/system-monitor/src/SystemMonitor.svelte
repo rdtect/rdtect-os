@@ -910,7 +910,8 @@
     flex-direction: column;
     height: 100%;
     background: #0f172a;
-    font-size: 12px;
+    font-family: var(--desktop-font-sans);
+    font-size: var(--text-sm);
     color: #e2e8f0;
     overflow: hidden;
   }
@@ -982,14 +983,15 @@
   .tab-btn {
     flex: 1;
     padding: 0.5rem 0.25rem;
+    min-height: 44px;
     border: none;
     background: transparent;
     color: #94a3b8;
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     font-weight: 500;
     cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-normal) var(--transition-easing);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -1013,7 +1015,7 @@
   }
 
   .tab-content::-webkit-scrollbar {
-    width: 4px;
+    width: var(--scrollbar-width);
   }
 
   .tab-content::-webkit-scrollbar-track {
@@ -1021,17 +1023,22 @@
   }
 
   .tab-content::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.3);
-    border-radius: 2px;
+    background: var(--scrollbar-thumb);
+    border-radius: var(--radius-full);
+  }
+
+  .tab-content::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 
   /* Panel */
   .panel {
-    background: rgba(30, 41, 59, 0.5);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    border-radius: 12px;
+    background: var(--glass-bg-default);
+    border: var(--glass-border);
+    border-radius: var(--radius-lg);
     padding: 1rem;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
   }
 
   .panel-title {
@@ -1050,7 +1057,7 @@
     gap: 12px;
     padding: 0.75rem;
     background: rgba(15, 23, 42, 0.4);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     margin-bottom: 1rem;
   }
 
@@ -1061,8 +1068,8 @@
 
   .metric-name {
     display: block;
-    color: #8b949e;
-    font-size: 0.65rem;
+    color: #94a3b8;
+    font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -1107,7 +1114,7 @@
     gap: 0.75rem;
     background: rgba(15, 23, 42, 0.4);
     padding: 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: 1px solid rgba(99, 102, 241, 0.1);
   }
 
@@ -1141,7 +1148,7 @@
   .session-card {
     background: rgba(15, 23, 42, 0.4);
     padding: 0.75rem;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     border: 1px solid rgba(99, 102, 241, 0.1);
   }
 
@@ -1169,7 +1176,7 @@
   }
 
   .mono {
-    font-family: "SF Mono", Monaco, Consolas, monospace;
+    font-family: var(--desktop-font-mono);
   }
 
   /* Memory Display */
@@ -1453,11 +1460,11 @@
   }
 
   .empty-state {
-    color: #8b949e;
+    color: #94a3b8;
     font-style: italic;
     text-align: center;
     padding: 1rem;
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
   }
 
   /* Apps Chart */
@@ -1588,14 +1595,14 @@
     gap: 0.5rem;
     background: rgba(15, 23, 42, 0.4);
     padding: 1rem 0.75rem;
-    border-radius: 10px;
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(99, 102, 241, 0.15);
-    transition: all 0.3s ease;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .plugin-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    transform: var(--card-hover-transform);
+    box-shadow: var(--card-hover-shadow);
   }
 
   .plugin-card.native {
@@ -1760,14 +1767,15 @@
   .server-refresh-btn {
     margin-top: 0.5rem;
     padding: 0.5rem 1.25rem;
+    min-height: 44px;
     background: rgba(99, 102, 241, 0.2);
     border: 1px solid rgba(99, 102, 241, 0.3);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     color: #a5b4fc;
-    font-size: 0.75rem;
+    font-size: var(--text-sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-normal) var(--transition-easing);
   }
 
   .server-retry-btn:hover,
@@ -1802,7 +1810,7 @@
     align-items: center;
     padding: 0.75rem;
     background: rgba(15, 23, 42, 0.4);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
   }
 
   .server-status-item {
@@ -1885,8 +1893,8 @@
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
     background: rgba(15, 23, 42, 0.4);
-    border-radius: 6px;
-    font-size: 0.7rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
   }
 
   .server-container-name {
@@ -1975,5 +1983,12 @@
 
   .refresh-info {
     opacity: 0.7;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot,
+    .status-indicator {
+      animation: none;
+    }
   }
 </style>
