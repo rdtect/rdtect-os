@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import type { PluginManifest } from '$lib/core/types';
   import { wm } from '$lib/shell';
-  import { availableApps, sourceColors, type StoreApp } from './store-data';
+  import { availableApps, sourceColors, type StoreApp, type AppSource } from './store-data';
 
   interface Props {
     windowId?: string;
@@ -17,12 +17,100 @@
   const installedApps: PluginManifest[] = Object.values(manifestModules).map(m => m.default);
 
   type TabId = 'installed' | 'available';
-  const categories = ['All', 'Showcase', 'Studio', 'Creative', 'Games', 'Desktop', 'Admin'];
+  const categories = ['All', 'Showcase', 'Studio', 'Creative', 'Games', 'Desktop', 'Admin', 'AI', 'Automation', 'Monitoring'];
+  const sources: { id: AppSource | 'all'; label: string }[] = [
+    { id: 'all', label: 'All Sources' },
+    { id: 'zyeta', label: 'Zyeta' },
+    { id: 'personal', label: 'Personal' },
+    { id: 'mrax', label: 'MRAX' },
+    { id: 'vps', label: 'VPS' },
+    { id: 'opensource', label: 'Open Source' },
+  ];
 
   let activeTab = $state<TabId>('installed');
   let searchQuery = $state('');
   let selectedCategory = $state('All');
+  let selectedSource = $state<AppSource | 'all'>('all');
   let isVisible = $state(false);
+  let toast = $state<string | null>(null);
+
+  // Track dynamically installed apps (from available → installed via install button)
+  let installedIds = $state<string[]>([]);
+
+  const STORAGE_KEY = 'app-store-installed';
+
+  function loadInstalledIds(): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function saveInstalledIds(ids: string[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  }
+
+  function buildPlugin(app: StoreApp) {
+    return {
+      manifest: {
+        id: app.id,
+        name: app.name,
+        version: '1.0.0',
+        type: 'iframe' as const,
+        icon: app.icon,
+        description: app.description,
+        url: app.installUrl,
+      },
+      type: 'iframe' as const,
+      render: {
+        kind: 'iframe' as const,
+        url: app.installUrl!,
+        sandbox: 'allow-same-origin allow-scripts allow-forms allow-popups',
+      },
+    };
+  }
+
+  function registerAppInWm(app: StoreApp) {
+    if (!wm.getApp(app.id)) {
+      wm.registerApp({
+        id: app.id,
+        title: app.name,
+        icon: app.icon,
+        pluginType: 'iframe',
+        plugin: buildPlugin(app),
+        defaultWidth: 900,
+        defaultHeight: 650,
+        minWidth: 500,
+        minHeight: 400,
+        singleton: false,
+        resizable: true,
+      });
+    }
+  }
+
+  function installApp(app: StoreApp) {
+    registerAppInWm(app);
+    installedIds = [...installedIds, app.id];
+    saveInstalledIds(installedIds);
+    showToast(`${app.name} installed`);
+  }
+
+  function uninstallApp(app: StoreApp) {
+    installedIds = installedIds.filter(id => id !== app.id);
+    saveInstalledIds(installedIds);
+    showToast(`${app.name} removed`);
+  }
+
+  function openInstalledApp(app: StoreApp) {
+    registerAppInWm(app);
+    wm.openWindow(app.id);
+  }
+
+  function showToast(msg: string) {
+    toast = msg;
+    setTimeout(() => { toast = null; }, 2500);
+  }
 
   const categoryFromManifest = (cat?: string): string => {
     if (!cat) return 'Desktop';
@@ -47,7 +135,8 @@
         a.description.toLowerCase().includes(searchQuery.toLowerCase());
       const cat = categoryFromManifest(a.category);
       const matchesCat = selectedCategory === 'All' || cat === selectedCategory;
-      return matchesSearch && matchesCat;
+      const matchesSource = selectedSource === 'all' || a.source === selectedSource;
+      return matchesSearch && matchesCat && matchesSource;
     })
   );
 
@@ -62,23 +151,38 @@
   function getCategoryIcon(category: string): string {
     const icons: Record<string, string> = {
       All: '📱', Showcase: '🌟', Studio: '🛠️', Creative: '🎨',
-      Games: '🎮', Desktop: '⚙️', Admin: '🔒',
+      Games: '🎮', Desktop: '⚙️', Admin: '🔒', AI: '🧠',
+      Automation: '🔄', Monitoring: '📡',
     };
     return icons[category] ?? '📦';
   }
 
   onMount(() => {
     setTimeout(() => { isVisible = true; }, 50);
+    // Restore installed apps and re-register with wm
+    const stored = loadInstalledIds();
+    installedIds = stored;
+    for (const id of stored) {
+      const app = availableApps.find(a => a.id === id);
+      if (app && app.installUrl) {
+        registerAppInWm(app);
+      }
+    }
   });
 </script>
 
 <div class="store" class:visible={isVisible}>
+  <!-- Toast notification -->
+  {#if toast}
+    <div class="toast">{toast}</div>
+  {/if}
+
   <!-- Header -->
   <header class="header">
     <div class="header-top">
       <div class="title-area">
         <h1 class="title">App Store</h1>
-        <p class="subtitle">Discover and launch applications</p>
+        <p class="subtitle">Discover, install and launch applications</p>
       </div>
       <div class="stats-area">
         <span class="stat-num">{installedApps.length}</span>
@@ -112,6 +216,8 @@
         Available ({availableApps.length})
       </button>
     </div>
+
+    <!-- Category filter -->
     <div class="cat-chips">
       {#each categories as cat}
         <button class="chip" class:active={selectedCategory === cat} onclick={() => selectedCategory = cat}>
@@ -120,6 +226,25 @@
         </button>
       {/each}
     </div>
+
+    <!-- Source filter (only on Available tab) -->
+    {#if activeTab === 'available'}
+      <div class="source-chips">
+        {#each sources as src}
+          {@const colors = src.id !== 'all' ? sourceColors[src.id] : null}
+          <button
+            class="chip source-chip"
+            class:active={selectedSource === src.id}
+            style={colors && selectedSource === src.id
+              ? `background:${colors.bg};color:${colors.text};border-color:${colors.border}`
+              : ''}
+            onclick={() => selectedSource = src.id}
+          >
+            <span class="chip-label">{src.label}</span>
+          </button>
+        {/each}
+      </div>
+    {/if}
   </div>
 
   <!-- Content -->
@@ -159,7 +284,8 @@
       {:else}
         <div class="grid">
           {#each filteredAvailable as app, i}
-            <button class="card available" style="--i:{i}" onclick={() => openGithub(app.githubUrl)}>
+            {@const isInstalled = installedIds.includes(app.id)}
+            <div class="card available" class:installed={isInstalled} style="--i:{i}">
               <div class="card-top">
                 <span class="card-icon">{app.icon}</span>
                 <span
@@ -180,9 +306,19 @@
               </div>
               <div class="card-bot">
                 <span class="card-cat">{categoryFromManifest(app.category)}</span>
-                <span class="open-hint">GitHub →</span>
+                <div class="card-actions">
+                  {#if isInstalled}
+                    <button class="btn-open" onclick={() => openInstalledApp(app)}>Open →</button>
+                    <button class="btn-uninstall" title="Uninstall" onclick={() => uninstallApp(app)}>✕</button>
+                  {:else if app.installUrl}
+                    <button class="btn-install" onclick={() => installApp(app)}>Install</button>
+                    <button class="btn-gh" onclick={() => openGithub(app.githubUrl)} title="GitHub">↗</button>
+                  {:else}
+                    <button class="btn-gh-full" onclick={() => openGithub(app.githubUrl)}>GitHub →</button>
+                  {/if}
+                </div>
               </div>
-            </button>
+            </div>
           {/each}
         </div>
       {/if}
@@ -200,8 +336,30 @@
     opacity: 0;
     transform: translateY(8px);
     transition: all var(--transition-slow) var(--transition-easing);
+    position: relative;
   }
   .store.visible { opacity: 1; transform: translateY(0); }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 41, 59, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 8px 20px;
+    font-size: var(--text-sm);
+    color: #a5b4fc;
+    z-index: 100;
+    animation: toastIn 0.2s var(--transition-easing);
+    pointer-events: none;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
 
   /* Header */
   .header {
@@ -238,7 +396,7 @@
   }
   .search-clear:hover { background: rgba(99, 102, 241, 0.3); color: #f1f5f9; }
 
-  /* Tabs + Category */
+  /* Tabs + Filters */
   .tab-row {
     display: flex; flex-direction: column; gap: 8px;
     padding: 10px 20px; border-bottom: 1px solid rgba(99, 102, 241, 0.08);
@@ -253,8 +411,8 @@
   .tab:hover { color: #e2e8f0; background: rgba(99, 102, 241, 0.08); }
   .tab.active { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc; }
 
-  .cat-chips { display: flex; gap: 6px; overflow-x: auto; }
-  .cat-chips::-webkit-scrollbar { height: 0; }
+  .cat-chips, .source-chips { display: flex; gap: 6px; overflow-x: auto; }
+  .cat-chips::-webkit-scrollbar, .source-chips::-webkit-scrollbar { height: 0; }
   .chip {
     display: flex; align-items: center; gap: 4px;
     padding: 4px 10px; background: transparent; border: 1px solid rgba(51, 65, 85, 0.5);
@@ -264,6 +422,7 @@
   }
   .chip:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.25); color: #e2e8f0; }
   .chip.active { background: rgba(99, 102, 241, 0.2); border-color: rgba(99, 102, 241, 0.4); color: #a5b4fc; }
+  .source-chip.active { /* colors set via inline style */ }
   .chip-icon { font-size: 0.75rem; }
   .chip-label { font-size: 0.7rem; }
 
@@ -281,18 +440,24 @@
   .card {
     display: flex; flex-direction: column; padding: 16px;
     background: var(--glass-bg-default); border: 1px solid rgba(51, 65, 85, 0.6);
-    border-radius: var(--radius-xl); cursor: pointer; text-align: left;
+    border-radius: var(--radius-xl); cursor: default; text-align: left;
     transition: all var(--transition-normal) var(--transition-easing);
     animation: fadeUp 0.3s var(--transition-easing) backwards;
     animation-delay: calc(var(--i) * 0.03s);
   }
-  .card:hover {
+  /* installed plugin cards are clickable */
+  button.card {
+    cursor: pointer;
+  }
+  button.card:hover {
     transform: translateY(-2px);
     border-color: rgba(99, 102, 241, 0.4);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px rgba(99, 102, 241, 0.08);
   }
   .card.available { border-color: rgba(51, 65, 85, 0.4); }
-  .card.available:hover { border-color: rgba(245, 158, 11, 0.3); }
+  .card.available:hover { border-color: rgba(99, 102, 241, 0.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25); }
+  .card.available.installed { border-color: rgba(34, 197, 94, 0.2); }
+  .card.available.installed:hover { border-color: rgba(34, 197, 94, 0.4); }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
@@ -326,8 +491,53 @@
     padding-top: 10px; border-top: 1px solid rgba(51, 65, 85, 0.4);
   }
   .card-cat { font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
-  .open-hint { font-size: 0.7rem; color: #64748b; transition: all 0.2s; }
-  .card:hover .open-hint { color: #6366f1; }
+
+  /* Action buttons */
+  .card-actions { display: flex; align-items: center; gap: 4px; }
+
+  .btn-install {
+    padding: 4px 12px; border-radius: var(--radius-md);
+    background: linear-gradient(135deg, #6366f1, #818cf8);
+    border: none; color: #fff; font-size: 0.7rem; font-weight: 600;
+    cursor: pointer; transition: all var(--transition-fast) var(--transition-easing);
+  }
+  .btn-install:hover { background: linear-gradient(135deg, #818cf8, #a5b4fc); transform: translateY(-1px); }
+
+  .btn-open {
+    padding: 4px 10px; border-radius: var(--radius-md);
+    background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #4ade80; font-size: 0.7rem; font-weight: 600;
+    cursor: pointer; transition: all var(--transition-fast) var(--transition-easing);
+  }
+  .btn-open:hover { background: rgba(34, 197, 94, 0.25); color: #86efac; }
+
+  .btn-uninstall {
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-md); background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171;
+    font-size: 0.6rem; cursor: pointer;
+    transition: all var(--transition-fast) var(--transition-easing);
+    opacity: 0;
+  }
+  .card:hover .btn-uninstall { opacity: 1; }
+  .btn-uninstall:hover { background: rgba(239, 68, 68, 0.25); color: #fca5a5; }
+
+  .btn-gh {
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-md); background: rgba(51, 65, 85, 0.5);
+    border: 1px solid rgba(51, 65, 85, 0.6); color: #64748b;
+    font-size: 0.75rem; cursor: pointer;
+    transition: all var(--transition-fast) var(--transition-easing);
+  }
+  .btn-gh:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.3); color: #a5b4fc; }
+
+  .btn-gh-full {
+    padding: 4px 10px; border-radius: var(--radius-md);
+    background: rgba(51, 65, 85, 0.4); border: 1px solid rgba(51, 65, 85, 0.5);
+    color: #64748b; font-size: 0.7rem; font-weight: 500;
+    cursor: pointer; transition: all var(--transition-fast) var(--transition-easing);
+  }
+  .btn-gh-full:hover { background: rgba(99, 102, 241, 0.1); border-color: rgba(99, 102, 241, 0.25); color: #a5b4fc; }
 
   /* Empty */
   .empty { display: flex; flex-direction: column; align-items: center; padding: 48px 20px; gap: 8px; }
