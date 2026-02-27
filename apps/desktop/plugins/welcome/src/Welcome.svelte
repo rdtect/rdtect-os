@@ -31,8 +31,8 @@
       subtitle: 'A web-based desktop experience'
     },
     {
-      title: 'What is rdtect OS?',
-      subtitle: 'Discover the possibilities'
+      title: 'What brings you here?',
+      subtitle: 'Choose your path'
     },
     {
       title: 'Explore the Apps',
@@ -46,12 +46,39 @@
 
   const totalSteps = steps.length;
 
+  // Audience paths for step 2
+  const audiencePaths = [
+    {
+      id: 'work',
+      icon: '💼',
+      title: 'See my work',
+      description: 'Portfolio, projects, and career journey',
+      apps: ['about-me', 'project-gallery', 'stories']
+    },
+    {
+      id: 'capabilities',
+      icon: '🏢',
+      title: 'Evaluate capabilities',
+      description: 'Skills, experience, and professional background',
+      apps: ['about-me', 'project-gallery']
+    },
+    {
+      id: 'tech',
+      icon: '⚡',
+      title: 'Explore the tech',
+      description: '3D experiences, creative tools, and the platform itself',
+      apps: ['3d-experience', 'stories', 'app-store']
+    }
+  ];
+
   // Featured apps to highlight (appId maps to registered plugin IDs)
   const featuredApps = [
-    { appId: 'about-me', icon: '👤', name: 'About Me', description: 'Learn about the developer' },
-    { appId: 'project-gallery', icon: '🚀', name: 'Projects', description: 'View portfolio projects' },
-    { appId: 'blog', icon: '📝', name: 'Blog', description: 'Read articles and thoughts' },
-    { appId: 'about-me', icon: '💬', name: 'Contact', description: 'Get in touch' }
+    { appId: 'about-me', icon: '👤', name: 'About Me', description: 'Interactive resume & career timeline' },
+    { appId: 'project-gallery', icon: '🚀', name: 'Projects', description: 'Portfolio showcase gallery' },
+    { appId: 'stories', icon: '📖', name: 'Stories', description: 'Thought leadership & insights' },
+    { appId: '3d-experience', icon: '🌌', name: '3D Experience', description: 'Interactive 3D portfolio scene' },
+    { appId: 'ai-chat', icon: '🤖', name: 'AI Chat', description: 'Chat with AI — Claude & Cloudflare' },
+    { appId: 'service-hub', icon: '🖧', name: 'Service Hub', description: 'Self-hosted VPS services' }
   ];
 
   // Launch an app and close the wizard
@@ -60,10 +87,19 @@
     handleClose();
   }
 
+  // Launch apps for a specific audience path
+  function choosePath(path: typeof audiencePaths[number]) {
+    for (const appId of path.apps) {
+      wm.openWindow(appId);
+    }
+    handleClose();
+  }
+
   // Launch featured apps for exploration
   function exploreWork() {
-    wm.openWindow('project-gallery');
     wm.openWindow('about-me');
+    wm.openWindow('project-gallery');
+    wm.openWindow('stories');
     handleClose();
   }
 
@@ -241,7 +277,7 @@
         </div>
       </WelcomeStep>
 
-      <!-- Step 2: What is rdtect OS? -->
+      <!-- Step 2: Audience paths -->
       <WelcomeStep
         step={2}
         title={steps[1].title}
@@ -250,29 +286,27 @@
         {direction}
       >
         <div class="step-2-content">
-          <div class="feature-cards">
-            <div class="feature-card">
-              <div class="feature-icon">🖥️</div>
-              <div class="feature-text">
-                <h4>Desktop Experience</h4>
-                <p>A fully functional desktop environment in your browser</p>
-              </div>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">🎨</div>
-              <div class="feature-text">
-                <h4>Portfolio Showcase</h4>
-                <p>Explore projects, skills, and creative work interactively</p>
-              </div>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">⚡</div>
-              <div class="feature-text">
-                <h4>Modern Stack</h4>
-                <p>Built with Svelte 5, TypeScript, and cutting-edge tech</p>
-              </div>
-            </div>
+          <div class="path-cards">
+            {#each audiencePaths as path, i}
+              <button
+                class="path-card"
+                style="animation-delay: {i * 100}ms"
+                onclick={() => choosePath(path)}
+              >
+                <div class="path-icon">{path.icon}</div>
+                <div class="path-text">
+                  <h4>{path.title}</h4>
+                  <p>{path.description}</p>
+                </div>
+                <div class="path-arrow">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
+            {/each}
           </div>
+          <p class="or-browse">or browse all apps below →</p>
         </div>
       </WelcomeStep>
 
@@ -287,7 +321,7 @@
         <div class="step-3-content">
           <div class="apps-grid">
             {#each featuredApps as app, i}
-              <button class="app-card" style="animation-delay: {i * 100}ms" onclick={() => launchApp(app.appId)}>
+              <button class="app-card" style="animation-delay: {i * 80}ms" onclick={() => launchApp(app.appId)}>
                 <div class="app-icon">{app.icon}</div>
                 <div class="app-info">
                   <span class="app-name">{app.name}</span>
@@ -614,18 +648,23 @@
     opacity: 1;
   }
 
-  /* Step 2 content */
+  /* Step 2 content — audience paths */
   .step-2-content {
     width: 100%;
-  }
-
-  .feature-cards {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
   }
 
-  .feature-card {
+  .path-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .path-card {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -633,13 +672,14 @@
     background: var(--glass-bg-subtle);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
+    cursor: pointer;
     transition: all var(--transition-normal) var(--transition-easing);
     animation: slideIn 0.5s ease-out backwards;
+    text-align: left;
+    width: 100%;
+    min-height: 44px;
+    color: inherit;
   }
-
-  .feature-card:nth-child(1) { animation-delay: 0.1s; }
-  .feature-card:nth-child(2) { animation-delay: 0.2s; }
-  .feature-card:nth-child(3) { animation-delay: 0.3s; }
 
   @keyframes slideIn {
     from {
@@ -648,34 +688,57 @@
     }
   }
 
-  .feature-card:hover {
+  .path-card:hover {
     background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: rgba(99, 102, 241, 0.4);
     transform: translateX(5px);
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
   }
 
-  .feature-icon {
-    font-size: 2rem;
+  .path-icon {
+    font-size: 1.75rem;
     width: 50px;
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(var(--desktop-accent-rgb), 0.2);
+    background: rgba(99, 102, 241, 0.15);
     border-radius: var(--radius-lg);
+    flex-shrink: 0;
   }
 
-  .feature-text h4 {
-    margin: 0 0 0.25rem 0;
+  .path-text {
+    flex: 1;
+  }
+
+  .path-text h4 {
+    margin: 0 0 0.2rem 0;
     font-size: 1rem;
     font-weight: 600;
     color: #e2e8f0;
   }
 
-  .feature-text p {
+  .path-text p {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #64748b;
+  }
+
+  .path-arrow {
+    color: #475569;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+  }
+
+  .path-card:hover .path-arrow {
+    color: #a5b4fc;
+    transform: translateX(4px);
+  }
+
+  .or-browse {
+    font-size: var(--text-xs);
+    color: #475569;
+    margin: 0;
   }
 
   /* Step 3 content */
@@ -685,21 +748,24 @@
 
   .apps-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
   }
 
   .app-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
+    gap: 0.5rem;
+    padding: 0.85rem 0.5rem;
     background: var(--glass-bg-subtle);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-normal) var(--transition-easing);
     animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    text-align: center;
+    color: inherit;
   }
 
   @keyframes popIn {
@@ -730,18 +796,19 @@
   .app-info {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
+    gap: 0.1rem;
   }
 
   .app-name {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #e2e8f0;
   }
 
   .app-description {
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     color: #64748b;
+    line-height: 1.3;
   }
 
   /* Step 4 content */
