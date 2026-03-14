@@ -324,7 +324,7 @@
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono', 'Source Code Pro', 'Consolas', monospace;
     font-size: 14px;
     line-height: 1.4;
-    color: #33ff33;
+    color: #f8fafc;
     padding: 8px;
     overflow: hidden;
     cursor: text;
@@ -384,7 +384,7 @@
   }
 
   .prompt {
-    color: #33ff33;
+    color: #6366f1;
     white-space: nowrap;
     margin-right: 8px;
   }
@@ -397,7 +397,7 @@
     color: #f8fafc;
     font-family: inherit;
     font-size: inherit;
-    caret-color: #33ff33;
+    caret-color: #6366f1;
   }
 
   .input::selection {

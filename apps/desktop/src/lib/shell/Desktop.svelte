@@ -544,14 +544,9 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="fixed inset-0 overflow-hidden font-sans" oncontextmenu={showDesktopContextMenu}>
-  <!-- Desktop background: 3 layers (gradient, aurora, noise) -->
+  <!-- Desktop background: gradient + aurora -->
   <div class="absolute inset-0 bg-desktop-gradient">
-    <!-- Layer 1: Base gradient (via bg-desktop-gradient class) -->
-    <!-- Layer 2: Aurora glow effect -->
     <div class="bg-desktop-aurora"></div>
-    <div class="absolute inset-0 bg-desktop-overlay"></div>
-    <!-- Layer 3: Noise texture for depth -->
-    <div class="absolute inset-0 bg-desktop-noise"></div>
   </div>
 
   <!-- Desktop area with icons and widgets -->
