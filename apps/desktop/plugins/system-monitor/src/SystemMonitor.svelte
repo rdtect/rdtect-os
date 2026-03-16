@@ -382,6 +382,16 @@
       perfObserver.disconnect();
     }
   });
+
+  // SVG arc path helper for circular gauges
+  function arcPath(percent: number, radius: number = 40, cx: number = 50, cy: number = 50): string {
+    const angle = (percent / 100) * 360;
+    const radians = (angle - 90) * (Math.PI / 180);
+    const x = cx + radius * Math.cos(radians);
+    const y = cy + radius * Math.sin(radians);
+    const largeArc = angle > 180 ? 1 : 0;
+    return `M ${cx} ${cy - radius} A ${radius} ${radius} 0 ${largeArc} 1 ${x} ${y}`;
+  }
 </script>
 
 <div class="system-monitor">
