@@ -1,0 +1,244 @@
+/* ========================================
+   All UI Components
+   ======================================== */
+
+/* ========================================
+   Header & Game Controls
+   ======================================== */
+header {
+    text-align: center;
+    color: var(--color-white);
+    margin-bottom: var(--spacing-lg);
+}
+
+header h1 {
+    font-size: 3em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: var(--spacing-md);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: var(--button-gradient);
+    color: var(--color-white);
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.score,
+.timer,
+.hints {
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.3);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+}
+
+.hints {
+    font-size: 14px;
+    font-weight: normal;
+    opacity: 0.8;
+}
+
+/* ========================================
+   Game Board & Piles Layout
+   ======================================== */
+.game-board {
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-lg);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-md);
+}
+
+.stock-waste,
+.foundations {
+    display: flex;
+    gap: var(--card-gap);
+}
+
+.tableau {
+    display: flex;
+    gap: var(--card-gap);
+    justify-content: center;
+}
+
+/* ========================================
+   Card Pile Zones (Drop Targets)
+   ======================================== */
+.card-pile {
+    width: var(--card-width);
+    height: var(--card-height);
+    border: 3px dashed rgba(255, 255, 255, 0.3);
+    border-radius: var(--card-border-radius);
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.card-pile.drag-over {
+    background: rgba(76, 175, 80, 0.3);
+    border-color: var(--color-primary);
+    transform: scale(1.05);
+}
+
+.tableau-pile {
+    min-height: 400px;
+    height: auto;
+}
+
+.stock {
+    cursor: pointer;
+}
+
+.stock:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========================================
+   Card Elements & States
+   ======================================== */
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    background: var(--color-white);
+    border-radius: var(--card-border-radius);
+    position: absolute;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    user-select: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.card.face-down {
+    background: var(--card-back-gradient);
+    cursor: default;
+}
+
+.card.face-down:hover {
+    transform: none;
+}
+
+/* ========================================
+   Card Content Layout
+   ======================================== */
+.card-top,
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-bottom {
+    align-items: flex-end;
+    transform: rotate(180deg);
+}
+
+.card-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card-suit {
+    font-size: 28px;
+}
+
+.card-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+}
+
+.red { color: var(--color-red); }
+.black { color: var(--color-black); }
+
+/* ========================================
+   Victory Modal Dialog
+   ======================================== */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--color-white);
+    padding: var(--spacing-xl);
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+    animation: modalAppear var(--transition-slow);
+}
+
+.modal-content h2 {
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-md);
+    font-size: 2em;
+}
+
+.modal-content p {
+    font-size: 1.2em;
+    margin: var(--spacing-sm) 0;
+    color: #333;
+}
+
+/* ========================================
+   Mobile & Tablet Responsive
+   ======================================== */
+@media (max-width: 768px) {
+    header h1 { font-size: 2em; }
+    .card-value { font-size: 18px; }
+    .card-suit { font-size: 20px; }
+    .card-center { font-size: 32px; }
+}
