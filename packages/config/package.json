@@ -1,0 +1,8 @@
+{
+  "name": "@rdtect/config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "description": "Shared config presets (tsconfig, eslint, prettier) for rdtect-os"
+}
