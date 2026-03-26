@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "workspaces": ["apps/*", "packages/*", "plugins/*"],
+  "workspaces": ["apps/*", "packages/*", "plugins/*", "labs/*"],
   "scripts": {
     "dev": "vite dev --host",
     "dev:services": "docker compose up -d",
