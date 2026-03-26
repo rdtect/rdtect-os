@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>Kanban Board</h1>
+        </header>
+
+        <main id="board-container" class="board-container">
+            <!-- Columns will be rendered here -->
+        </main>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add Task</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="task-title" placeholder="Task title" autocomplete="off">
+                <textarea id="task-description" placeholder="Description (optional)" rows="3"></textarea>
+                <input type="text" id="task-assignee" placeholder="Assigned to (optional)" autocomplete="off">
+                <div class="date-inputs">
+                    <div class="input-group">
+                        <label>Start Date</label>
+                        <input type="date" id="task-start-date">
+                    </div>
+                    <div class="input-group">
+                        <label>Due Date</label>
+                        <input type="date" id="task-due-date">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Priority</label>
+                    <select id="task-priority">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-task-btn" class="btn">Cancel</button>
+                <button id="save-task-btn" class="btn btn-primary">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Column Modal -->
+    <div id="column-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Column</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="column-name" placeholder="Column name" autocomplete="off">
+                <div class="input-group">
+                    <label>Color</label>
+                    <input type="color" id="column-color" value="#6366f1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-column-btn" class="btn">Cancel</button>
+                <button id="save-column-btn" class="btn btn-primary">Save Column</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
