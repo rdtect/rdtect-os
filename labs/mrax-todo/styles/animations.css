@@ -1,0 +1,165 @@
+/* Animations */
+
+/* Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Fade Out */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+}
+
+/* Slide In */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Bounce */
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Pulse */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* Shake */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Todo Entering */
+.todo-entering {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+}
+
+.todo-enter-active {
+    animation: fadeIn 300ms ease-out;
+}
+
+/* Todo Leaving */
+.todo-leaving {
+    animation: fadeOut 250ms ease-out;
+    pointer-events: none;
+}
+
+/* Initial page load animations */
+header {
+    animation: slideIn 500ms ease-out;
+}
+
+.controls {
+    animation: slideIn 600ms ease-out;
+}
+
+.todo-list {
+    animation: slideIn 700ms ease-out;
+}
+
+.stats {
+    animation: slideIn 800ms ease-out;
+}
+
+/* Checkbox check animation */
+@keyframes checkBounce {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.todo-checkbox input:checked + label {
+    animation: bounce 300ms ease-out;
+}
+
+.todo-checkbox input:checked + label .check-icon {
+    animation: checkBounce 300ms ease-out;
+}
+
+/* Button hover animations */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Loading animation for async operations */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading {
+    animation: spin 1s linear infinite;
+}
+
+/* Stagger animation for list items */
+.todo-item {
+    animation: fadeIn 300ms ease-out backwards;
+}
+
+.todo-item:nth-child(1) { animation-delay: 0ms; }
+.todo-item:nth-child(2) { animation-delay: 50ms; }
+.todo-item:nth-child(3) { animation-delay: 100ms; }
+.todo-item:nth-child(4) { animation-delay: 150ms; }
+.todo-item:nth-child(5) { animation-delay: 200ms; }
+.todo-item:nth-child(n+6) { animation-delay: 250ms; }
