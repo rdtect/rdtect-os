@@ -1,0 +1,6 @@
+{
+  "name": "@rdtect/mrax-kanban",
+  "version": "0.0.1",
+  "private": true,
+  "description": "MRAX microapp — Kanban board with drag-and-drop"
+}

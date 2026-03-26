@@ -1,0 +1,6 @@
+{
+  "name": "@rdtect/mrax-solitaire",
+  "version": "0.0.1",
+  "private": true,
+  "description": "MRAX microapp — Klondike solitaire card game"
+}
