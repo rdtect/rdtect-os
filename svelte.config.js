@@ -1,4 +1,4 @@
-import adapterNode from '@sveltejs/adapter-node';
+import adapterCloudflare from '@sveltejs/adapter-cloudflare';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -12,7 +12,7 @@ const config = {
 	},
 
 	kit: {
-		adapter: adapterNode(),
+		adapter: adapterCloudflare(),
 		experimental: {
 			remoteFunctions: true
 		}

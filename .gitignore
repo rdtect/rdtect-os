@@ -25,3 +25,7 @@ vite.config.ts.timestamp-*
 # Data directories (user content)
 /data/
 !/data/markdown/.gitkeep
+
+# Project management symlink (sidecar, not part of repo)
+_project
+rdtect-os

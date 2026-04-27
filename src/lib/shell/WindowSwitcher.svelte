@@ -1,6 +1,6 @@
 <script lang="ts">
   import { wm } from './registry.svelte';
-  import type { Window } from './window.svelte';
+  import type { Window } from './snap-zones.svelte';
 
   interface Props {
     /** Whether the switcher is visible */

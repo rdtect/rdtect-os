@@ -2,7 +2,7 @@
   import { onDestroy } from 'svelte';
   import { wm } from './registry.svelte';
   import type { AppDefinition, MenuItem } from './types';
-  import { Window } from './window.svelte';
+  import { Window } from './snap-zones.svelte';
   import { getAuthState } from '$lib/core/pocketbase';
   import { mobile } from '$lib/core/mobile.svelte';
   import { pluginBadges } from './constants';

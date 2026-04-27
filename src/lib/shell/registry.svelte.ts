@@ -8,7 +8,7 @@
  * Supports all 5 plugin types via LoadedPlugin abstraction.
  */
 import type { AppDefinition, SnapZone } from './types';
-import { Window, detectSnapZone, getSnapZoneBounds } from './window.svelte';
+import { Window, detectSnapZone, getSnapZoneBounds } from './snap-zones.svelte';
 import { eventBus } from '$lib/core/event-bus';
 import { mobile } from '$lib/core/mobile.svelte';
 

@@ -1,18 +1,9 @@
-import { readFile, writeFile, readdir, mkdir, unlink, stat } from 'fs/promises';
-import { join, basename, extname } from 'path';
-import { existsSync } from 'fs';
-
-// Base directory for markdown files
-const MARKDOWN_DIR = process.env.MARKDOWN_DIR || join(process.cwd(), 'data', 'markdown');
-
 /**
- * Ensure the markdown directory exists
+ * Markdown file storage
+ *
+ * This module provides a filesystem-based markdown storage backend.
+ * On Cloudflare Workers/Pages, fs is unavailable — operations return empty/error gracefully.
  */
-async function ensureMarkdownDir(): Promise<void> {
-  if (!existsSync(MARKDOWN_DIR)) {
-    await mkdir(MARKDOWN_DIR, { recursive: true });
-  }
-}
 
 export interface MarkdownFile {
   filename: string;
@@ -28,73 +19,81 @@ export interface MarkdownFileMeta {
   size: number;
 }
 
-/**
- * Get the full path for a markdown file
- */
-function getFilePath(filename: string): string {
-  // Sanitize filename to prevent directory traversal
-  const sanitized = basename(filename);
-  const name = sanitized.endsWith('.md') ? sanitized : `${sanitized}.md`;
-  return join(MARKDOWN_DIR, name);
+// Dynamic import for Node.js fs — unavailable on edge runtimes
+let fsAvailable = false;
+let fsPromises: typeof import('fs/promises') | null = null;
+let fsSync: typeof import('fs') | null = null;
+let pathModule: typeof import('path') | null = null;
+
+try {
+  fsPromises = await import('fs/promises');
+  fsSync = await import('fs');
+  pathModule = await import('path');
+  fsAvailable = true;
+} catch {
+  // Edge runtime — fs not available
 }
 
-/**
- * Save markdown content to a file
- */
-export async function saveMarkdown(filename: string, content: string): Promise<MarkdownFile> {
-  await ensureMarkdownDir();
+const MARKDOWN_DIR = fsAvailable && pathModule
+  ? (process.env.MARKDOWN_DIR || pathModule.join(process.cwd(), 'data', 'markdown'))
+  : '';
 
-  const filePath = getFilePath(filename);
-  await writeFile(filePath, content, 'utf-8');
-
-  const stats = await stat(filePath);
-
-  return {
-    filename: basename(filePath),
-    content,
-    createdAt: stats.birthtime,
-    modifiedAt: stats.mtime,
-  };
-}
-
-/**
- * Read a markdown file
- */
-export async function readMarkdown(filename: string): Promise<MarkdownFile | null> {
-  await ensureMarkdownDir();
-
-  const filePath = getFilePath(filename);
-
-  if (!existsSync(filePath)) {
-    return null;
+async function ensureMarkdownDir(): Promise<void> {
+  if (!fsAvailable || !fsSync || !fsPromises) return;
+  if (!fsSync.existsSync(MARKDOWN_DIR)) {
+    await fsPromises.mkdir(MARKDOWN_DIR, { recursive: true });
   }
+}
 
-  const [content, stats] = await Promise.all([
-    readFile(filePath, 'utf-8'),
-    stat(filePath),
-  ]);
+function getFilePath(filename: string): string {
+  if (!pathModule) return filename;
+  const sanitized = pathModule.basename(filename);
+  const name = sanitized.endsWith('.md') ? sanitized : `${sanitized}.md`;
+  return pathModule.join(MARKDOWN_DIR, name);
+}
 
+export async function saveMarkdown(filename: string, content: string): Promise<MarkdownFile> {
+  if (!fsAvailable || !fsPromises || !pathModule) {
+    throw new Error('File storage not available in edge runtime');
+  }
+  await ensureMarkdownDir();
+  const filePath = getFilePath(filename);
+  await fsPromises.writeFile(filePath, content, 'utf-8');
+  const stats = await fsPromises.stat(filePath);
   return {
-    filename: basename(filePath),
+    filename: pathModule.basename(filePath),
     content,
     createdAt: stats.birthtime,
     modifiedAt: stats.mtime,
   };
 }
 
-/**
- * List all markdown files in the directory
- */
-export async function listMarkdownFiles(): Promise<MarkdownFileMeta[]> {
+export async function readMarkdown(filename: string): Promise<MarkdownFile | null> {
+  if (!fsAvailable || !fsPromises || !fsSync || !pathModule) return null;
   await ensureMarkdownDir();
+  const filePath = getFilePath(filename);
+  if (!fsSync.existsSync(filePath)) return null;
+  const [content, stats] = await Promise.all([
+    fsPromises.readFile(filePath, 'utf-8'),
+    fsPromises.stat(filePath),
+  ]);
+  return {
+    filename: pathModule.basename(filePath),
+    content,
+    createdAt: stats.birthtime,
+    modifiedAt: stats.mtime,
+  };
+}
 
-  const files = await readdir(MARKDOWN_DIR);
-  const markdownFiles = files.filter((f) => extname(f) === '.md');
-
+export async function listMarkdownFiles(): Promise<MarkdownFileMeta[]> {
+  if (!fsAvailable || !fsPromises || !pathModule) return [];
+  await ensureMarkdownDir();
+  const files = await fsPromises.readdir(MARKDOWN_DIR);
+  const markdownFiles = files.filter((f) => pathModule!.extname(f) === '.md');
   const filesMeta: MarkdownFileMeta[] = await Promise.all(
     markdownFiles.map(async (filename) => {
-      const filePath = join(MARKDOWN_DIR, filename);
-      const stats = await stat(filePath);
+      const filePath = pathModule!.join(MARKDOWN_DIR, filename);
+      const stats = await fsPromises!.stat(filePath);
       return {
         filename,
         createdAt: stats.birthtime,
@@ -103,29 +102,19 @@ export async function listMarkdownFiles(): Promise<MarkdownFileMeta[]> {
       };
     })
   );
-
-  // Sort by modified date descending
   return filesMeta.sort((a, b) => b.modifiedAt.getTime() - a.modifiedAt.getTime());
 }
 
-/**
- * Delete a markdown file
- */
 export async function deleteMarkdown(filename: string): Promise<boolean> {
+  if (!fsAvailable || !fsPromises || !fsSync) return false;
   const filePath = getFilePath(filename);
-
-  if (!existsSync(filePath)) {
-    return false;
-  }
-
-  await unlink(filePath);
+  if (!fsSync.existsSync(filePath)) return false;
+  await fsPromises.unlink(filePath);
   return true;
 }
 
-/**
- * Check if a markdown file exists
- */
 export async function markdownExists(filename: string): Promise<boolean> {
+  if (!fsAvailable || !fsSync) return false;
   const filePath = getFilePath(filename);
-  return existsSync(filePath);
+  return fsSync.existsSync(filePath);
 }

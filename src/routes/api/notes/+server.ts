@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getAllNotes, saveNote } from '$lib/server/notes';
-import { randomUUID } from 'crypto';
+const randomUUID = () => crypto.randomUUID();
 
 /**
  * GET /api/notes - Get all notes
