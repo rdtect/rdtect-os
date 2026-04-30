@@ -1,6 +1,11 @@
 {
   "name": "@rdtect/mrax-todo",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
-  "description": "MRAX microapp — Todo list with IndexedDB persistence"
+  "description": "MRAX microapp — Todo list (Svelte 5 + runes-class + IndexedDB). Reference implementation of the MRAX trilogy.",
+  "type": "module",
+  "main": "./svelte-web/src/lib/index.ts",
+  "exports": {
+    ".": "./svelte-web/src/lib/index.ts"
+  }
 }
