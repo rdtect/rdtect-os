@@ -12,3 +12,8 @@ binding = "AI"
 binding = "DB"
 database_name = "rdtect_search"
 database_id = "b72d026b-7082-4cc9-9524-4bac09628fe8"
+
+# KV namespace for article content (RDT-451)
+[[kv_namespaces]]
+binding = "ARTICLES_KV"
+id = "95ea79f52b5640f8a83637203fa1f52c"
