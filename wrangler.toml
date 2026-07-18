@@ -3,6 +3,12 @@ compatibility_date = "2025-04-01"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-# AI binding for embeddings POC (RDT-412)
+# AI binding for embeddings (RDT-412)
 [[ai]]
 id = "AI"
+
+# D1 database for article embeddings (RDT-415)
+[[d1_databases]]
+binding = "DB"
+database_name = "rdtect_search"
+database_id = "rdtect_search"
