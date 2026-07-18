@@ -221,7 +221,7 @@ With both:                 real × fast = wisdom at scale</code></pre>
 
 		<p>
 			An architect using AI for spatial design: the architect's eye matters. AI is faster. The vision is
-			real.
+			real. <a href="/writing/2026/07/architects-natural-ai-leaders">Architects have an unfair advantage in AI</a>—learn why.
 		</p>
 
 		<p>
@@ -324,5 +324,17 @@ With both:                 real × fast = wisdom at scale</code></pre>
 		background-color: transparent;
 		color: #e5e7eb;
 		padding: 0;
+	}
+
+	:global(.prose a) {
+		color: #2563eb;
+		text-decoration: none;
+		font-weight: 500;
+		border-bottom: 1px solid #dbeafe;
+		transition: border-color 0.2s;
+	}
+
+	:global(.prose a:hover) {
+		border-bottom-color: #3b82f6;
 	}
 </style>
