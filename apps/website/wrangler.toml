@@ -1,0 +1,13 @@
+name = "rdtect-website"
+type = "javascript"
+main = "build/index.js"
+site = { bucket = "build/client" }
+
+[env.production]
+routes = [
+  { pattern = "rdtect.com", zone_name = "rdtect.com" }
+]
+
+[build]
+command = "npm run build"
+cwd = "./"
