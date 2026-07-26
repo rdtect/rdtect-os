@@ -6,11 +6,15 @@
  * Executes 7 chunked calls (~50K tokens each) against DeepSeek API
  * Captures cost + latency + output quality metrics
  *
- * Requires: DEEPSEEK_API_KEY env var
+ * Requires ONE of:
+ *   DEEPSEEK_API_KEY  → direct DeepSeek API (platform.deepseek.com)
+ *   OPENROUTER_API_KEY → OpenRouter DeepSeek endpoint (unblocked by RDT-540)
+ *
  * Est. cost: ~$0.40 (7 × 50K tokens × $0.435/1M input + $0.87/1M output × ~500 out)
  * Est. time: ~35–70s (7 sequential calls × 5–10s each)
  *
  * Run: DEEPSEEK_API_KEY=sk-... bun run scripts/benchmark-deepseek-baseline.ts
+ *  OR: OPENROUTER_API_KEY=sk-or-... bun run scripts/benchmark-deepseek-baseline.ts
  * Output: /tmp/deepseek-baseline-output/results.json + results-summary.md
  */
 
@@ -18,16 +22,28 @@ import * as fs from "fs";
 import * as path from "path";
 
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-if (!DEEPSEEK_API_KEY) {
-  console.error("ERROR: DEEPSEEK_API_KEY not set. Provision via Rick (RDT-568 blocker).");
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
+if (!DEEPSEEK_API_KEY && !OPENROUTER_API_KEY) {
+  console.error("ERROR: No API key found.");
+  console.error("  Set DEEPSEEK_API_KEY (platform.deepseek.com) OR");
+  console.error("  Set OPENROUTER_API_KEY (RDT-540 gate, openrouter.ai).");
   process.exit(1);
 }
 
+// ponytail: prefer direct key; fall back to OpenRouter which proxies DeepSeek
+const API_KEY = DEEPSEEK_API_KEY ?? OPENROUTER_API_KEY!;
+const USING_OPENROUTER = !DEEPSEEK_API_KEY && !!OPENROUTER_API_KEY;
+const API_URL = USING_OPENROUTER
+  ? "https://openrouter.ai/api/v1/chat/completions"
+  : "https://api.deepseek.com/v1/chat/completions";
+// OpenRouter model ID for DeepSeek V3/V4 Pro
+const OPENROUTER_MODEL = "deepseek/deepseek-chat";
+
 const MANIFEST_PATH = "/tmp/deepseek-baseline-output/api-calls-manifest.json";
 const OUTPUT_DIR = "/tmp/deepseek-baseline-output";
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
-// Pricing as of 2026-07 (DeepSeek V4 Pro)
+// Pricing as of 2026-07 (DeepSeek V4 Pro direct; OpenRouter adds ~5–10% margin)
 const PRICE_INPUT_PER_M = 0.435;
 const PRICE_OUTPUT_PER_M = 0.87;
 
@@ -94,15 +110,21 @@ function p95(latencies: number[]): number {
 
 async function executeCall(call: ApiCall): Promise<CallResult> {
   const start = Date.now();
+  // Use OpenRouter model ID when routing through OpenRouter
+  const modelId = USING_OPENROUTER ? OPENROUTER_MODEL : call.model;
+  const extraHeaders: Record<string, string> = USING_OPENROUTER
+    ? { "HTTP-Referer": "https://rdtect.com", "X-Title": "RDT-535 benchmark" }
+    : {};
   try {
-    const response = await fetch(DEEPSEEK_API_URL, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+        Authorization: `Bearer ${API_KEY}`,
         "Content-Type": "application/json",
+        ...extraHeaders,
       },
       body: JSON.stringify({
-        model: call.model,
+        model: modelId,
         messages: call.messages,
         temperature: call.temperature,
         max_tokens: call.max_tokens,
@@ -169,7 +191,7 @@ async function main() {
 
   const manifest: CallManifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf-8"));
   console.log(`\n=== DeepSeek V4 Pro Baseline — RDT-568 ===`);
-  console.log(`Model: ${manifest.baseline_model}`);
+  console.log(`Model: ${manifest.baseline_model}${USING_OPENROUTER ? ` (via OpenRouter → ${OPENROUTER_MODEL})` : " (direct)"}`);
   console.log(`Calls: ${manifest.total_calls}`);
   console.log(`Vault: ${manifest.vault_source}`);
   console.log();
@@ -216,10 +238,12 @@ async function main() {
   fs.writeFileSync(resultsPath, JSON.stringify(summary, null, 2));
 
   // Write markdown summary for vault
+  const apiPath = USING_OPENROUTER ? `OpenRouter (${OPENROUTER_MODEL})` : "Direct DeepSeek API";
   const md = `# DeepSeek V4 Pro Baseline Results — RDT-568
 
 **Trial**: ${summary.trial_id}
 **Model**: ${summary.model}
+**API path**: ${apiPath}
 **Date**: ${summary.timestamp}
 
 ## Cost
