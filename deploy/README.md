@@ -1,6 +1,24 @@
-# rdtect OS - Coolify Deployment Guide
+# rdtect OS - Deployment Guide
 
-This guide covers deploying rdtect OS to [Coolify](https://coolify.io), a self-hosted PaaS platform.
+## Primary: Cloudflare Pages (Frontend)
+
+The rdtect OS frontend is deployed via **Cloudflare Pages**. Build output is at `.svelte-kit/cloudflare`, configured in the root `wrangler.toml`.
+
+**Deploy command:**
+```bash
+bun run build
+npx wrangler pages deploy .svelte-kit/cloudflare --project-name rdtect-os
+```
+
+**Production domain:** `https://rdtect.com` (bound to Pages project)
+
+> ⚠️ The legacy `apps/website/` Worker was retired in RDT-580. Pages is the sole canonical deployment path for the frontend.
+
+---
+
+## Alternative: Coolify (Full Stack — Backend + AI Services)
+
+This guide covers deploying the full rdtect OS stack (PocketBase, Python backend) to [Coolify](https://coolify.io), a self-hosted PaaS platform. The frontend can also be served via Coolify instead of Cloudflare Pages if needed.
 
 ## Prerequisites
 
