@@ -10,6 +10,7 @@ declare global {
 			env: {
 				AI: any;
 				DB: any;
+				ADMIN_TOKEN?: string;
 			};
 		}
 	}
