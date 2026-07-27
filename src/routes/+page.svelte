@@ -190,7 +190,21 @@
 </script>
 
 <svelte:head>
-  <title>rdtect OS</title>
+  <title>rdtect — Rick De</title>
+  <meta name="description" content="Design x Architecture x Intelligence. Building workplace systems that think — where spatial design, technology integration, and AI orchestration converge." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="rdtect — Rick De" />
+  <meta property="og:description" content="Design x Architecture x Intelligence. Building workplace systems that think." />
+  <meta property="og:url" content="https://rdtect.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://rdtect.com/og/home.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="rdtect — Rick De" />
+  <meta name="twitter:description" content="Design x Architecture x Intelligence. Building workplace systems that think." />
+  <meta name="twitter:image" content="https://rdtect.com/og/home.svg" />
 </svelte:head>
 
 <Desktop />

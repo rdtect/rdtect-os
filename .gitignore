@@ -29,3 +29,6 @@ vite.config.ts.timestamp-*
 # Project management symlink (sidecar, not part of repo)
 _project
 rdtect-os
+
+# Vault knowledge spillover (not repo content)
+/1_Atlas/

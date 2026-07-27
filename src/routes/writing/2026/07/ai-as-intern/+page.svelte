@@ -4,7 +4,7 @@
 		description:
 			'Long-form piece on AI as a force multiplier, not a replacement. Explore how domain expertise combined with AI capability creates true leverage.',
 		url: 'https://rdtect.com/writing/2026/07/ai-as-intern',
-		image: 'https://rdtect.com/og/ai-as-intern.png' // hero image will come from visual commission
+		image: 'https://rdtect.com/og/ai-as-intern.svg' // hero image will come from visual commission
 	};
 </script>
 

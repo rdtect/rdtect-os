@@ -4,7 +4,7 @@
 		description:
 			'How Zyeta Digital Experience bridges spatial design, technology integration, and AI orchestration to build workplace systems that think.',
 		url: 'https://rdtect.com/about',
-		image: 'https://rdtect.com/og/about.png'
+		image: 'https://rdtect.com/og/about.svg'
 	};
 </script>
 

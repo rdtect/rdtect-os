@@ -1,5 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+
 	let mobileNavOpen = $state(false);
+
+	function isActive(path: string): boolean {
+		return $page.url.pathname === path || $page.url.pathname.startsWith(path + '/');
+	}
 </script>
 
 <nav class="site-nav">
@@ -16,10 +22,10 @@
 
 		<!-- Desktop links -->
 		<div class="hidden items-center gap-6 sm:flex">
-			<a href="/writing" class="nav-link text-sm text-slate-400 transition-colors hover:text-white">
+			<a href="/writing" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/writing') ? 'page' : undefined}>
 				Writing
 			</a>
-			<a href="/about" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current="page">
+			<a href="/about" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/about') ? 'page' : undefined}>
 				About
 			</a>
 			<a href="mailto:hello@rdtect.com" class="ml-2 rounded-lg border border-indigo-500/30 px-3 py-1.5 text-xs font-medium text-indigo-300 transition-all hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200">
@@ -49,10 +55,10 @@
 	{#if mobileNavOpen}
 		<div class="sm:hidden border-t border-white/5 bg-slate-900/95 backdrop-blur-xl">
 			<div class="flex flex-col gap-1 px-4 py-3">
-				<a href="/writing" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white">
+				<a href="/writing" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/writing') ? 'page' : undefined}>
 					Writing
 				</a>
-				<a href="/about" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white">
+				<a href="/about" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/about') ? 'page' : undefined}>
 					About
 				</a>
 				<a href="mailto:hello@rdtect.com" class="mt-1 rounded-lg border border-indigo-500/30 px-3 py-2 text-center text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200">
