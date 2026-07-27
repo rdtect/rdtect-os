@@ -1,3 +1,5 @@
-# allow crawling everything by default
+# https://rdtect.com
 User-agent: *
-Disallow:
+Allow: /
+
+Sitemap: https://rdtect.com/sitemap.xml

@@ -22,13 +22,22 @@
 
 		<!-- Desktop links -->
 		<div class="hidden items-center gap-6 sm:flex">
+			<a href="/insights" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/insights') ? 'page' : undefined}>
+				Insights
+			</a>
+			<a href="/case-studies" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/case-studies') ? 'page' : undefined}>
+				Case Studies
+			</a>
+			<a href="/experience" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/experience') ? 'page' : undefined}>
+				Work With Me
+			</a>
 			<a href="/writing" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/writing') ? 'page' : undefined}>
 				Writing
 			</a>
 			<a href="/about" class="nav-link text-sm text-slate-400 transition-colors hover:text-white" aria-current={isActive('/about') ? 'page' : undefined}>
 				About
 			</a>
-			<a href="mailto:hello@rdtect.com" class="ml-2 rounded-lg border border-indigo-500/30 px-3 py-1.5 text-xs font-medium text-indigo-300 transition-all hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200">
+			<a href="/contact" class="ml-2 rounded-lg border border-indigo-500/30 px-3 py-1.5 text-xs font-medium text-indigo-300 transition-all hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200" aria-current={isActive('/contact') ? 'page' : undefined}>
 				Contact
 			</a>
 		</div>
@@ -55,13 +64,22 @@
 	{#if mobileNavOpen}
 		<div class="sm:hidden border-t border-white/5 bg-slate-900/95 backdrop-blur-xl">
 			<div class="flex flex-col gap-1 px-4 py-3">
+				<a href="/insights" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/insights') ? 'page' : undefined}>
+					Insights
+				</a>
+				<a href="/case-studies" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/case-studies') ? 'page' : undefined}>
+					Case Studies
+				</a>
+				<a href="/experience" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/experience') ? 'page' : undefined}>
+					Work With Me
+				</a>
 				<a href="/writing" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/writing') ? 'page' : undefined}>
 					Writing
 				</a>
 				<a href="/about" class="rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-white/5 hover:text-white" aria-current={isActive('/about') ? 'page' : undefined}>
 					About
 				</a>
-				<a href="mailto:hello@rdtect.com" class="mt-1 rounded-lg border border-indigo-500/30 px-3 py-2 text-center text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200">
+				<a href="/contact" class="mt-1 rounded-lg border border-indigo-500/30 px-3 py-2 text-center text-sm font-medium text-indigo-300 transition-colors hover:border-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-200" aria-current={isActive('/contact') ? 'page' : undefined}>
 					Contact
 				</a>
 			</div>
