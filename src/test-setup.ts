@@ -4,7 +4,8 @@
  * Global test configuration and mocks for rdtect-os
  */
 
-import { vi, beforeAll, afterAll } from 'vitest';
+import { vi, beforeAll, afterAll, expect } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 
 // Mock console methods that spam test output
 const originalConsole = { ...console };

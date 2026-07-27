@@ -2,7 +2,8 @@
 export default {
 	content: [
 		'./src/**/*.{html,js,svelte,ts}',
-		'./plugins/**/*.{html,js,svelte,ts}'
+		'./plugins/**/*.{html,js,svelte,ts}',
+		'./packages/**/*.{html,js,svelte,ts}'
 	],
 	theme: {
 		extend: {

@@ -24,7 +24,7 @@ export default defineConfig({
 		cors: true,
 		fs: {
 			// Allow serving files from the plugins directory
-			allow: ['src', 'plugins', 'node_modules', '.svelte-kit'],
+			allow: ['src', 'plugins', 'packages', 'node_modules', '.svelte-kit'],
 		},
 		proxy: {
 			// Proxy federation remotes to avoid CORS issues
