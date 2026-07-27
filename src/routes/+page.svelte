@@ -6,6 +6,8 @@
   import { initVirtualFilesystems } from "$lib/core/vfs";
   import { startFileHandler, stopFileHandler } from "$lib/core/file-associations";
   import { agentRuntime } from "$lib/core/agents/runtime.svelte";
+  import { getAuthState } from "$lib/core/pocketbase";
+  import { theme } from "$lib/core/theme";
   import type { PluginManifest, LoadedPlugin } from "$lib/core/types";
 
   /**
@@ -35,7 +37,13 @@
     console.log("[rdtect OS] Starting plugin discovery...");
 
     // Initialize virtual filesystems with reactive providers
-    initVirtualFilesystems(wm, agentRuntime);
+    initVirtualFilesystems(wm, agentRuntime, {
+      getAuthState: () => ({
+        isValid: getAuthState().isValid,
+        username: getAuthState().model?.name
+      }),
+      getThemeId: () => theme.activeThemeId
+    });
 
     // Start the file handler for file:open events
     startFileHandler();

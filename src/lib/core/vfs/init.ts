@@ -48,6 +48,17 @@ interface AgentRuntime {
   agents: AgentLike[];
 }
 
+/** Status provider dependencies for /proc/self/status */
+export interface StatusProviders {
+  /** Returns auth state: { isValid, username } */
+  getAuthState?: () => { isValid: boolean; username?: string };
+  /** Returns active theme id */
+  getThemeId?: () => string;
+}
+
+/** System boot time (shared with proc.ts BOOT_TIME concept) */
+let sessionStart = Date.now();
+
 let initialized = false;
 
 /**
@@ -56,14 +67,16 @@ let initialized = false;
  * This wires up the procFS to read reactive state from:
  * - Window Manager (for /proc/windows, /proc/apps)
  * - Agent Runtime (for /proc/agents)
- * - VFS (for /proc/self/cwd)
+ * - VFS (for /proc/self/cwd, /proc/self/status)
  *
  * @param wm - Window manager instance
  * @param agentRuntime - Agent runtime instance
+ * @param statusProviders - Optional providers for /proc/self/status (auth, theme)
  */
 export function initVirtualFilesystems(
   wm: WindowManager,
-  agentRuntime: AgentRuntime
+  agentRuntime: AgentRuntime,
+  statusProviders?: StatusProviders
 ): void {
   if (!browser) return;
   if (initialized) {
@@ -112,6 +125,58 @@ export function initVirtualFilesystems(
   // Wire up /proc/self/cwd - returns current working directory
   procFS.setCwdProvider(() => {
     return vfs.pwd();
+  });
+
+  // Wire up /proc/self/status - returns session/system status
+  // Like Linux /proc/self/status, provides human-readable status info
+  procFS.setStatusProvider(() => {
+    const uptimeSec = Math.floor((Date.now() - sessionStart) / 1000);
+    const hours = Math.floor(uptimeSec / 3600);
+    const minutes = Math.floor((uptimeSec % 3600) / 60);
+    const seconds = uptimeSec % 60;
+    const uptimeStr = `${hours}h ${minutes}m ${seconds}s`;
+
+    const status: Record<string, string | number> = {
+      Name: 'rdtect-os',
+      State: 'running (web)',
+      Uptime: uptimeStr,
+      Windows: wm.windows.length,
+      Agents: agentRuntime.agents.length,
+      CWD: vfs.pwd(),
+    };
+
+    // Inject auth state if provider available
+    if (statusProviders?.getAuthState) {
+      const auth = statusProviders.getAuthState();
+      status.Auth = auth.isValid ? `authenticated (${auth.username || 'user'})` : 'guest';
+    } else {
+      status.Auth = 'unknown';
+    }
+
+    // Inject theme if provider available
+    if (statusProviders?.getThemeId) {
+      status.Theme = statusProviders.getThemeId();
+    }
+
+    // Memory info from browser (if available)
+    const memory = (performance as Performance & {
+      memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number };
+    }).memory;
+    if (memory) {
+      status.MemTotal = `${Math.floor(memory.totalJSHeapSize / 1024)} kB`;
+      status.MemUsed = `${Math.floor(memory.usedJSHeapSize / 1024)} kB`;
+    }
+
+    // Agent status summary
+    const agentStates = agentRuntime.agents.map(a => a.status);
+    const idleCount = agentStates.filter(s => s === 'idle').length;
+    const activeCount = agentStates.filter(s => s !== 'idle' && s !== 'error').length;
+    const errorCount = agentStates.filter(s => s === 'error').length;
+    status.AgentsIdle = idleCount;
+    status.AgentsActive = activeCount;
+    status.AgentsError = errorCount;
+
+    return status;
   });
 
   initialized = true;

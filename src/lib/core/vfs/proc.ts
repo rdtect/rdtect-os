@@ -10,7 +10,12 @@
  * - /proc/apps - JSON list of registered apps
  * - /proc/uptime - System uptime in seconds
  * - /proc/meminfo - Browser memory info (if available)
+ * - /proc/version - System version and platform info
+ * - /proc/loadavg - Simulated load average (based on window count)
+ * - /proc/stat - Basic system stats (CPU, boot time, processes)
  * - /proc/self/cwd - Current working directory
+ * - /proc/self/status - Session/system status (name, state, uptime,
+ *   windows, agents, CWD, auth, theme, memory, agent summary)
  */
 
 import { browser } from '$app/environment';
@@ -30,6 +35,7 @@ class ProcFS {
   private windowsProvider: (() => unknown[]) | null = null;
   private appsProvider: (() => unknown[]) | null = null;
   private cwdProvider: (() => string) | null = null;
+  private statusProvider: (() => Record<string, string | number>) | null = null;
 
   constructor() {
     this.registerDefaultGetters();
@@ -61,6 +67,18 @@ class ProcFS {
    */
   setCwdProvider(provider: () => string): void {
     this.cwdProvider = provider;
+  }
+
+  /**
+   * Register the status provider for /proc/self/status
+   *
+   * The provider should return a Record of key-value pairs
+   * representing session/system status, like Linux /proc/self/status.
+   *
+   * Expected keys: Name, State, Uptime, Windows, Agents, CWD, Theme, Auth, etc.
+   */
+  setStatusProvider(provider: () => Record<string, string | number>): void {
+    this.statusProvider = provider;
   }
 
   private registerDefaultGetters(): void {
@@ -132,6 +150,28 @@ class ProcFS {
         return this.cwdProvider();
       }
       return '/home/user';
+    });
+
+    // /proc/self/status - Session and system status (like Linux /proc/self/status)
+    this.getters.set('/proc/self/status', () => {
+      if (this.statusProvider) {
+        const status = this.statusProvider();
+        // Format as key: value pairs like Linux /proc/self/status
+        const lines: string[] = [];
+        const maxKeyLen = Math.max(...Object.keys(status).map(k => k.length));
+        for (const [key, value] of Object.entries(status)) {
+          const padded = key.padEnd(maxKeyLen + 2);
+          lines.push(`${padded}${value}`);
+        }
+        return lines.join('\n');
+      }
+      // Fallback minimal status
+      const uptimeSec = Math.floor((Date.now() - BOOT_TIME) / 1000);
+      return [
+        'Name:   rdtect-os',
+        'State:  running',
+        `Uptime: ${uptimeSec}s`,
+      ].join('\n');
     });
 
     // /proc/version - System version info
