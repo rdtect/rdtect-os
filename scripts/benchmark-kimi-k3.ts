@@ -11,6 +11,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import * as os from "os";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 if (!OPENROUTER_API_KEY) {
@@ -36,9 +37,11 @@ interface BenchmarkResult {
 }
 
 async function loadVaultContent(): Promise<string> {
-  const vaultPath = path.expand("~/Documents/rdtect");
-  // ponytail: load only 1_Atlas + 3_Efforts dirs; skip media/archived
-  const dirs = ["1_Atlas", "3_Efforts"];
+  const vaultPath = path.join(os.homedir(), "Documents/rdtect");
+  // ponytail: load only 3_Efforts (~751K tokens). 1_Atlas + 3_Efforts combined
+  // is ~2.2M tokens which exceeds K3's 1M context window.
+  // 3_Efforts alone is the active projects directory and fits within 1M limit.
+  const dirs = ["3_Efforts"];
   let content = "";
 
   for (const dir of dirs) {
@@ -187,11 +190,15 @@ async function compareResults(
 }
 
 async function main() {
-  console.log("Loading vault content...");
+  console.log("Loading vault content (3_Efforts only — ~751K est. tokens)...");
   const content = await loadVaultContent();
+  const estTokens = Math.round(content.length / 4);
   console.log(
-    `✓ Loaded ${content.length.toLocaleString()} characters (~${Math.round(content.length / 4)} tokens estimated)`
+    `✓ Loaded ${content.length.toLocaleString()} characters (~${estTokens.toLocaleString()} tokens estimated)`
   );
+  if (estTokens > 900_000) {
+    console.warn(`⚠️  Estimated tokens (${estTokens.toLocaleString()}) near K3 1M limit — output may be truncated.`);
+  }
 
   console.log("\nCalling Kimi K3 API...");
   const kimi = await callKimiK3(content);
