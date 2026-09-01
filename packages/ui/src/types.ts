@@ -61,3 +61,24 @@ export const TOGGLE_SIZE_MAP: Record<ToggleSize, {
 // ─── Tooltip ────────────────────────────────────────────────────────
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+
+// ─── Dialog / Modal ─────────────────────────────────────────────────
+
+export type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
+
+// ─── Toast / Notifications ──────────────────────────────────────────
+
+export type ToastKind = 'info' | 'success' | 'warning' | 'error';
+
+export type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export interface ToastOptions {
+  /** Toast title (bold line) */
+  title?: string;
+  /** Secondary message line */
+  message?: string;
+  /** Visual tone */
+  kind?: ToastKind;
+  /** Auto-dismiss delay in ms (default 4000; 0 = sticky) */
+  duration?: number;
+}
