@@ -32,3 +32,32 @@ export type InputVariant = 'default' | 'ghost' | 'error';
 export type BadgeVariant = 'default' | 'accent' | 'success' | 'warning' | 'error' | 'info';
 
 export type CardVariant = 'default' | 'elevated' | 'bordered' | 'ghost';
+
+// ─── Select ─────────────────────────────────────────────────────────
+
+export interface SelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+/** Accept either shorthand strings or full option objects. */
+export type SelectOptionInput = string | SelectOption;
+
+// ─── Toggle / Switch ────────────────────────────────────────────────
+
+export type ToggleSize = 'sm' | 'md' | 'lg';
+
+export const TOGGLE_SIZE_MAP: Record<ToggleSize, {
+  track: string;
+  knob: string;
+  offset: string;
+}> = {
+  sm: { track: 'w-8 h-4', knob: 'w-3 h-3', offset: 'translate-x-4' },
+  md: { track: 'w-10 h-5', knob: 'w-4 h-4', offset: 'translate-x-5' },
+  lg: { track: 'w-12 h-6', knob: 'w-5 h-5', offset: 'translate-x-6' },
+};
+
+// ─── Tooltip ────────────────────────────────────────────────────────
+
+export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';

@@ -61,6 +61,7 @@
   const paddingClasses = $derived(padded ? 'p-3' : '');
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -- interactive cards act as buttons -->
 <div
   class="{baseClasses} {variantClasses[variant]} {paddingClasses} {interactiveClasses} {className}"
   role={interactive ? 'button' : undefined}
