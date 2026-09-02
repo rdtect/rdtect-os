@@ -14,7 +14,9 @@ export default defineConfig({
 		setupFiles: ['./src/test-setup.ts'],
 		// Svelte transform under parallel load is slow on this repo; give
 		// user-event interaction tests headroom over the 5s default.
-		timeout: 15000,
+		// NB: vitest 4 config key is `testTimeout` — the legacy `test.timeout`
+		// alias is silently ignored, which used to leave tests at 5s.
+		testTimeout: 15000,
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html'],
