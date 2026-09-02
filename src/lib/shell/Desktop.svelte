@@ -10,7 +10,8 @@
   import AppInfoModal from './AppInfoModal.svelte';
   import WindowSwitcher from './WindowSwitcher.svelte';
   import AuthGate from './AuthGate.svelte';
-  import { ToastContainer, pushToast } from '@rdtect/ui';
+  import { ToastContainer, pushToast, ConfirmDialog } from '@rdtect/ui';
+  import { confirmMeta, executeConfirmedAction, type DesktopConfirmAction } from './desktop-confirmations';
   import { keyboardShortcuts, type Shortcut } from '$lib/core/keyboard-shortcuts';
   import { eventBus } from '$lib/core/event-bus';
   import { widgetRegistry } from '$lib/core/widget-registry.svelte';
@@ -320,6 +321,29 @@
     appInfoModal.show = false;
   }
 
+  // ===== Destructive action confirmation (O1 ConfirmDialog) =====
+  // Desktop destructive flows never execute directly from a context-menu
+  // action. They first arm a pending confirmation; the danger ConfirmDialog
+  // must be accepted before the underlying action runs (logic in
+  // ./desktop-confirmations).
+  let pendingConfirm = $state<DesktopConfirmAction | null>(null);
+
+  function requestConfirm(action: DesktopConfirmAction) {
+    closeContextMenu();
+    pendingConfirm = action;
+  }
+
+  function confirmPendingAction() {
+    const action = pendingConfirm;
+    if (!action) return;
+    executeConfirmedAction(action, {
+      hideDesktopIcon: (appId) => desktopIconsRef?.hideIcon(appId),
+      resetIconPositions: () => desktopIconsRef?.resetIconPositions(),
+      resetWidgetPositions: () => widgetRegistry.resetPositions(),
+      notify: (toast) => pushToast(toast),
+    });
+  }
+
   function showAppContextMenu(e: MouseEvent, app: AppDefinition) {
     contextMenu = {
       show: true,
@@ -335,7 +359,7 @@
         {
           label: 'Remove from Desktop',
           icon: '🗑️',
-          action: () => desktopIconsRef?.hideIcon(app.id),
+          action: () => requestConfirm({ kind: 'remove-from-desktop', app }),
         },
       ],
     };
@@ -447,7 +471,7 @@
       widgetsSubmenu.push({
         label: 'Reset Positions',
         icon: '↩️',
-        action: () => widgetRegistry.resetPositions(),
+        action: () => requestConfirm({ kind: 'reset-widget-positions' }),
       });
     } else {
       widgetsSubmenu.push({
@@ -508,7 +532,7 @@
       menuItems.push({
         label: 'Reset Icon Positions',
         icon: '↩️',
-        action: () => desktopIconsRef?.resetIconPositions(),
+        action: () => requestConfirm({ kind: 'reset-icon-positions' }),
       });
     }
 
@@ -655,6 +679,24 @@
       app={appInfoModal.app}
       view={appInfoModal.view}
       onClose={closeAppInfoModal}
+    />
+  {/if}
+
+  <!-- Destructive-action confirmation (layered above the window stack) -->
+  {#if pendingConfirm}
+    {@const meta = confirmMeta(pendingConfirm)}
+    <ConfirmDialog
+      open
+      title={meta.title}
+      description={meta.description}
+      confirmLabel={meta.confirmLabel}
+      cancelLabel="Cancel"
+      danger
+      zIndex="z-[9999]"
+      onconfirm={confirmPendingAction}
+      onclose={() => {
+        pendingConfirm = null;
+      }}
     />
   {/if}
 
