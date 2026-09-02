@@ -177,4 +177,11 @@ describe('ToastContainer', () => {
     expect(region.className).toContain('top-4');
     expect(region.className).toContain('right-4');
   });
+
+  it('applies a custom zIndex class to the toast layer', () => {
+    pushToast({ title: 'Layer' });
+    const { container } = render(ToastContainer, { props: { zIndex: 'z-[9999]' } });
+    const region = container.querySelector('[role="region"]')!;
+    expect(region.className).toContain('z-[9999]');
+  });
 });

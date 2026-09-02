@@ -87,8 +87,6 @@
   const disabledClass = $derived(
     disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
   );
-
-  const isSnippet = $derived(typeof children === 'function');
 </script>
 
 <button
@@ -106,7 +104,7 @@
     <span class="shrink-0 text-current" aria-hidden="true">{icon}</span>
   {/if}
   {#if children}
-    {#if isSnippet}
+    {#if typeof children === 'function'}
       {@render children()}
     {:else}
       {children}

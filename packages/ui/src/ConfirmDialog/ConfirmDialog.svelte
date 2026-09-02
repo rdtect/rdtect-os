@@ -56,6 +56,8 @@
     closable?: boolean;
     /** Unique ID prefix (auto-derived from title if not provided) */
     id?: string;
+    /** Tailwind z-index class for the backdrop layer (passed to Dialog) */
+    zIndex?: string;
     /** Optional extra body content rendered above the actions */
     children?: Children;
   }
@@ -75,14 +77,13 @@
     closeOnEscape = true,
     closable = true,
     id,
+    zIndex = 'z-50',
     children,
   }: Props = $props();
 
   const footerId = $derived(
     id ? `${id}-footer` : title ? `dialog-${title.toLowerCase().replace(/\s+/g, '-')}-footer` : 'dialog-footer'
   );
-
-  const isSnippet = $derived(typeof children === 'function');
 
   function handleConfirm() {
     onconfirm?.();
@@ -112,12 +113,13 @@
   {closeOnBackdrop}
   {closeOnEscape}
   {closable}
+  {zIndex}
   {onclose}
 >
   <div class="space-y-4">
     {#if children}
       <div>
-        {#if isSnippet}
+        {#if typeof children === 'function'}
           {@render children()}
         {:else}
           {children}

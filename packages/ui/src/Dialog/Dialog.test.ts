@@ -178,4 +178,16 @@ describe('Dialog', () => {
     const labelledBy = dialog.getAttribute('aria-labelledby');
     expect(labelledBy).toBe('my-dialog-title');
   });
+
+  it('applies a custom zIndex class to the backdrop layer', () => {
+    const { container } = renderOpen({ zIndex: 'z-[9999]' });
+    const backdrop = container.querySelector('[role="presentation"]')!;
+    expect(backdrop.className).toContain('z-[9999]');
+  });
+
+  it('defaults the backdrop layer to z-50', () => {
+    const { container } = renderOpen();
+    const backdrop = container.querySelector('[role="presentation"]')!;
+    expect(backdrop.className).toContain('z-50');
+  });
 });

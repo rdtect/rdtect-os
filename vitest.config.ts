@@ -12,6 +12,9 @@ export default defineConfig({
 		environment: 'jsdom',
 		globals: true,
 		setupFiles: ['./src/test-setup.ts'],
+		// Svelte transform under parallel load is slow on this repo; give
+		// user-event interaction tests headroom over the 5s default.
+		timeout: 15000,
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html'],

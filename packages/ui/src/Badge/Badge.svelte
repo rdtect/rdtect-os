@@ -50,8 +50,6 @@
     error: 'bg-red-400',
     info: 'bg-blue-400',
   };
-
-  const isSnippet = $derived(typeof children === 'function' && children !== undefined);
 </script>
 
 {#if dot}
@@ -65,7 +63,7 @@
       {variantClasses[variant]} {className}"
   >
     {#if children}
-      {#if isSnippet}
+      {#if typeof children === 'function'}
         {@render children()}
       {:else}
         {children}

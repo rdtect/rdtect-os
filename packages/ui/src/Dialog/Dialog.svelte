@@ -42,6 +42,8 @@
     children?: Children;
     /** Additional CSS classes for the panel */
     class?: string;
+    /** Tailwind z-index class for the backdrop layer (default `z-50`) */
+    zIndex?: string;
   }
 
   let {
@@ -58,6 +60,7 @@
     describedBy,
     children,
     class: className = '',
+    zIndex = 'z-50',
   }: Props = $props();
 
   const dialogId = $derived(
@@ -116,7 +119,7 @@
         return;
       }
       const current = document.activeElement as HTMLElement | null;
-      const currentIndex = focusables.indexOf(current);
+      const currentIndex = current ? focusables.indexOf(current) : -1;
       let nextIndex: number;
       if (e.shiftKey) {
         nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
@@ -139,7 +142,7 @@
 {#if open}
   <!-- Backdrop (click target = backdrop only, not the panel) -->
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto
+    class="fixed inset-0 {zIndex} flex items-center justify-center overflow-y-auto
       bg-black/60 p-4"
     role="presentation"
     onclick={(e) => {
@@ -188,7 +191,13 @@
               {description}
             </p>
           {/if}
-          {@render children?.()}
+          {#if children}
+            {#if typeof children === 'function'}
+              {@render children()}
+            {:else}
+              {children}
+            {/if}
+          {/if}
         </div>
       </div>
     </div>

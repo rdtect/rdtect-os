@@ -15,9 +15,11 @@
     position?: ToastPosition;
     /** Additional CSS classes for the container */
     class?: string;
+    /** Tailwind z-index class for the toast layer (default `z-50`) */
+    zIndex?: string;
   }
 
-  let { position = 'bottom-right', class: className = '' }: Props = $props();
+  let { position = 'bottom-right', class: className = '', zIndex = 'z-50' }: Props = $props();
 
   const POSITION_CLASS: Record<ToastPosition, string> = {
     'top-left': 'top-4 left-4',
@@ -29,7 +31,7 @@
 
 {#if $toasts.length > 0}
   <div
-    class="pointer-events-none fixed z-50 flex w-full max-w-sm flex-col gap-2
+    class="pointer-events-none fixed {zIndex} flex w-full max-w-sm flex-col gap-2
       p-4 {POSITION_CLASS[position]} {className}"
     role="region"
     aria-label="Notifications"

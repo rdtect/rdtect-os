@@ -14,6 +14,8 @@ import type { ToastKind, ToastOptions } from '../types';
 
 export interface Toast extends ToastOptions {
   id: number;
+  /** Visual tone (always set by pushToast; required for consumers) */
+  kind: ToastKind;
 }
 
 let nextId = 1;

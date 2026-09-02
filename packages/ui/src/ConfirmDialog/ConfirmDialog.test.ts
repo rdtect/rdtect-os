@@ -172,4 +172,9 @@ describe('ConfirmDialog', () => {
     const dialog = screen.getByRole('dialog');
     expect(dialog.getAttribute('aria-labelledby')).toBe('delete-flow-title');
   });
+
+  it('passes a custom zIndex through to the Dialog backdrop', () => {
+    const { container } = renderOpen({ zIndex: 'z-[9999]' });
+    expect(container.querySelector('[role="presentation"]')?.className).toContain('z-[9999]');
+  });
 });

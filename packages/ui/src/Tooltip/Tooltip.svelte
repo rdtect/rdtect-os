@@ -41,8 +41,6 @@
     class: className = '',
   }: Props = $props();
 
-  const isSnippet = $derived(typeof children === 'function');
-
   const tooltipId = $derived(
     id ??
       `tooltip-${text
@@ -62,11 +60,11 @@
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -- wrapper is an intentional focusable tooltip trigger -->
 <span
   class="group relative inline-flex {className}"
-  tabindex={interactive ? undefined : '0'}
+  tabindex={interactive ? undefined : 0}
   aria-describedby={disabled ? undefined : tooltipId}
 >
   {#if children}
-    {#if isSnippet}
+    {#if typeof children === 'function'}
       {@render children()}
     {:else}
       {children}

@@ -10,6 +10,7 @@
   import AppInfoModal from './AppInfoModal.svelte';
   import WindowSwitcher from './WindowSwitcher.svelte';
   import AuthGate from './AuthGate.svelte';
+  import { ToastContainer, pushToast } from '@rdtect/ui';
   import { keyboardShortcuts, type Shortcut } from '$lib/core/keyboard-shortcuts';
   import { eventBus } from '$lib/core/event-bus';
   import { widgetRegistry } from '$lib/core/widget-registry.svelte';
@@ -92,7 +93,14 @@
       showAuthGate = true;
       return;
     }
-    wm.openWindow(appId);
+    const windowId = wm.openWindow(appId);
+    if (!windowId) {
+      pushToast({
+        kind: 'error',
+        title: 'App not found',
+        message: `"${appId}" is not registered with the window manager.`,
+      });
+    }
   }
 
   function openStartMenu() {
@@ -674,4 +682,7 @@
       }}
     />
   {/if}
+
+  <!-- O1 Toast notifications (layered above the window stack) -->
+  <ToastContainer zIndex="z-[9999]" />
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { Dialog } from '@rdtect/ui';
   import type { AppDefinition } from './types';
   import type { PluginType } from '$lib/core/types';
 
@@ -10,8 +10,6 @@
   }
 
   let { app, view, onClose }: Props = $props();
-
-  let modalEl: HTMLDivElement | undefined = $state();
 
   // Source file mappings - now uses plugins directory
   const sourceFileMappings: Record<string, { path: string; relativePath: string }> = {
@@ -241,78 +239,43 @@
     currentView = view;
   });
 
-  onMount(() => {
-    const handleKeydown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalEl && !modalEl.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-
-    // Delay to prevent immediate close
-    setTimeout(() => {
-      window.addEventListener('keydown', handleKeydown);
-      window.addEventListener('click', handleClickOutside);
-    }, 0);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeydown);
-      window.removeEventListener('click', handleClickOutside);
-    };
-  });
-
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
   }
 </script>
 
-<!-- Modal Backdrop -->
-<div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
-  <!-- Modal Container -->
-  <div
-    bind:this={modalEl}
-    class="relative w-full max-w-xl bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden animate-scale-in"
-  >
-    <!-- Glass highlight effect -->
-    <div class="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
-
-    <!-- Header -->
-    <div class="relative flex items-center gap-4 px-6 py-5 border-b border-white/10">
-      <!-- App Icon -->
-      <div class="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg">
-        <span class="text-3xl">{app.icon}</span>
-      </div>
-
-      <!-- App Info -->
-      <div class="flex-1 min-w-0">
-        <h2 class="text-xl font-semibold text-white truncate">{app.title}</h2>
-        <div class="flex items-center gap-2 mt-1">
-          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {typeInfo.bgColor} {typeInfo.color} border">
-            {typeInfo.label}
-          </span>
-          <span class="text-xs text-slate-400">v{app.plugin?.manifest?.version ?? '1.0.0'}</span>
-        </div>
-      </div>
-
-      <!-- Close Button -->
-      <button
-        class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-        onclick={onClose}
-        aria-label="Close"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+<!--
+  Shell usage pattern: compose the O1 Dialog instead of hand-rolling a modal.
+  Dialog owns the backdrop, Escape-to-close, backdrop click, close button,
+  focus trap + restore, and aria-labelledby/describedby wiring.
+  zIndex is lifted above the window manager stack (windows start at z-100).
+-->
+<Dialog
+  open
+  title={app.title}
+  size="xl"
+  zIndex="z-[9999]"
+  onclose={onClose}
+>
+  <!-- Icon + plugin type row -->
+  <div class="flex items-center gap-4">
+    <div
+      class="w-14 h-14 flex items-center justify-center rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg"
+    >
+      <span class="text-3xl">{app.icon}</span>
     </div>
+    <div class="flex items-center gap-2">
+      <span
+        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {typeInfo.bgColor} {typeInfo.color} border"
+      >
+        {typeInfo.label}
+      </span>
+      <span class="text-xs text-slate-400">v{app.plugin?.manifest?.version ?? '1.0.0'}</span>
+    </div>
+  </div>
 
-    <!-- Tab Navigation -->
-    <div class="flex border-b border-white/10">
+  <!-- Tab Navigation -->
+  <div class="flex -mx-5 mt-4 border-b border-white/10">
       <button
         class="flex-1 px-4 py-3 text-sm font-medium transition-colors relative
           {currentView === 'source' ? 'text-desktop-accent' : 'text-slate-400 hover:text-slate-200'}"
@@ -346,7 +309,7 @@
     </div>
 
     <!-- Content Area -->
-    <div class="relative p-6 max-h-[400px] overflow-y-auto">
+    <div class="relative max-h-[400px] overflow-y-auto">
       {#if currentView === 'source'}
         <!-- Source Code View -->
         <div class="space-y-4">
@@ -500,43 +463,16 @@
       {/if}
     </div>
 
-    <!-- Footer -->
-    <div class="relative px-6 py-4 border-t border-white/10 bg-slate-900/30">
-      <div class="flex items-center justify-between">
-        <span class="text-xs text-slate-500">Desktop OS Plugin System</span>
-        <button
-          class="px-4 py-2 text-sm font-medium text-white bg-desktop-accent hover:bg-desktop-accent/80 rounded-lg transition-colors"
-          onclick={onClose}
-        >
-          Close
-        </button>
-      </div>
-    </div>
+  <!-- Footer -->
+  <div
+    class="flex items-center justify-between -mx-5 -mb-4 mt-4 border-t border-white/10 bg-slate-900/30 px-5 py-4"
+  >
+    <span class="text-xs text-slate-500">Desktop OS Plugin System</span>
+    <button
+      class="px-4 py-2 text-sm font-medium text-white bg-desktop-accent hover:bg-desktop-accent/80 rounded-lg transition-colors"
+      onclick={onClose}
+    >
+      Close
+    </button>
   </div>
-</div>
-
-<style>
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.2s ease-out forwards;
-  }
-
-  .animate-scale-in {
-    animation: scale-in 0.25s ease-out forwards;
-  }
-</style>
+</Dialog>

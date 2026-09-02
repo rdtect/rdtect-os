@@ -8,6 +8,7 @@
   import { agentRuntime } from "$lib/core/agents/runtime.svelte";
   import { getAuthState } from "$lib/core/pocketbase";
   import { theme } from "$lib/core/theme";
+  import { pushToast } from "@rdtect/ui";
   import type { PluginManifest, LoadedPlugin } from "$lib/core/types";
 
   /**
@@ -62,6 +63,11 @@
       } catch (error) {
         console.error(`[rdtect OS] Failed to load plugin from ${path}:`, error);
         errorCount++;
+        pushToast({
+          kind: 'error',
+          title: 'Plugin failed to load',
+          message: path.replace('/manifest.ts', '').replace('/plugins/', ''),
+        });
       }
     }
 
@@ -120,6 +126,11 @@
       return true;
     } catch (error) {
       console.error(`[rdtect OS] Failed to load plugin ${manifest.id}:`, error);
+      pushToast({
+        kind: 'error',
+        title: 'Plugin failed to load',
+        message: manifest.id,
+      });
       return false;
     }
   }
