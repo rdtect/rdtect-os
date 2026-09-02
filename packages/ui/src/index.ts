@@ -5,7 +5,7 @@
  * Components are built with Svelte 5 runes and the desktop theme tokens.
  *
  * Usage:
- *   import { Button, Input, Card, Badge, Select, Toggle, Tooltip, Dialog, ToastContainer } from '@rdtect/ui';
+ *   import { Button, Input, Card, Badge, Select, Toggle, Tooltip, Dialog, ToastContainer, ConfirmDialog } from '@rdtect/ui';
  *   import { pushToast } from '@rdtect/ui';
  *   import type { ButtonVariant, ComponentSize, ToggleSize, ToastKind } from '@rdtect/ui';
  */
@@ -22,6 +22,7 @@ export { default as Tooltip } from './Tooltip/Tooltip.svelte';
 export { default as Dialog } from './Dialog/Dialog.svelte';
 export { default as Toast } from './Toast/Toast.svelte';
 export { default as ToastContainer } from './Toast/ToastContainer.svelte';
+export { default as ConfirmDialog } from './ConfirmDialog/ConfirmDialog.svelte';
 
 // ─── Toast store ────────────────────────────────────────────────────
 
