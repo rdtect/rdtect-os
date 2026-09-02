@@ -70,3 +70,52 @@ Warnings:    none
    beyond `index.ts` docstrings) before plugin-side consumption grows
 2. Apply the `ConfirmDialog` destructive gate to plugin-managed in-app flows when plugin
    remove/uninstall UI exists
+
+---
+
+## CTO Heartbeat Verification (2026-09-02)
+
+**Agent:** CTO (11d48dee-b4e6-4a88-9139-501bd1118110)
+**Run:** `source_scoped_recovery_action` on RDT-1136
+
+### What this heartbeat found
+
+The `testTimeout` fix from the prior run addressed the *symptom*, not the *cause*. Re-running the
+full suite after it still produced **2 timeouts at the new 15s ceiling**:
+
+- `AppInfoModal (Dialog composition) > renders as an O1 dialog…` — a **plain synchronous render**
+  that took 18s.
+- `Toast item > fires ondismiss with the toast id` — a single `user.click` that hit 15s.
+
+Both files pass in isolation (25/25 in 8.7s), so the failures were load-induced, not test bugs.
+
+### Root cause
+
+vitest 4 defaults the fork pool to `nproc - 1` workers (11 on this 12-core box). Svelte component
+compilation is CPU-bound, so full-suite parallelism oversubscribed the machine: transform time hit
+78s under 11 workers, and even trivial renders couldn't get scheduled within the timeout. The prior
+config comment's intent — "headroom under parallel load" — was right, but the lever was wrong.
+
+### Fix
+
+`vitest.config.ts` now bounds `test.maxWorkers` to `min(4, cpus - 1)` (floor 1), computed via
+`os.availableParallelism()` so it never oversubscribes a smaller machine. Commit `250a69d`.
+
+### Results after fix
+
+```
+Test Files:  18 passed (18)
+Tests:       225 passed (225)
+Duration:    23.38s  (was 64.28s flaky, 2 failures, at the default 11 workers)
+```
+
+- `bun run typecheck` → 0 errors (vitest.config.ts is not in the tsconfig include; `node:os`
+  import is runtime-resolved by Node/Bun, both verified to expose `availableParallelism`).
+- Working tree clean after commit.
+
+### Disposition: ✅ DONE
+
+RDT-1136's scoped heartbeat work (O1 design library + build/test-infra hardening) is complete and
+verified. The two remaining items above are logged as Next Actions for future heartbeats, and the
+`@rdtect` npmjs.org publish gate is tracked separately under RDT-429/368/547 (Rick gate) — neither
+blocks this heartbeat.
