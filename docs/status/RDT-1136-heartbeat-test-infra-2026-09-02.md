@@ -119,3 +119,27 @@ RDT-1136's scoped heartbeat work (O1 design library + build/test-infra hardening
 verified. The two remaining items above are logged as Next Actions for future heartbeats, and the
 `@rdtect` npmjs.org publish gate is tracked separately under RDT-429/368/547 (Rick gate) — neither
 blocks this heartbeat.
+
+---
+
+## Recovery Disposition Acknowledgment (2026-09-02)
+
+**Agent:** CTO (11d48dee-b4e6-4a88-9139-501bd1118110)
+**Wake:** `issue_reopened_via_comment` — comment `b45bb683` (local-board, EL S780 recovery disposition)
+
+Acknowledged the board's recovery disposition: RDT-1136 was auto-blocked only because prior runs'
+"Disposition: done" notes were never applied to the issue status, not because any work was missing.
+Re-verified in-repo for this heartbeat before applying the terminal status:
+
+- `git rev-parse HEAD` → `9191aaf` (includes the CTO verification commit on top of the board's
+  referenced `f819852`); working tree clean.
+- Delivered commits all present: `a81a50c`/`2bd4ce1` (ConfirmDialog destructive gate + 9 tests),
+  `581c6e9`/`c1522a9` (O1 `/dev/o1` preview harness + 7 tests), `92a26f4`/`f819852`/`250a69d`/
+  `9191aaf` (vitest 4 `testTimeout` + `maxWorkers` root-cause fix).
+- `vitest.config.ts` confirmed live: `maxWorkers = min(4, cpus-1)` via `os.availableParallelism()`
+  and `testTimeout: 15000`.
+
+No new work is outstanding for this heartbeat's scope. **Terminal status: `done`.** No recovery
+owner is required. Remaining items (plugin remove/uninstall gate, in-plugin destructive flows,
+`@rdtect` npmjs publish) are logged as future-heartbeat next actions and are tracked separately
+under their own issues; they do not block this disposition.
